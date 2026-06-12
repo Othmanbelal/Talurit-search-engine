@@ -44,12 +44,14 @@ services:
       SMTP_SECURE: ${SMTP_SECURE:-false}
       ADMIN_SUMMARY_EMAIL: ${ADMIN_SUMMARY_EMAIL:-}
       BACKUP_DIR: /app/backups
-      UPLOAD_DIR: /app/uploads
+      SUPABASE_URL: ${SUPABASE_URL:-}
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
+      SUPABASE_STORAGE_BUCKET: ${SUPABASE_STORAGE_BUCKET:-tool-inventory-uploads}
+      SUPABASE_SIGNED_URL_SECONDS: ${SUPABASE_SIGNED_URL_SECONDS:-3600}
     ports:
       - "4000:4000"
     volumes:
       - ./backups:/app/backups
-      - ./uploads:/app/uploads
     command: sh -c "npm --workspace server run db:migrate:deploy && npm --workspace server run start"
 
   client:

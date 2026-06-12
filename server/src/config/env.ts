@@ -33,7 +33,10 @@ const envSchema = z.object({
     .default(false),
   ADMIN_SUMMARY_EMAIL: z.string().optional().default(""),
   BACKUP_DIR: z.string().default("./backups"),
-  UPLOAD_DIR: z.string().default("./uploads"),
+  SUPABASE_URL: z.string().url().optional(),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().optional().default(""),
+  SUPABASE_STORAGE_BUCKET: z.string().default("tool-inventory-uploads"),
+  SUPABASE_SIGNED_URL_SECONDS: z.coerce.number().int().positive().default(3600),
 });
 
 export const env = envSchema.parse(process.env);

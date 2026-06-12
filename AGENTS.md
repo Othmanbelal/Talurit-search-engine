@@ -124,7 +124,9 @@ Rules:
 - InventoryItem stores shared item identity fields, identifiers, attributes, and picture URL.
 - Opening an inventory row must show the full item/entry details, all mapped attributes, notes, picture, and uploaded QR code image.
 - QR codes are user-uploaded images, not auto-generated codes.
-- Uploaded images are stored under the configured UPLOAD_DIR and exposed through /uploads.
+- Uploaded files must use Supabase Storage or another real object-storage provider; do not use Render/local disk or database base64 fields for production uploads.
+- PostgreSQL stores only storage references or metadata, not image binary/base64 payloads.
+- Image display must go through authenticated backend media routes that create short-lived signed storage URLs.
 - Taking stock out creates a TakenStockItem record, decreases the source StockBalance quantity, and can be returned later.
 - Assigning stock to a Used In card creates a UsedInStockAssignment, decreases the source StockBalance quantity, and shows usage tags on the source row.
 - Returning taken or used stock must increase the original StockBalance quantity and mark the movement record returned.

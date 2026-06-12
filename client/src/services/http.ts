@@ -16,6 +16,9 @@ type ApiResponse<T> = ApiSuccess<T> | ApiFailure;
 const apiBaseUrl = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
 
 export function buildApiUrl(path: string) {
+  if (path.startsWith("supabase://")) {
+    return `${apiBaseUrl}/api/uploads/media?ref=${encodeURIComponent(path)}`;
+  }
   if (!apiBaseUrl || /^(https?:|data:|blob:)/i.test(path)) return path;
   return `${apiBaseUrl}${path}`;
 }

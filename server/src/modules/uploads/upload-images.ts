@@ -1,7 +1,12 @@
 import multer from "multer";
 import { AppError } from "../../utils/AppError";
 
-const allowedMimeTypes = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
+const allowedMimeTypes = new Map([
+  ["image/png", ".png"],
+  ["image/jpeg", ".jpg"],
+  ["image/webp", ".webp"],
+  ["image/gif", ".gif"],
+]);
 
 export const imageMemoryUpload = multer({
   limits: { fileSize: 3 * 1024 * 1024, files: 1 },
@@ -11,9 +16,13 @@ export const imageMemoryUpload = multer({
   },
 });
 
-export function imageFileToDataUrl(file?: Express.Multer.File) {
+export function validateImageFile(file?: Express.Multer.File) {
   if (!file || !allowedMimeTypes.has(file.mimetype) || !file.buffer?.length) {
     throw new AppError("Upload a PNG, JPG, WEBP, or GIF image.", 400);
   }
-  return `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
+  return file;
+}
+
+export function imageExtension(mimeType: string) {
+  return allowedMimeTypes.get(mimeType) ?? ".bin";
 }

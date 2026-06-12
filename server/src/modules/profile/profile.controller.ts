@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { successResponse } from "../../utils/api-response";
-import { imageFileToDataUrl } from "../uploads/upload-images";
+import { uploadImageToStorage } from "../uploads/storage.service";
 import { changePasswordSchema, updateProfileSchema } from "./profile.schemas";
 import { changePassword, getProfile, updateProfile, uploadProfilePicture } from "./profile.service";
 
@@ -22,7 +22,7 @@ export async function changePasswordController(request: Request, response: Respo
 }
 
 export async function uploadProfilePictureController(request: Request, response: Response) {
-  const imageUrl = imageFileToDataUrl(request.file);
-  const result = await uploadProfilePicture(request.user!.id, imageUrl);
+  const imageRef = await uploadImageToStorage(request.file, "profile-pictures", request.user!.id);
+  const result = await uploadProfilePicture(request.user!.id, imageRef);
   return response.json(successResponse(result));
 }

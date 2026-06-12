@@ -1023,8 +1023,8 @@ Completed:
 - Removed the generated QR code display from the inventory row detail drawer.
 - Added InventoryItem.qrCodeImageUrl for user-uploaded QR code images.
 - Added authenticated image upload endpoint at POST /api/uploads/images.
-- Uploaded images are stored under UPLOAD_DIR and exposed from /uploads.
-- Docker Compose now mounts ./uploads to /app/uploads so uploaded files persist.
+- Uploaded images use Supabase Storage in production; local/Render disk upload storage is no longer the target architecture.
+- PostgreSQL stores only storage references for uploaded images.
 - Inventory row detail drawer now lets the user upload and preview a QR code image.
 - Manual stock row creation also supports saving a QR code image URL.
 - Removed the qrcode.react dependency.
@@ -1277,7 +1277,7 @@ Completed:
 - Take me there routes to the source inventory table and highlights the matched row.
 - Uploaded QR code images remain user-facing images only; URL fields stay hidden from users.
 - QR image uploads now decode the QR payload and store it as hidden item data for future scans.
-- New image uploads are stored as database-backed data URLs so Render restarts do not break item, QR, or profile images.
+- New image uploads are stored in Supabase Storage and rendered through authenticated signed media URLs.
 
 Verification:
 - npm run check:lines passed.

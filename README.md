@@ -98,6 +98,23 @@ The production compose file includes:
 - `server`
 - `client`
 
+## File Storage
+
+Uploaded item pictures, QR images, and profile pictures use Supabase Storage in production. PostgreSQL stores only storage references; image bytes are not stored in normal database text fields, and Render/local disk is not used for production uploads.
+
+Create a private Supabase Storage bucket, or let the configured service role upload to an existing private bucket, then set these variables on Render and in local `.env` when uploads are needed:
+
+```env
+SUPABASE_URL=https://PROJECT_REF.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+SUPABASE_STORAGE_BUCKET=tool-inventory-uploads
+SUPABASE_SIGNED_URL_SECONDS=3600
+```
+
+The service role key is a backend secret. Do not put it in Vercel or any frontend environment.
+
+Images are rendered through the backend media endpoint, which creates a short-lived signed Supabase URL for authenticated users.
+
 ## Email Setup
 
 Email is SMTP-first and does not require a paid email API. Configure initial fallback values in `.env` or your server environment:

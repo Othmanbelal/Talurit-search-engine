@@ -21,7 +21,6 @@ import { toolsRoutes } from "./modules/tools/tools.routes";
 import { structuredImportRoutes } from "./modules/structured-imports/structured-import.routes";
 import { structuredInventoryRoutes } from "./modules/structured-inventory/structured-inventory.routes";
 import { uploadRoutes } from "./modules/uploads/upload.routes";
-import { uploadRoot } from "./modules/uploads/upload-paths";
 import { profileRoutes } from "./modules/profile/profile.routes";
 import { usedInRoutes } from "./modules/used-in/used-in.routes";
 import { warehouseRoutes } from "./modules/warehouses/warehouse.routes";
@@ -38,7 +37,6 @@ export function createApp() {
   app.use(cookieParser());
   app.use(express.json({ limit: "10mb" }));
   app.use(requestLogger);
-  app.use("/uploads", express.static(uploadRoot()));
 
   app.use(`${API_PREFIX}/auth`, authRoutes);
   app.use(`${API_PREFIX}/admin`, adminRoutes);
