@@ -10,7 +10,7 @@ export function StagingRowsTable({
 }) {
   const visibleRows = rows.slice(0, 80);
   return (
-    <div className="overflow-hidden rounded-lg border border-line bg-panel">
+    <div className="overflow-x-auto rounded-lg border border-line bg-panel">
       <table className="min-w-full divide-y divide-line text-sm">
         <thead className="bg-slate-950/70 text-left text-xs uppercase tracking-wide text-slate-500">
           <tr><th className="px-3 py-2">Sheet</th><th className="px-3 py-2">Row</th><th className="px-3 py-2">Status</th><th className="px-3 py-2">Message</th><th className="px-3 py-2">Actions</th></tr>
