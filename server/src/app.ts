@@ -60,6 +60,9 @@ export function createApp() {
   app.use(`${API_PREFIX}/item-notes`, itemNotesRoutes);
   app.use(`${API_PREFIX}/urgent-issues`, urgentIssueRoutes);
 
+  // Root health-check for Render and load-balancers.
+  app.get("/", (_request, response) => response.sendStatus(200));
+
   app.use(notFoundMiddleware);
   app.use(errorMiddleware);
 
