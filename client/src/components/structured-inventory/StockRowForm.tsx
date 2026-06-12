@@ -20,6 +20,7 @@ const initialForm: AddStockRowInput = {
   currency: "SEK",
   notes: "",
   imageUrl: "",
+  qrCodeId: "",
   qrCodeImageUrl: "",
   attributes: [],
 };
@@ -55,7 +56,14 @@ export function StockRowForm({ onAddRow }: { onAddRow: (input: AddStockRowInput)
       </div>
       <div className="grid gap-3 md:grid-cols-2">
         <ImageUploadField label="Upload item picture" onChange={(value) => update("imageUrl", value)} previewAlt="Item picture" value={form.imageUrl} />
-        <ImageUploadField label="Upload QR code image" onChange={(value) => update("qrCodeImageUrl", value)} previewAlt="Uploaded QR code" value={form.qrCodeImageUrl} />
+        <ImageUploadField
+          decodeQr
+          label="Upload QR code image"
+          onChange={(value) => update("qrCodeImageUrl", value)}
+          onDecodedText={(value) => update("qrCodeId", value)}
+          previewAlt="Uploaded QR code"
+          value={form.qrCodeImageUrl}
+        />
       </div>
       <AttributeFields attributes={form.attributes} onChange={(value) => update("attributes", value)} />
       <div className="flex items-center justify-between gap-3">
@@ -139,6 +147,7 @@ function cleanForm(form: AddStockRowInput): AddStockRowInput {
     unitPrice: form.unitPrice || null,
     notes: emptyToNull(form.notes),
     imageUrl: emptyToNull(form.imageUrl),
+    qrCodeId: emptyToNull(form.qrCodeId),
     qrCodeImageUrl: emptyToNull(form.qrCodeImageUrl),
     attributes: form.attributes.filter((attribute) => attribute.name.trim() && attribute.rawValue?.trim()),
   };

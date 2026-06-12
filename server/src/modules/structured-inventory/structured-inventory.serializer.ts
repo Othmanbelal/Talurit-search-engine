@@ -105,6 +105,7 @@ export function serializeStockRow(row: StockRowRecord) {
       name: row.item.name,
       grade: row.item.grade,
       imageUrl: row.item.imageUrl,
+      qrCodeId: row.item.qrCodeId,
       qrCodeImageUrl: row.item.qrCodeImageUrl,
       articleNumber: article,
       alternativeArticleNumber: altArticle,

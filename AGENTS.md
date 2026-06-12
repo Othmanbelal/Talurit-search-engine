@@ -340,6 +340,18 @@ Avoid:
 - giant components
 - inconsistent spacing
 
+## QR Scan Rules
+
+- Dashboard must keep a visible QR scan action for authenticated users.
+- Scanning opens the camera on supported devices and also allows manual code entry.
+- Uploaded QR code images are user-managed assets; URLs must stay hidden from normal users.
+- When a QR image is uploaded, decode the QR payload and save it as hidden item data.
+- A scanned QR should show the matched item picture, table, location/FACK, warehouse placement, managers, and used-in state.
+- If no item matches the scanned QR payload, show a clear not-linked message.
+- Scan result actions should support Take out / Use in for roles allowed to move stock.
+- Scan result actions should allow permitted users to add item notes or report urgent issues.
+- "Take me there" must route to the correct inventory table and highlight the matching row.
+
 ## Phase Completion Format
 
 At the end of each phase, report:

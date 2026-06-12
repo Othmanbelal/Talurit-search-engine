@@ -64,6 +64,7 @@ export const addStockRowSchema = z.object({
   currency: z.string().trim().min(1).default("SEK"),
   notes: z.string().trim().nullable().optional(),
   imageUrl: z.string().trim().nullable().optional(),
+  qrCodeId: z.string().trim().max(1000).nullable().optional(),
   qrCodeImageUrl: z.string().trim().nullable().optional(),
   attributes: z.array(itemAttributeInputSchema).max(80).default([]),
 });

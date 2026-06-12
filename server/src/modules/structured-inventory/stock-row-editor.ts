@@ -74,7 +74,8 @@ export function deleteStockRowRecord(tableId: string, rowId: string) {
 
 function itemUpdateData(input: UpdateStockRowInput, manufacturerId?: string | null, categoryId?: string | null) {
   const name = toNullableString(input.itemName);
-  return {
+  const qrCodeId = toNullableString(input.qrCodeId);
+  const data: Prisma.InventoryItemUncheckedUpdateInput = {
     ...(name ? { name, normalizedName: normalizeKey(name) } : {}),
     manufacturerId,
     categoryId,
@@ -82,6 +83,8 @@ function itemUpdateData(input: UpdateStockRowInput, manufacturerId?: string | nu
     imageUrl: input.imageUrl,
     qrCodeImageUrl: input.qrCodeImageUrl,
   };
+  if (qrCodeId) data.qrCodeId = qrCodeId;
+  return data;
 }
 
 async function replaceIdentifiers(

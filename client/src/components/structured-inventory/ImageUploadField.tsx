@@ -3,26 +3,37 @@ import { Trash2 } from "lucide-react";
 import { uploadImageRequest } from "../../services/upload.service";
 
 export function ImageUploadField({
+  decodeQr = false,
   label,
   onChange,
+  onDecodedText,
   previewAlt,
   previewClassName = "object-contain",
   value,
 }: {
+  decodeQr?: boolean;
   label: string;
   onChange: (value: string) => void;
+  onDecodedText?: (value: string) => void;
   previewAlt: string;
   previewClassName?: string;
   value?: string | null;
 }) {
   const [isUploading, setIsUploading] = useState(false);
+  const [decodeMessage, setDecodeMessage] = useState<string | null>(null);
 
   async function upload(file?: File) {
     if (!file) return;
     setIsUploading(true);
+    setDecodeMessage(null);
     try {
+      const qrText = decodeQr ? await decodeQrImage(file) : null;
       const result = await uploadImageRequest(file);
       onChange(result.upload.url);
+      if (decodeQr && onDecodedText) {
+        onDecodedText(qrText ?? "");
+        setDecodeMessage(qrText ? "QR value linked to this item." : "No readable QR value found in the image.");
+      }
     } finally {
       setIsUploading(false);
     }
@@ -41,14 +52,39 @@ export function ImageUploadField({
         />
       </label>
       {isUploading ? <p className="mt-2 text-sm text-slate-400">Uploading...</p> : null}
+      {decodeMessage ? <p className="mt-2 text-xs text-slate-400">{decodeMessage}</p> : null}
       {value ? (
         <div className="mt-3">
           <img alt={previewAlt} className={`h-36 rounded-md border border-line bg-white p-2 ${previewClassName}`} src={value} />
-          <button className="mt-2 inline-flex h-8 w-8 items-center justify-center rounded-md border border-red-400/30 bg-red-500/10 text-red-100" onClick={() => window.confirm("Remove this image?") && onChange("")} title="Remove image" type="button">
+          <button
+            className="mt-2 inline-flex h-8 w-8 items-center justify-center rounded-md border border-red-400/30 bg-red-500/10 text-red-100"
+            onClick={() => {
+              if (!window.confirm("Remove this image?")) return;
+              onChange("");
+              onDecodedText?.("");
+            }}
+            title="Remove image"
+            type="button"
+          >
             <Trash2 size={14} />
           </button>
         </div>
       ) : null}
     </div>
   );
+}
+
+async function decodeQrImage(file: File) {
+  try {
+    const { BrowserQRCodeReader } = await import("@zxing/browser");
+    const reader = new BrowserQRCodeReader();
+    const objectUrl = URL.createObjectURL(file);
+    try {
+      return (await reader.decodeFromImageUrl(objectUrl)).getText().trim() || null;
+    } finally {
+      URL.revokeObjectURL(objectUrl);
+    }
+  } catch {
+    return null;
+  }
 }

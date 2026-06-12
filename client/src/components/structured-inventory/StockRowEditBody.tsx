@@ -18,6 +18,7 @@ export type FormState = {
   currency: string;
   notes: string;
   imageUrl: string;
+  qrCodeId: string;
   qrCodeImageUrl: string;
   attributes: ItemAttributeInput[];
 };
@@ -59,7 +60,14 @@ function MediaPanel({ form, update }: {
         <ImageUploadField label="Upload item picture" onChange={(value) => update("imageUrl", value)} previewAlt="Item picture" value={form.imageUrl} />
       </div>
       <div className="rounded-lg border border-line bg-white/[0.03] p-4">
-        <ImageUploadField label="Upload QR code image" onChange={(value) => update("qrCodeImageUrl", value)} previewAlt="Uploaded QR code" value={form.qrCodeImageUrl} />
+        <ImageUploadField
+          decodeQr
+          label="Upload QR code image"
+          onChange={(value) => update("qrCodeImageUrl", value)}
+          onDecodedText={(value) => update("qrCodeId", value)}
+          previewAlt="Uploaded QR code"
+          value={form.qrCodeImageUrl}
+        />
       </div>
     </section>
   );

@@ -67,6 +67,7 @@ export type AddStockRowInput = {
   currency: string;
   notes?: string | null;
   imageUrl?: string | null;
+  qrCodeId?: string | null;
   qrCodeImageUrl?: string | null;
   attributes: ItemAttributeInput[];
 };
@@ -95,6 +96,7 @@ export type StructuredStockRow = {
     name: string;
     grade?: string | null;
     imageUrl?: string | null;
+    qrCodeId: string;
     qrCodeImageUrl?: string | null;
     articleNumber?: string | null;
     alternativeArticleNumber?: string | null;

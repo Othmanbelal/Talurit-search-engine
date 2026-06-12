@@ -69,16 +69,19 @@ async function createItem(
   categoryId?: string | null,
 ) {
   const normalizedName = normalizeKey(input.itemName);
+  const qrCodeId = toNullableString(input.qrCodeId);
+  const data: Prisma.InventoryItemUncheckedCreateInput = {
+    name: input.itemName,
+    normalizedName,
+    manufacturerId,
+    categoryId,
+    grade: input.grade,
+    imageUrl: input.imageUrl,
+    qrCodeImageUrl: input.qrCodeImageUrl,
+    ...(qrCodeId ? { qrCodeId } : {}),
+  };
   const item = await tx.inventoryItem.create({
-    data: {
-      name: input.itemName,
-      normalizedName,
-      manufacturerId,
-      categoryId,
-      grade: input.grade,
-      imageUrl: input.imageUrl,
-      qrCodeImageUrl: input.qrCodeImageUrl,
-    },
+    data,
   });
 
   await createIdentifier(tx, item.id, "manufacturer_article", input.articleNumber);

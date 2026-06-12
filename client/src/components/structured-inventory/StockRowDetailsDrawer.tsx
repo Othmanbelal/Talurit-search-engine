@@ -299,6 +299,7 @@ function formFromRow(row: StructuredStockRow): FormState {
     currency: row.currency,
     notes: row.notes ?? "",
     imageUrl: row.item.imageUrl ?? "",
+    qrCodeId: row.item.qrCodeId,
     qrCodeImageUrl: row.item.qrCodeImageUrl ?? "",
     attributes: row.item.attributes.map((attribute) => ({
       name: attribute.name,

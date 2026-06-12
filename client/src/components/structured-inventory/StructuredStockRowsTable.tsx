@@ -25,9 +25,11 @@ export function StructuredStockRowsTable({
   onRestore,
   rows,
   table,
+  highlightedRowId,
 }: {
   onArchive?: (row: StructuredStockRow) => void;
   onDelete?: (row: StructuredStockRow) => void;
+  highlightedRowId?: string | null;
   onMove?: (row: StructuredStockRow) => void;
   onOpen: (row: StructuredStockRow) => void;
   onRestore?: (row: StructuredStockRow) => void;
@@ -51,7 +53,7 @@ export function StructuredStockRowsTable({
           </thead>
           <tbody className="divide-y divide-line">
             {rows.map((row) => (
-              <tr className="hover:bg-white/[0.03]" key={row.id}>
+              <tr className={row.id === highlightedRowId ? "bg-accent/15 ring-1 ring-inset ring-accent/60" : "hover:bg-white/[0.03]"} key={row.id}>
                 {visibleColumns.map((column) => (
                   <Cell key={column} strong={column === "item"}>{renderStockCell(row, column)}</Cell>
                 ))}

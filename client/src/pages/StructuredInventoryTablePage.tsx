@@ -1,7 +1,7 @@
 import { ArrowLeft, Plus, Settings2, Trash2 } from "lucide-react";
 import { InlineManagerStrip } from "../components/InlineManagerStrip";
 import { FormEvent, useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { DuplicateReviewPanel } from "../components/structured-inventory/DuplicateReviewPanel";
 import { attributeColumnKey } from "../components/structured-inventory/StructuredStockRowsTable";
 import { StockRowAddDrawer } from "../components/structured-inventory/StockRowAddDrawer";
@@ -19,6 +19,7 @@ import type { AddStockRowInput, StructuredStockRow, StructuredTableFilters } fro
 export function StructuredInventoryTablePage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { canManageInventory, canTakeReturn } = usePermissions();
   const { isResourceManager } = useMyResourceManagers();
   const [search, setSearch] = useState("");
@@ -28,6 +29,8 @@ export function StructuredInventoryTablePage() {
   const [selectedRow, setSelectedRow] = useState<StructuredStockRow | null>(null);
   const [movingRow, setMovingRow] = useState<StructuredStockRow | null>(null);
   const [movementVersion, setMovementVersion] = useState(0);
+  const highlightedRowId = searchParams.get("highlight");
+  const initialSearch = searchParams.get("search") ?? "";
   const inventory = useStructuredInventoryTable(id);
   const groupId = inventory.table?.group?.id ?? null;
   const canManageThisTable = canManageInventory
@@ -41,6 +44,14 @@ export function StructuredInventoryTablePage() {
     const fresh = inventory.rows.items.find((r) => r.id === selectedRow.id);
     if (fresh && fresh !== selectedRow) setSelectedRow(fresh);
   }, [inventory.rows, selectedRow]);
+
+  useEffect(() => {
+    if (!initialSearch) return;
+    setSearch(initialSearch);
+    inventory.loadRows(initialSearch, inventory.archived, filters, 1);
+    // Run once for scan/deep links; normal search state is handled by the form.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialSearch]);
 
   function submitSearch(event: FormEvent) {
     event.preventDefault();
@@ -136,6 +147,7 @@ export function StructuredInventoryTablePage() {
       {inventory.rows ? (
         <>
           <StructuredStockRowsTable
+            highlightedRowId={highlightedRowId}
             rows={inventory.rows.items}
             table={inventory.table}
             onArchive={canManageInventory ? (row) => void inventory.archiveRow(row.id) : undefined}

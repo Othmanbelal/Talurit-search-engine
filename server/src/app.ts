@@ -27,6 +27,7 @@ import { usedInRoutes } from "./modules/used-in/used-in.routes";
 import { warehouseRoutes } from "./modules/warehouses/warehouse.routes";
 import { resourceManagerRoutes } from "./modules/resource-managers/resource-managers.routes";
 import { itemNotesRoutes } from "./modules/item-notes/item-notes.routes";
+import { qrScanRoutes } from "./modules/qr-scan/qr-scan.routes";
 import { urgentIssueRoutes } from "./modules/urgent-issues/urgent-issues.routes";
 
 export function createApp() {
@@ -55,6 +56,7 @@ export function createApp() {
   app.use(`${API_PREFIX}/locations`, locationRoutes);
   app.use(`${API_PREFIX}/machines`, machineRoutes);
   app.use(`${API_PREFIX}/profile`, profileRoutes);
+  app.use(`${API_PREFIX}/scan`, qrScanRoutes);
   app.use(`${API_PREFIX}/used-in`, usedInRoutes);
   app.use(`${API_PREFIX}/warehouses`, warehouseRoutes);
   app.use(`${API_PREFIX}/item-notes`, itemNotesRoutes);

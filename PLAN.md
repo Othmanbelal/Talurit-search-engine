@@ -1266,6 +1266,23 @@ Verification:
 - Backend health returned database ok.
 - Client returned HTTP 200 on port 5173.
 
+## QR Scan Workflow - Completed
+
+Completed:
+- Added a dashboard Scan QR action for authenticated users.
+- Added camera-based QR scanning with manual QR value fallback.
+- Added backend QR lookup endpoint for stock rows by hidden item QR value, item id, uploaded QR image URL, or item identifiers.
+- Scan result card shows matched item picture, table, quantity, location/FACK, warehouse placement, managers, and used-in state.
+- Scan result card supports Take me there, Take out / Use in, Add note, and Report urgent issue for permitted roles.
+- Take me there routes to the source inventory table and highlights the matched row.
+- Uploaded QR code images remain user-facing images only; URL fields stay hidden from users.
+- QR image uploads now decode the QR payload and store it as hidden item data for future scans.
+
+Verification:
+- npm run check:lines passed.
+- npm run lint passed.
+- npm run build passed.
+
 ## Known Risks
 
 - Excel columns vary between sheets.
