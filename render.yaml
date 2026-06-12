@@ -3,12 +3,14 @@ services:
     name: tool-inventory-api
     env: node
     plan: free
-    buildCommand: npm install && npm --workspace server run build
+    buildCommand: npm install --include=dev && npm --workspace server run build
     startCommand: npm --workspace server run db:migrate:deploy && npm --workspace server run db:seed && npm --workspace server run start
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NPM_CONFIG_INCLUDE
+        value: dev
       - key: DATABASE_URL
         sync: false
       - key: CLIENT_URL

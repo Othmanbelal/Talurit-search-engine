@@ -19,7 +19,7 @@ Use this repository as a Render Blueprint or create a Web Service manually.
 Manual settings:
 
 - Root directory: repository root
-- Build command: `npm install && npm --workspace server run build`
+- Build command: `npm install --include=dev && npm --workspace server run build`
 - Start command: `npm --workspace server run db:migrate:deploy && npm --workspace server run db:seed && npm --workspace server run start`
 - Health check path: `/api/health`
 
