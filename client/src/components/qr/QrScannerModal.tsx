@@ -1,4 +1,5 @@
 import { BrowserQRCodeReader, type IScannerControls } from "@zxing/browser";
+import { DecodeHintType } from "@zxing/library";
 import { Camera, RotateCcw, Search, X } from "lucide-react";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { scanQrCodeRequest } from "../../services/qr-scan.service";
@@ -36,8 +37,16 @@ export function QrScannerModal({ canMove = true, canWrite = true, onClose, onMov
     setIsCameraLoading(true);
     scannedRef.current = false;
     try {
-      const reader = new BrowserQRCodeReader();
-      const controls = await reader.decodeFromVideoDevice(undefined, videoRef.current ?? undefined, (scanResult) => {
+      // TRY_HARDER improves detection for codes that are partially obscured or off-angle.
+      // 150ms scan interval is fast enough for real-time use without hammering the CPU.
+      const hints = new Map<DecodeHintType, unknown>([[DecodeHintType.TRY_HARDER, true]]);
+      const reader = new BrowserQRCodeReader(hints, 150);
+      // Request 720p so there are enough pixels to resolve small QR codes.
+      // facingMode ideal "environment" prefers rear camera on mobile, falls back to webcam on desktop.
+      const constraints: MediaStreamConstraints = {
+        video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } },
+      };
+      const controls = await reader.decodeFromConstraints(constraints, videoRef.current ?? undefined, (scanResult) => {
         const text = scanResult?.getText();
         if (!text || scannedRef.current) return;
         scannedRef.current = true;
