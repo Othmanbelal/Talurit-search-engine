@@ -78,6 +78,9 @@ export async function sendEmail(message: EmailMessage) {
     port: config.port,
     secure: config.secure,
     auth: buildSmtpAuth(config),
+    connectionTimeout: 10_000, // fail fast — surface SMTP errors quickly
+    greetingTimeout: 10_000,
+    socketTimeout: 15_000,
   });
 
   await transporter.sendMail({
