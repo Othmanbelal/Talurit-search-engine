@@ -70,7 +70,7 @@ export function StockRowDetailsDrawer({
             </p>
             <h2 className="mt-2 text-2xl font-semibold text-white">{row.item.name}</h2>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             {!isEditing && canTakeReturn && tableId && (
               <button
                 className="inline-flex items-center gap-2 rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-300 hover:border-red-400 hover:bg-red-500/20"
@@ -99,7 +99,7 @@ export function StockRowDetailsDrawer({
           </div>
         </header>
 
-        <div className="flex flex-1 overflow-hidden">
+        <div className="flex flex-1 flex-col overflow-hidden sm:flex-row">
           <div className="flex-1 overflow-y-auto p-5">
             {isEditing ? (
               <EditBody form={form} update={update} />
@@ -116,18 +116,18 @@ export function StockRowDetailsDrawer({
         </div>
 
         {isEditing && (
-          <footer className="flex items-center justify-between border-t border-line p-5">
+          <footer className="flex flex-col gap-3 border-t border-line p-5 sm:flex-row sm:items-center sm:justify-between">
             <span className="text-sm text-emerald-200">{message}</span>
             <div className="flex gap-2">
               <button
-                className="rounded-md border border-line px-4 py-2.5 text-sm font-semibold text-slate-200"
+                className="flex-1 rounded-md border border-line px-4 py-2.5 text-sm font-semibold text-slate-200 sm:flex-none"
                 onClick={() => setIsEditing(false)}
                 type="button"
               >
                 Cancel
               </button>
               <button
-                className="rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-slate-950"
+                className="flex-1 rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-slate-950 sm:flex-none"
                 onClick={save}
                 type="button"
               >
