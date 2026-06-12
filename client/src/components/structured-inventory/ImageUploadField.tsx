@@ -21,20 +21,30 @@ export function ImageUploadField({
   value?: string | null;
 }) {
   const [isUploading, setIsUploading] = useState(false);
-  const [decodeMessage, setDecodeMessage] = useState<string | null>(null);
+  const [statusMessage, setStatusMessage] = useState<{ text: string; isError: boolean } | null>(null);
 
   async function upload(file?: File) {
     if (!file) return;
     setIsUploading(true);
-    setDecodeMessage(null);
+    setStatusMessage(null);
     try {
       const qrText = decodeQr ? await decodeQrImage(file) : null;
       const result = await uploadImageRequest(file);
       onChange(result.upload.url);
       if (decodeQr && onDecodedText) {
-        onDecodedText(qrText ?? "");
-        setDecodeMessage(qrText ? "QR value linked to this item." : "No readable QR value found in the image.");
+        if (qrText) {
+          onDecodedText(qrText);
+          setStatusMessage({ text: "QR value linked to this item.", isError: false });
+        } else {
+          // Do not clear the existing qrCodeId — the image uploaded fine but was unreadable.
+          setStatusMessage({ text: "Image uploaded. No QR value could be read from it — QR code ID unchanged.", isError: false });
+        }
       }
+    } catch (err) {
+      setStatusMessage({
+        text: err instanceof Error ? err.message : "Upload failed. Please try again.",
+        isError: true,
+      });
     } finally {
       setIsUploading(false);
     }
@@ -53,7 +63,11 @@ export function ImageUploadField({
         />
       </label>
       {isUploading ? <p className="mt-2 text-sm text-slate-400">Uploading...</p> : null}
-      {decodeMessage ? <p className="mt-2 text-xs text-slate-400">{decodeMessage}</p> : null}
+      {statusMessage ? (
+        <p className={`mt-2 text-xs ${statusMessage.isError ? "text-red-300" : "text-slate-400"}`}>
+          {statusMessage.text}
+        </p>
+      ) : null}
       {value ? (
         <div className="mt-3">
           <img alt={previewAlt} className={`h-36 rounded-md border border-line bg-white p-2 ${previewClassName}`} src={buildApiUrl(value)} />

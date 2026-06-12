@@ -1,5 +1,5 @@
 import { AlertTriangle, FileText, MapPin, Navigation, PackageMinus } from "lucide-react";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { buildApiUrl } from "../../services/http";
 import { itemNotesService } from "../../services/itemNotesService";
@@ -23,6 +23,13 @@ export function QrScanResultCard({ canMove = true, canWrite = true, onClose, onM
   const [isSaving, setIsSaving] = useState(false);
   const row = useMemo(() => result.rows.find((candidate) => candidate.stockBalanceId === selectedId) ?? result.rows[0], [result.rows, selectedId]);
 
+  // Reset form state when the user switches between matched rows.
+  useEffect(() => {
+    setMessage(null);
+    setNote("");
+    setIssue("");
+  }, [selectedId]);
+
   if (!result.matched || !row) {
     return (
       <div className="rounded-lg border border-amber-400/30 bg-amber-500/10 p-5">
@@ -37,6 +44,15 @@ export function QrScanResultCard({ canMove = true, canWrite = true, onClose, onM
     const params = new URLSearchParams({ highlight: row.stockBalanceId, search: row.item.name });
     navigate(`/inventory/tables/${row.table.id}?${params.toString()}`);
     onClose();
+  }
+
+  async function handleMove() {
+    setMessage(null);
+    try {
+      await onMove(row);
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : "Failed to open movement. Try again.");
+    }
   }
 
   async function submitNote(event: FormEvent) {
@@ -115,11 +131,13 @@ export function QrScanResultCard({ canMove = true, canWrite = true, onClose, onM
       ) : null}
 
       <div className="flex flex-wrap gap-2">
-        <button className="inline-flex items-center gap-2 rounded-md bg-accent px-3 py-2 text-sm font-semibold text-slate-950" onClick={takeMeThere} type="button">
-          <Navigation size={15} /> Take me there
-        </button>
+        {row.table ? (
+          <button className="inline-flex items-center gap-2 rounded-md bg-accent px-3 py-2 text-sm font-semibold text-slate-950" onClick={takeMeThere} type="button">
+            <Navigation size={15} /> Take me there
+          </button>
+        ) : null}
         {canMove && canWrite ? (
-          <button className="inline-flex items-center gap-2 rounded-md border border-line px-3 py-2 text-sm font-semibold text-slate-200 hover:border-accent" onClick={() => void onMove(row)} type="button">
+          <button className="inline-flex items-center gap-2 rounded-md border border-line px-3 py-2 text-sm font-semibold text-slate-200 hover:border-accent" onClick={() => void handleMove()} type="button">
             <PackageMinus size={15} /> Take out / Use in
           </button>
         ) : null}
@@ -172,7 +190,8 @@ function formatLocation(row: QrScanRow) {
 }
 
 function formatWarehouse(row: QrScanRow) {
-  const placement = row.warehousePlacements[0];
-  if (!placement) return "-";
-  return `${placement.warehouseName} / ${placement.shelfName} / ${placement.slotName ?? placement.slotCode}`;
+  if (row.warehousePlacements.length === 0) return "-";
+  return row.warehousePlacements
+    .map((p) => `${p.warehouseName} / ${p.shelfName} / ${p.slotName ?? p.slotCode}`)
+    .join("; ");
 }

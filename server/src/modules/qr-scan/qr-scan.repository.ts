@@ -9,7 +9,6 @@ export function findRowsByQrCandidates(candidates: string[]) {
           OR: [
             { qrCodeId: { in: candidates } },
             { id: { in: candidates } },
-            { qrCodeImageUrl: { in: candidates } },
             { identifiers: { some: { value: { in: candidates } } } },
           ],
         },

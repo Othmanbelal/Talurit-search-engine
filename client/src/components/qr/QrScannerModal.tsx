@@ -14,12 +14,13 @@ type Props = {
 
 export function QrScannerModal({ canMove = true, canWrite = true, onClose, onMove }: Props) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
-  const controlsRef = useRef<IScannerControls | null>(null);
+  const controlsRef = useRef<IScannerControls | null | "stopped">(null);
   const scannedRef = useRef(false);
   const [error, setError] = useState<string | null>(null);
   const [manualCode, setManualCode] = useState("");
   const [result, setResult] = useState<QrScanResult | null>(null);
   const [isScanning, setIsScanning] = useState(true);
+  const [isCameraLoading, setIsCameraLoading] = useState(true);
   const [isLookingUp, setIsLookingUp] = useState(false);
 
   useEffect(() => {
@@ -32,25 +33,36 @@ export function QrScannerModal({ canMove = true, canWrite = true, onClose, onMov
   async function startCamera() {
     setError(null);
     setIsScanning(true);
+    setIsCameraLoading(true);
     scannedRef.current = false;
     try {
       const reader = new BrowserQRCodeReader();
-      controlsRef.current = await reader.decodeFromVideoDevice(undefined, videoRef.current ?? undefined, (scanResult) => {
+      const controls = await reader.decodeFromVideoDevice(undefined, videoRef.current ?? undefined, (scanResult) => {
         const text = scanResult?.getText();
         if (!text || scannedRef.current) return;
         scannedRef.current = true;
         stopCamera();
         void lookup(text);
       });
+      // If the modal was closed while the camera was initialising, stop immediately.
+      if (controlsRef.current === "stopped") {
+        controls.stop();
+      } else {
+        controlsRef.current = controls;
+        setIsCameraLoading(false);
+      }
     } catch {
       setIsScanning(false);
+      setIsCameraLoading(false);
       setError("Camera could not be opened. Check browser permissions or enter the QR code manually.");
     }
   }
 
   function stopCamera() {
-    controlsRef.current?.stop();
-    controlsRef.current = null;
+    if (controlsRef.current && controlsRef.current !== "stopped") {
+      controlsRef.current.stop();
+    }
+    controlsRef.current = "stopped";
     setIsScanning(false);
   }
 
@@ -76,6 +88,8 @@ export function QrScannerModal({ canMove = true, canWrite = true, onClose, onMov
 
   function scanAgain() {
     setResult(null);
+    setError(null);
+    controlsRef.current = null;
     void startCamera();
   }
 
@@ -94,8 +108,13 @@ export function QrScannerModal({ canMove = true, canWrite = true, onClose, onMov
         </header>
 
         <div className="flex-1 space-y-4 overflow-y-auto p-5">
-          <div className="overflow-hidden rounded-lg border border-line bg-black">
+          <div className="relative overflow-hidden rounded-lg border border-line bg-black">
             <video className="aspect-video w-full object-cover" muted playsInline ref={videoRef} />
+            {isCameraLoading ? (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/80">
+                <p className="text-sm text-slate-400">Starting camera...</p>
+              </div>
+            ) : null}
           </div>
 
           <div className="flex flex-wrap items-center gap-2 text-sm">
