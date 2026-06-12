@@ -65,7 +65,7 @@ export function StructuredTableSearchFilters({
             <Filter size={16} /> Attributes {activeAttributeCount > 0 ? `(${activeAttributeCount})` : ""}
           </button>
         ) : null}
-        <button className="inline-flex items-center justify-center gap-2 rounded-md bg-accent px-3 py-2 text-sm font-semibold text-slate-950" type="submit">
+        <button className="inline-flex w-full items-center justify-center gap-2 rounded-md bg-accent px-3 py-2 text-sm font-semibold text-slate-950 xl:w-auto" type="submit">
           <Search size={16} /> Search
         </button>
       </div>
