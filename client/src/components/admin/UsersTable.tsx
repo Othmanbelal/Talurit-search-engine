@@ -21,7 +21,51 @@ export function UsersTable({ currentUserId, isLoading, onUpdate, users }: UsersT
         <h2 className="text-lg font-semibold text-white">Users</h2>
         <p className="mt-1 text-sm text-slate-400">Manage access, roles, and account state.</p>
       </div>
-      <div className="overflow-x-auto">
+      {/* Mobile: card list */}
+      <div className="space-y-2 p-4 md:hidden">
+        {isLoading ? (
+          <div className="h-24 animate-pulse rounded-lg border border-line bg-white/5" />
+        ) : null}
+        {!isLoading && users.length === 0 ? (
+          <p className="text-sm text-slate-400">No users found.</p>
+        ) : null}
+        {!isLoading
+          ? users.map((user) => {
+              const profile = user.profile;
+              const fullName = profile
+                ? `${profile.firstName} ${profile.lastName}`
+                : user.name;
+              return (
+                <div className="rounded-lg border border-line bg-white/[0.03] p-4" key={user.id}>
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <p className="font-semibold text-white">{fullName}</p>
+                      <p className="mt-0.5 text-sm text-slate-400">{user.email}</p>
+                    </div>
+                    <StatusPill active={user.isActive} />
+                  </div>
+                  <div className="mt-3 flex items-center gap-3">
+                    <RoleSelect
+                      disabled={user.id === currentUserId}
+                      onChange={(role) => onUpdate(user.id, { role })}
+                      value={user.role}
+                    />
+                    <button
+                      className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-line bg-white/5 text-slate-200 hover:border-accent disabled:cursor-not-allowed disabled:opacity-40"
+                      disabled={user.id === currentUserId}
+                      onClick={() => onUpdate(user.id, { isActive: !user.isActive })}
+                      title={user.isActive ? "Deactivate" : "Reactivate"}
+                      type="button"
+                    >
+                      {user.isActive ? <PowerOff size={16} /> : <Power size={16} />}
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          : null}
+      </div>
+      <div className="hidden overflow-x-auto md:block">
         <table className="min-w-full divide-y divide-line text-left text-sm">
           <thead className="bg-white/[0.03] text-xs uppercase tracking-wide text-slate-400">
             <tr>
