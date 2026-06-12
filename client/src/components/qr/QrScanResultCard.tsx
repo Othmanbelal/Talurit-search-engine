@@ -169,7 +169,7 @@ export function QrScanResultCard({ canMove = true, canWrite = true, onClose, onM
 function ImagePreview({ row }: { row: QrScanRow }) {
   const src = row.item.imageUrl ? buildApiUrl(row.item.imageUrl) : null;
   return src ? (
-    <img alt={row.item.name} className="h-28 w-28 rounded-lg border border-line object-cover" src={src} />
+    <img alt={row.item.name} className="h-28 w-28 rounded-lg border border-line bg-white object-contain p-1" src={src} />
   ) : (
     <div className="grid h-28 w-28 place-items-center rounded-lg border border-dashed border-line text-center text-xs text-slate-500">No picture</div>
   );

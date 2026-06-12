@@ -70,7 +70,7 @@ export function ImageUploadField({
       ) : null}
       {value ? (
         <div className="mt-3">
-          <img alt={previewAlt} className={`h-36 rounded-md border border-line bg-white p-2 ${previewClassName}`} src={buildApiUrl(value)} />
+          <img alt={previewAlt} className={`mt-1 w-full rounded-md border border-line bg-white p-2 ${previewClassName}`} style={{ maxHeight: "12rem" }} src={buildApiUrl(value)} />
           <button
             className="mt-2 inline-flex h-8 w-8 items-center justify-center rounded-md border border-red-400/30 bg-red-500/10 text-red-100"
             onClick={() => {

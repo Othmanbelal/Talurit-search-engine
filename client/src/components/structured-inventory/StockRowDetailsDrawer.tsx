@@ -218,7 +218,8 @@ function ImagePreview({ alt, label, value }: { alt: string; label: string; value
       {value ? (
         <img
           alt={alt}
-          className="mt-3 h-36 rounded-md border border-line bg-white object-contain p-2"
+          className="mt-3 w-full rounded-md border border-line bg-white object-contain p-2"
+          style={{ maxHeight: "12rem" }}
           src={buildApiUrl(value)}
         />
       ) : (
