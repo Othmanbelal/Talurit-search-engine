@@ -42,34 +42,75 @@ function ToolRows({
   tools: MachineInventoryTool[];
 }) {
   return (
-    <section className="overflow-hidden rounded-lg border border-line bg-panel shadow-industrial">
-      <div className="overflow-x-auto">
-        <table className="min-w-[1220px] table-fixed divide-y divide-line text-left text-sm">
-          <thead className="bg-white/[0.03] text-xs uppercase tracking-wide text-slate-400">
-            <tr>
-              <th className="px-4 py-3 font-medium">Product</th>
-              <th className="px-4 py-3 font-medium">Article</th>
-              <th className="px-4 py-3 font-medium">Manufacturer</th>
-              <th className="px-4 py-3 font-medium">Type</th>
-              <th className="px-4 py-3 font-medium">Location</th>
-              <th className="px-4 py-3 font-medium">FACK</th>
-              <th className="w-40 px-4 py-3 font-medium">Placement</th>
-              <th className="px-4 py-3 text-center font-medium" title="Diameter">Ø</th>
-              <th className="px-4 py-3 font-medium">Quantity</th>
-              <th className="px-4 py-3 font-medium">Status</th>
-              {onView ? <th className="px-4 py-3 font-medium">Action</th> : null}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-line">
-            {isLoading ? <LoadingRow /> : null}
-            {!isLoading && tools.length === 0 ? <EmptyRow /> : null}
-            {!isLoading
-              ? tools.map((tool) => <ToolRow key={tool.id} onView={onView} tool={tool} />)
-              : null}
-          </tbody>
-        </table>
+    <div>
+      {/* Mobile: card list */}
+      <div className="space-y-2 md:hidden">
+        {isLoading ? (
+          <div className="h-24 animate-pulse rounded-lg border border-line bg-white/5" />
+        ) : null}
+        {!isLoading && tools.length === 0 ? (
+          <p className="rounded-lg border border-line bg-panel p-6 text-sm text-slate-400">
+            No database tools are assigned to this machine.
+          </p>
+        ) : null}
+        {!isLoading
+          ? tools.map((tool) => (
+              <div className="rounded-lg border border-line bg-panel p-4" key={tool.id}>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold text-white">{tool.productName}</p>
+                    <p className="mt-0.5 text-sm text-slate-400">
+                      {[tool.articleNumber, tool.manufacturer?.name].filter(Boolean).join(" / ") || "-"}
+                    </p>
+                    <div className="mt-2">
+                      <PlacementBadge tool={tool} />
+                    </div>
+                  </div>
+                  {onView ? (
+                    <button
+                      className="shrink-0 rounded-md border border-line px-3 py-1.5 text-xs text-slate-200 hover:border-accent"
+                      onClick={() => onView(tool)}
+                      type="button"
+                    >
+                      Open
+                    </button>
+                  ) : null}
+                </div>
+              </div>
+            ))
+          : null}
       </div>
-    </section>
+
+      {/* Desktop: existing table */}
+      <section className="hidden overflow-hidden rounded-lg border border-line bg-panel shadow-industrial md:block">
+        <div className="overflow-x-auto">
+          <table className="min-w-[1220px] table-fixed divide-y divide-line text-left text-sm">
+            <thead className="bg-white/[0.03] text-xs uppercase tracking-wide text-slate-400">
+              <tr>
+                <th className="px-4 py-3 font-medium">Product</th>
+                <th className="px-4 py-3 font-medium">Article</th>
+                <th className="px-4 py-3 font-medium">Manufacturer</th>
+                <th className="px-4 py-3 font-medium">Type</th>
+                <th className="px-4 py-3 font-medium">Location</th>
+                <th className="px-4 py-3 font-medium">FACK</th>
+                <th className="w-40 px-4 py-3 font-medium">Placement</th>
+                <th className="px-4 py-3 text-center font-medium" title="Diameter">Ø</th>
+                <th className="px-4 py-3 font-medium">Quantity</th>
+                <th className="px-4 py-3 font-medium">Status</th>
+                {onView ? <th className="px-4 py-3 font-medium">Action</th> : null}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-line">
+              {isLoading ? <LoadingRow /> : null}
+              {!isLoading && tools.length === 0 ? <EmptyRow /> : null}
+              {!isLoading
+                ? tools.map((tool) => <ToolRow key={tool.id} onView={onView} tool={tool} />)
+                : null}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
   );
 }
 

@@ -9,42 +9,75 @@ type LocationsTableProps = {
 
 export function LocationsTable({ isLoading, locations }: LocationsTableProps) {
   return (
-    <section className="overflow-hidden rounded-lg border border-line bg-panel shadow-industrial">
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-line text-left text-sm">
-          <thead className="bg-white/[0.03] text-xs uppercase tracking-wide text-slate-400">
-            <tr>
-              <th className="px-4 py-3 font-medium">PLAN/HYLLA/BACK</th>
-              <th className="px-4 py-3 font-medium">FACK</th>
-              <th className="px-4 py-3 font-medium">Map row</th>
-              <th className="px-4 py-3 font-medium">Map column</th>
-              <th className="px-4 py-3 font-medium">Occupancy</th>
-              <th className="px-4 py-3 font-medium">Source</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-line">
-            {isLoading ? <LoadingRows /> : null}
-            {!isLoading && locations.length === 0 ? <EmptyRow /> : null}
-            {!isLoading
-              ? locations.map((location) => (
-                  <tr className="text-slate-200 hover:bg-white/[0.03]" key={location.id}>
-                    <td className="px-4 py-3 font-medium text-white">
-                      {formatNullable(location.rawLabel ?? location.shelf)}
-                    </td>
-                    <td className="px-4 py-3">{formatNullable(location.compartment)}</td>
-                    <td className="px-4 py-3">{formatNullable(location.mapRow)}</td>
-                    <td className="px-4 py-3">{formatNullable(location.mapColumn)}</td>
-                    <td className="px-4 py-3">
-                      <OccupancyBadge location={location} />
-                    </td>
-                    <td className="px-4 py-3">{formatNullable(location.sourceSheet)}</td>
-                  </tr>
-                ))
-              : null}
-          </tbody>
-        </table>
+    <div>
+      {/* Mobile: card list */}
+      <div className="space-y-2 md:hidden">
+        {isLoading ? (
+          <div className="h-24 animate-pulse rounded-lg border border-line bg-white/5" />
+        ) : null}
+        {!isLoading && locations.length === 0 ? (
+          <p className="rounded-lg border border-line bg-panel p-6 text-sm text-slate-400">No locations match this view.</p>
+        ) : null}
+        {!isLoading
+          ? locations.map((location) => (
+              <div className="rounded-lg border border-line bg-panel p-4" key={location.id}>
+                <div className="flex items-start justify-between gap-3">
+                  <p className="font-semibold text-white">
+                    {formatNullable(location.rawLabel ?? location.shelf)}
+                  </p>
+                  <OccupancyBadge location={location} />
+                </div>
+                <p className="mt-1 text-sm text-slate-400">
+                  {[
+                    location.compartment ? `FACK ${location.compartment}` : null,
+                    location.sourceSheet,
+                  ]
+                    .filter(Boolean)
+                    .join(" · ") || "No extra info"}
+                </p>
+              </div>
+            ))
+          : null}
       </div>
-    </section>
+
+      {/* Desktop: existing table */}
+      <section className="hidden overflow-hidden rounded-lg border border-line bg-panel shadow-industrial md:block">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-line text-left text-sm">
+            <thead className="bg-white/[0.03] text-xs uppercase tracking-wide text-slate-400">
+              <tr>
+                <th className="px-4 py-3 font-medium">PLAN/HYLLA/BACK</th>
+                <th className="px-4 py-3 font-medium">FACK</th>
+                <th className="px-4 py-3 font-medium">Map row</th>
+                <th className="px-4 py-3 font-medium">Map column</th>
+                <th className="px-4 py-3 font-medium">Occupancy</th>
+                <th className="px-4 py-3 font-medium">Source</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-line">
+              {isLoading ? <LoadingRows /> : null}
+              {!isLoading && locations.length === 0 ? <EmptyRow /> : null}
+              {!isLoading
+                ? locations.map((location) => (
+                    <tr className="text-slate-200 hover:bg-white/[0.03]" key={location.id}>
+                      <td className="px-4 py-3 font-medium text-white">
+                        {formatNullable(location.rawLabel ?? location.shelf)}
+                      </td>
+                      <td className="px-4 py-3">{formatNullable(location.compartment)}</td>
+                      <td className="px-4 py-3">{formatNullable(location.mapRow)}</td>
+                      <td className="px-4 py-3">{formatNullable(location.mapColumn)}</td>
+                      <td className="px-4 py-3">
+                        <OccupancyBadge location={location} />
+                      </td>
+                      <td className="px-4 py-3">{formatNullable(location.sourceSheet)}</td>
+                    </tr>
+                  ))
+                : null}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
   );
 }
 
