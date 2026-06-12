@@ -9,7 +9,7 @@ export function LocationMapGrid({ groups }: LocationMapGridProps) {
   const mappedGroups = groups.filter((group) => group.mapLocation);
 
   return (
-    <section className="rounded-lg border border-line bg-panel p-4 shadow-industrial">
+    <section className="overflow-x-auto rounded-lg border border-line bg-panel p-4 shadow-industrial">
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {mappedGroups.map((group) => (
           <div className="rounded-lg border border-line bg-slate-950/50 p-4" key={group.label}>

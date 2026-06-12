@@ -125,7 +125,7 @@ function UsageCard({ card, onDelete, onEdit }: { card: UsedInCard; onDelete?: (c
       </div>
       <h2 className="mt-5 truncate text-xl font-semibold text-white">{card.name}</h2>
       <p className="mt-2 min-h-5 text-sm text-slate-400">{card.description || "No description."}</p>
-      <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
+      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm">
         <Metric label="Assigned" value={assigned} />
         <Metric label="Spots" value={card.spots.length ? `${occupiedSpots}/${card.spots.length}` : "None"} />
       </div>
