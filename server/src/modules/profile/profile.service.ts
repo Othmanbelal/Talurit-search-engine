@@ -1,6 +1,5 @@
 import { compare, hash } from "bcryptjs";
 import { AppError } from "../../utils/AppError";
-import { publicUploadUrl } from "../uploads/upload-paths";
 import type { ChangePasswordInput, UpdateProfileInput } from "./profile.schemas";
 import {
   findUserWithProfile,
@@ -30,10 +29,9 @@ export async function changePassword(userId: string, input: ChangePasswordInput)
   await updateUserPassword(userId, newHash);
 }
 
-export async function uploadProfilePicture(userId: string, filename: string) {
-  const url = publicUploadUrl(filename);
-  await updateProfilePicture(userId, url);
-  return { profilePictureUrl: url };
+export async function uploadProfilePicture(userId: string, imageUrl: string) {
+  await updateProfilePicture(userId, imageUrl);
+  return { profilePictureUrl: imageUrl };
 }
 
 function serializeProfile(user: {

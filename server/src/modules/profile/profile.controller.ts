@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { successResponse } from "../../utils/api-response";
-import { AppError } from "../../utils/AppError";
+import { imageFileToDataUrl } from "../uploads/upload-images";
 import { changePasswordSchema, updateProfileSchema } from "./profile.schemas";
 import { changePassword, getProfile, updateProfile, uploadProfilePicture } from "./profile.service";
 
@@ -22,7 +22,7 @@ export async function changePasswordController(request: Request, response: Respo
 }
 
 export async function uploadProfilePictureController(request: Request, response: Response) {
-  if (!request.file) throw new AppError("Upload a PNG, JPG, WEBP, or GIF image.", 400);
-  const result = await uploadProfilePicture(request.user!.id, request.file.filename);
+  const imageUrl = imageFileToDataUrl(request.file);
+  const result = await uploadProfilePicture(request.user!.id, imageUrl);
   return response.json(successResponse(result));
 }

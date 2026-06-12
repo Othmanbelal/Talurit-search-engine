@@ -1277,6 +1277,7 @@ Completed:
 - Take me there routes to the source inventory table and highlights the matched row.
 - Uploaded QR code images remain user-facing images only; URL fields stay hidden from users.
 - QR image uploads now decode the QR payload and store it as hidden item data for future scans.
+- New image uploads are stored as database-backed data URLs so Render restarts do not break item, QR, or profile images.
 
 Verification:
 - npm run check:lines passed.

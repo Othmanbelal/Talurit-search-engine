@@ -16,7 +16,7 @@ type ApiResponse<T> = ApiSuccess<T> | ApiFailure;
 const apiBaseUrl = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
 
 export function buildApiUrl(path: string) {
-  if (!apiBaseUrl || /^https?:\/\//i.test(path)) return path;
+  if (!apiBaseUrl || /^(https?:|data:|blob:)/i.test(path)) return path;
   return `${apiBaseUrl}${path}`;
 }
 
