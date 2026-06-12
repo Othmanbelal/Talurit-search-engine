@@ -61,6 +61,7 @@ export async function sendAdminTestEmail(input: SendTestEmailInput) {
     });
   } catch (error) {
     if (error instanceof AppError) throw error;
+    console.error("[email] SMTP test send failed:", error);
     throw new AppError("Test email could not be sent. Check SMTP settings.", 502);
   }
 

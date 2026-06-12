@@ -262,6 +262,7 @@ function invitationEmailError(error: unknown) {
     return error;
   }
 
+  console.error("[invitation] SMTP send failed:", error);
   return new AppError(
     "Invitation was saved, but the email could not be sent. Fix SMTP and resend the invitation.",
     502,
