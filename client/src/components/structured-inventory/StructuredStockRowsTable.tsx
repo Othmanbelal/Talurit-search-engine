@@ -51,6 +51,7 @@ export function StructuredStockRowsTable({
               "w-full rounded-lg border bg-panel p-4 text-left shadow-industrial",
               row.id === highlightedRowId ? "border-accent/60 bg-accent/5" : "border-line",
             ].join(" ")}
+            id={`row-${row.id}`}
             key={row.id}
             onClick={() => onOpen(row)}
             type="button"
@@ -101,7 +102,7 @@ export function StructuredStockRowsTable({
             </thead>
             <tbody className="divide-y divide-line">
               {rows.map((row) => (
-                <tr className={row.id === highlightedRowId ? "bg-accent/15 ring-1 ring-inset ring-accent/60" : "hover:bg-white/[0.03]"} key={row.id}>
+                <tr className={row.id === highlightedRowId ? "bg-accent/15 ring-1 ring-inset ring-accent/60" : "hover:bg-white/[0.03]"} id={`row-${row.id}`} key={row.id}>
                   {visibleColumns.map((column) => (
                     <Cell key={column} strong={column === "item"}>{renderStockCell(row, column)}</Cell>
                   ))}

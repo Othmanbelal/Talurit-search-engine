@@ -53,6 +53,15 @@ export function StructuredInventoryTablePage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialSearch]);
 
+  useEffect(() => {
+    if (!highlightedRowId || !inventory.rows) return;
+    // Wait one tick for the DOM to render the rows before scrolling.
+    const timer = setTimeout(() => {
+      document.getElementById(`row-${highlightedRowId}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [highlightedRowId, inventory.rows]);
+
   function submitSearch(event: FormEvent) {
     event.preventDefault();
     inventory.loadRows(search, inventory.archived, filters, 1);
