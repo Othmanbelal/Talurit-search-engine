@@ -3,6 +3,7 @@ import { Modal } from "../Modal";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { usePermissions } from "../../hooks/usePermissions";
+import { buildApiUrl } from "../../services/http";
 import { getAssignmentByStockRequest } from "../../services/warehouse.service";
 import type { WarehouseStockPlacement } from "../../types/warehouse";
 import type {
@@ -218,7 +219,7 @@ function ImagePreview({ alt, label, value }: { alt: string; label: string; value
         <img
           alt={alt}
           className="mt-3 h-36 rounded-md border border-line bg-white object-contain p-2"
-          src={value}
+          src={buildApiUrl(value)}
         />
       ) : (
         <p className="mt-3 text-sm text-slate-500">No image uploaded.</p>

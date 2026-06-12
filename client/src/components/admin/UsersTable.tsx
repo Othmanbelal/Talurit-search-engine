@@ -1,6 +1,7 @@
 import { Power, PowerOff, UserCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { resourceManagerService } from "../../services/resourceManagerService";
+import { buildApiUrl } from "../../services/http";
 import { formatDateTime } from "../../utils/format";
 import { formatRole, userRoleOptions } from "../../constants/roles";
 import type { AdminUser, UpdateUserPayload } from "../../types/admin";
@@ -167,7 +168,7 @@ function ProfileCell({ user }: { user: AdminUser }) {
         <img
           alt=""
           className="h-10 w-10 rounded-md border border-line object-cover"
-          src={profile.profilePictureUrl}
+          src={buildApiUrl(profile.profilePictureUrl)}
         />
       ) : (
         <div className="flex h-10 w-10 items-center justify-center rounded-md border border-line bg-white/5 text-slate-400">

@@ -8,6 +8,7 @@ import {
   uploadProfilePictureRequest,
   type ProfileData,
 } from "../services/profile.service";
+import { buildApiUrl } from "../services/http";
 
 export function ProfilePage() {
   const { refreshUser } = useAuth();
@@ -96,7 +97,7 @@ function AvatarSection({ onUpdated, profile, setError }: {
       <div className="flex items-center gap-5">
         <div className="relative">
           {pictureUrl ? (
-            <img alt="Profile" className="h-20 w-20 rounded-full object-cover border border-line" src={pictureUrl} />
+            <img alt="Profile" className="h-20 w-20 rounded-full object-cover border border-line" src={buildApiUrl(pictureUrl)} />
           ) : (
             <div className="flex h-20 w-20 items-center justify-center rounded-full border border-line bg-white/[0.06]">
               <User className="text-slate-400" size={32} />

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
+import { buildApiUrl } from "../../services/http";
 import { uploadImageRequest } from "../../services/upload.service";
 
 export function ImageUploadField({
@@ -55,7 +56,7 @@ export function ImageUploadField({
       {decodeMessage ? <p className="mt-2 text-xs text-slate-400">{decodeMessage}</p> : null}
       {value ? (
         <div className="mt-3">
-          <img alt={previewAlt} className={`h-36 rounded-md border border-line bg-white p-2 ${previewClassName}`} src={value} />
+          <img alt={previewAlt} className={`h-36 rounded-md border border-line bg-white p-2 ${previewClassName}`} src={buildApiUrl(value)} />
           <button
             className="mt-2 inline-flex h-8 w-8 items-center justify-center rounded-md border border-red-400/30 bg-red-500/10 text-red-100"
             onClick={() => {

@@ -1,3 +1,5 @@
+import { buildApiUrl } from "../services/http";
+
 type Props = {
   name: string;
   pictureUrl?: string | null;
@@ -17,7 +19,7 @@ export function UserAvatar({ name, pictureUrl, size = 36 }: Props) {
       <img
         alt={name}
         className="shrink-0 rounded-full object-cover"
-        src={pictureUrl}
+        src={buildApiUrl(pictureUrl)}
         style={{ width: size, height: size }}
       />
     );
