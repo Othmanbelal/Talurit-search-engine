@@ -14,6 +14,7 @@ import { TableWidgets } from "../components/structured-inventory/TableWidgets";
 import { useMyResourceManagers } from "../hooks/useMyResourceManagers";
 import { usePermissions } from "../hooks/usePermissions";
 import { useStructuredInventoryTable } from "../hooks/useStructuredInventory";
+import { getStructuredStockRowRequest } from "../services/structured-inventory.service";
 import type { AddStockRowInput, StructuredStockRow, StructuredTableFilters } from "../types/structured-inventory";
 
 export function StructuredInventoryTablePage() {
@@ -61,6 +62,15 @@ export function StructuredInventoryTablePage() {
     }, 100);
     return () => clearTimeout(timer);
   }, [highlightedRowId, inventory.rows]);
+
+  // Auto-drill: open the detail drawer for the highlighted row immediately.
+  // Fetches the row directly by ID so it works regardless of which page it is on.
+  useEffect(() => {
+    if (!highlightedRowId || !id) return;
+    getStructuredStockRowRequest(id, highlightedRowId)
+      .then((result) => setSelectedRow(result.row))
+      .catch(() => {});
+  }, [highlightedRowId, id]);
 
   function submitSearch(event: FormEvent) {
     event.preventDefault();

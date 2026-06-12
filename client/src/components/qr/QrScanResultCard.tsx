@@ -41,8 +41,7 @@ export function QrScanResultCard({ canMove = true, canWrite = true, onClose, onM
 
   function takeMeThere() {
     if (!row.table) return;
-    const params = new URLSearchParams({ highlight: row.stockBalanceId, search: row.item.name });
-    navigate(`/inventory/tables/${row.table.id}?${params.toString()}`);
+    navigate(`/inventory/tables/${row.table.id}?highlight=${row.stockBalanceId}`);
     onClose();
   }
 
