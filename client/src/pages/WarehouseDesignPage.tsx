@@ -1,6 +1,7 @@
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, Warehouse } from "lucide-react";
 import { lazy, Suspense, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useIsMobile } from "../hooks/useIsMobile";
 import { useWarehouse } from "../hooks/useWarehouses";
 import { createWarehouseRequest } from "../services/warehouse.service";
 import type { ProjectData } from "../modules/warehouse-designer/types";
@@ -18,12 +19,15 @@ export function WarehouseDesignPage() {
 }
 
 function CreateDesignPage() {
+  const isMobile = useIsMobile();
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const pendingProjectRef = useRef<ProjectData | null>(null);
+
+  if (isMobile) return <MobileGate />;
 
   async function handleSave(project: ProjectData) {
     pendingProjectRef.current = project;
@@ -114,6 +118,7 @@ function EditDesignPage({ id }: { id: string }) {
   const warehouse = useWarehouse(id);
   const [isDone, setIsDone] = useState(false);
   const requestSaveRef = useRef<(() => Promise<void>) | null>(null);
+  const isMobile = useIsMobile();
 
   async function handleSave(project: ProjectData) {
     await warehouse.saveLayout(project as unknown as Record<string, unknown>);
@@ -135,6 +140,8 @@ function EditDesignPage({ id }: { id: string }) {
     </section>
   );
   if (!warehouse.warehouse) return null;
+
+  if (isMobile) return <MobileGate />;
 
   return (
     <div className="space-y-5">
@@ -164,6 +171,20 @@ function EditDesignPage({ id }: { id: string }) {
             requestSaveRef={requestSaveRef}
           />
         </Suspense>
+      </div>
+    </div>
+  );
+}
+
+function MobileGate() {
+  return (
+    <div className="mx-auto max-w-7xl">
+      <div className="rounded-xl border border-line bg-panel p-10 text-center">
+        <Warehouse className="mx-auto text-accent" size={40} />
+        <h2 className="mt-4 text-xl font-semibold text-white">Desktop only</h2>
+        <p className="mx-auto mt-2 max-w-md text-sm text-slate-400">
+          The 3D warehouse designer requires a larger screen. Please open this page on a desktop or tablet.
+        </p>
       </div>
     </div>
   );
