@@ -1,6 +1,6 @@
 import type { ToolFilters } from "../types/tools";
 import type { ConfirmImportResult, ExcelPreview } from "../types/import";
-import { apiRequest } from "./http";
+import { apiRequest, buildApiUrl } from "./http";
 
 export function previewExcelImportRequest(file: File) {
   const formData = new FormData();
@@ -31,7 +31,7 @@ export async function exportInventoryRequest(filters: ToolFilters) {
     }
   }
 
-  const response = await fetch(`/api/excel/export?${params.toString()}`, {
+  const response = await fetch(buildApiUrl(`/api/excel/export?${params.toString()}`), {
     credentials: "include",
   });
 

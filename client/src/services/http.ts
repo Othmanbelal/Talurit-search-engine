@@ -15,7 +15,7 @@ type ApiResponse<T> = ApiSuccess<T> | ApiFailure;
 
 const apiBaseUrl = (import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
 
-function buildRequestUrl(path: string) {
+export function buildApiUrl(path: string) {
   if (!apiBaseUrl || /^https?:\/\//i.test(path)) return path;
   return `${apiBaseUrl}${path}`;
 }
@@ -23,7 +23,7 @@ function buildRequestUrl(path: string) {
 export async function apiRequest<T>(path: string, options: RequestInit = {}) {
   const isFormData = options.body instanceof FormData;
 
-  const response = await fetch(buildRequestUrl(path), {
+  const response = await fetch(buildApiUrl(path), {
     credentials: "include",
     ...options,
     headers: {
