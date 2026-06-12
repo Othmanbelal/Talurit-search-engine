@@ -1,5 +1,5 @@
 import type React from "react";
-import { Archive, Eye, PackageMinus, RotateCcw, Trash2 } from "lucide-react";
+import { Archive, ChevronRight, Eye, PackageMinus, RotateCcw, Trash2 } from "lucide-react";
 import type { StructuredInventoryTable, StructuredStockRow, TableColumnSettings } from "../../types/structured-inventory";
 
 export type StockColumnKey = string;
@@ -42,26 +42,75 @@ export function StructuredStockRowsTable({
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-line bg-panel shadow-industrial">
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-line text-sm">
-          <thead className="bg-white/[0.04] text-left text-xs uppercase tracking-[0.16em] text-slate-400">
-            <tr>
-              {visibleColumns.map((column) => <Header key={column}>{labelForColumn(column, table)}</Header>)}
-              <Header>Actions</Header>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-line">
-            {rows.map((row) => (
-              <tr className={row.id === highlightedRowId ? "bg-accent/15 ring-1 ring-inset ring-accent/60" : "hover:bg-white/[0.03]"} key={row.id}>
-                {visibleColumns.map((column) => (
-                  <Cell key={column} strong={column === "item"}>{renderStockCell(row, column)}</Cell>
+    <div>
+      {/* Mobile: card list (hidden on md+) */}
+      <div className="space-y-2 md:hidden">
+        {rows.map((row) => (
+          <button
+            className={[
+              "w-full rounded-lg border bg-panel p-4 text-left shadow-industrial",
+              row.id === highlightedRowId ? "border-accent/60 bg-accent/5" : "border-line",
+            ].join(" ")}
+            key={row.id}
+            onClick={() => onOpen(row)}
+            type="button"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="truncate font-semibold text-white">{row.item.name}</p>
+                <p className="mt-0.5 text-sm text-slate-400">
+                  {row.item.articleNumber ?? row.item.alternativeArticleNumber ?? "-"}
+                </p>
+                <p className="mt-1 text-xs text-slate-500">
+                  {formatPlacement(row.location)}
+                  {row.compartment ? ` / FACK ${row.compartment}` : ""}
+                </p>
+              </div>
+              <div className="flex shrink-0 items-center gap-2">
+                <span className="text-sm text-slate-300">
+                  {formatNumber(row.quantity)} {row.unit}
+                </span>
+                <ChevronRight className="text-slate-500" size={16} />
+              </div>
+            </div>
+            {row.usageTags.length > 0 ? (
+              <div className="mt-2 flex flex-wrap gap-1">
+                {row.usageTags.map((tag) => (
+                  <span
+                    className="rounded border border-accent/40 bg-accent/10 px-2 py-0.5 text-[11px] text-accent"
+                    key={tag.cardId}
+                  >
+                    {tag.quantity} used in {tag.cardName}
+                  </span>
                 ))}
-                <Cell><RowActions row={row} onArchive={onArchive} onDelete={onDelete} onMove={onMove} onOpen={onOpen} onRestore={onRestore} /></Cell>
+              </div>
+            ) : null}
+          </button>
+        ))}
+      </div>
+
+      {/* Desktop: existing table (hidden below md) */}
+      <div className="hidden overflow-hidden rounded-lg border border-line bg-panel shadow-industrial md:block">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-line text-sm">
+            <thead className="bg-white/[0.04] text-left text-xs uppercase tracking-[0.16em] text-slate-400">
+              <tr>
+                {visibleColumns.map((column) => <Header key={column}>{labelForColumn(column, table)}</Header>)}
+                <Header>Actions</Header>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-line">
+              {rows.map((row) => (
+                <tr className={row.id === highlightedRowId ? "bg-accent/15 ring-1 ring-inset ring-accent/60" : "hover:bg-white/[0.03]"} key={row.id}>
+                  {visibleColumns.map((column) => (
+                    <Cell key={column} strong={column === "item"}>{renderStockCell(row, column)}</Cell>
+                  ))}
+                  <Cell><RowActions row={row} onArchive={onArchive} onDelete={onDelete} onMove={onMove} onOpen={onOpen} onRestore={onRestore} /></Cell>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
