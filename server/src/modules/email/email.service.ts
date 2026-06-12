@@ -78,6 +78,7 @@ export async function sendEmail(message: EmailMessage) {
     port: config.port,
     secure: config.secure,
     auth: buildSmtpAuth(config),
+    family: 4, // Render free tier has no IPv6 outbound — force IPv4
   });
 
   await transporter.sendMail({
