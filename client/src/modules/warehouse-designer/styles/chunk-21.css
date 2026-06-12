@@ -1,0 +1,119 @@
+/* Phase 5 drawing focus mode. */
+.drawing-focus-active .topbar {
+  box-shadow: 0 16px 60px rgba(2, 8, 18, .24);
+}
+.drawing-focus-active .canvas-stage {
+  padding-left: 0;
+}
+.drawing-focus-active .view-badge {
+  opacity: .55;
+}
+.drawing-focus-bar {
+  position: absolute;
+  left: 50%;
+  top: 14px;
+  z-index: 56;
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: minmax(240px, 1.1fr) auto auto auto 34px;
+  align-items: center;
+  gap: 10px;
+  width: min(980px, calc(100% - 42px));
+  padding: 9px 10px;
+  border: 1px solid rgba(84, 216, 255, .24);
+  box-shadow: 0 24px 90px rgba(0, 0, 0, .34);
+  backdrop-filter: blur(18px);
+}
+.drawing-focus-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.drawing-focus-icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border-radius: 14px;
+  color: #0c1825;
+  background: linear-gradient(135deg, #b8f0ff, #d7b15e);
+}
+.drawing-focus-main strong,
+.drawing-focus-main span {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.drawing-focus-main strong {
+  color: #f8fcff;
+  font-size: .88rem;
+}
+.drawing-focus-main span {
+  color: rgba(224, 240, 251, .66);
+  font-size: .72rem;
+}
+.drawing-focus-state {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.drawing-focus-state span,
+.drawing-focus-state em {
+  padding: 6px 8px;
+  border-radius: 999px;
+  font-size: .68rem;
+  font-style: normal;
+  color: rgba(239, 248, 255, .78);
+  background: rgba(255, 255, 255, .055);
+  border: 1px solid rgba(255, 255, 255, .08);
+}
+.drawing-snap-pills {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.drawing-snap-pills button,
+.drawing-done,
+.drawing-cancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 32px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 999px;
+  color: rgba(234, 246, 255, .76);
+  background: rgba(255, 255, 255, .055);
+  cursor: pointer;
+}
+.drawing-snap-pills button {
+  padding: 0 9px;
+  font-size: .68rem;
+  font-weight: 800;
+}
+.drawing-snap-pills button.active {
+  color: #071421;
+  border-color: rgba(199, 232, 255, .75);
+  background: linear-gradient(135deg, #c8efff, #d8b862);
+}
+.drawing-done {
+  padding: 0 12px;
+  color: #071421;
+  font-weight: 900;
+  background: linear-gradient(135deg, #d0f6ff, #d8b862);
+}
+.drawing-cancel {
+  width: 32px;
+  color: #ffdce3;
+  background: rgba(255, 96, 120, .12);
+}
+@media (max-width: 1180px) {
+  .drawing-focus-bar { grid-template-columns: 1fr auto 34px; }
+  .drawing-focus-state,
+  .drawing-snap-pills,
+  .drawing-done { display: none; }
+}

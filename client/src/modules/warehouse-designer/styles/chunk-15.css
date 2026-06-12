@@ -1,0 +1,115 @@
+.wall-draft-preview line { stroke: #f3c969; stroke-width: .07; stroke-dasharray: .18 .11; }
+.wall-draft-preview circle { fill: #f7d27a; stroke: #101827; stroke-width: .035; }
+.wall-draft-preview text { fill: #ffe9aa; font-size: .28px; font-weight: 900; paint-order: stroke; stroke: #07111f; stroke-width: .07; }
+.door-cut { fill: rgba(255,255,255,.82); stroke: #f2c86a; stroke-width: .045; }
+.door-swing-2d { fill: none; stroke: #f2c86a; stroke-width: .04; stroke-dasharray: .1 .07; }
+.door-leaf-2d { stroke: #f2c86a; stroke-width: .06; }
+.window-cut { fill: rgba(216,242,255,.88); stroke: #44d7ff; stroke-width: .045; }
+.window-line-2d { stroke: #44d7ff; stroke-width: .035; }
+.plan-svg { cursor: crosshair; }
+.plan-svg.drawing-room { cursor: cell; }
+.premium-create-menu.room-context { min-width: 220px; }
+.single-header {
+  min-height: 62px;
+  padding: 10px 18px;
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) auto auto auto auto auto auto;
+  align-items: center;
+  gap: 10px;
+}
+.single-header .brand-block { min-width: 0; }
+.single-header .project-name {
+  max-width: 420px;
+  min-width: 220px;
+  background: transparent;
+  border: 0;
+  padding: 1px 0;
+  color: #f7fbff;
+  font-size: 17px;
+  font-weight: 800;
+  outline: none;
+}
+.single-header .mode-switcher { justify-self: end; width: auto; }
+.single-header .toolbar-icon-group { width: auto; display: flex; gap: 7px; }
+.single-header .edit-selected-button { min-width: 130px; max-width: 210px; width: auto; }
+.single-header .ghost-button,
+.single-header .status-pill,
+.single-header .file-button {
+  width: auto;
+  white-space: nowrap;
+}
+.file-button { position: relative; overflow: hidden; }
+.file-button input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.single-canvas-stage { padding-top: 0; }
+.no-workspace-header .canvas-stage { gap: 10px; }
+.workspace-mode-plan .view-split.mode-plan { grid-template-columns: 1fr; }
+.workspace-mode-3d .view-split.mode-3d { grid-template-columns: 1fr; }
+.workspace-mode-3d .view-split.mode-3d .plan-card,
+.workspace-mode-plan .view-split.mode-plan .scene-card { display: none; }
+.scene-card .scene3d-wrapper,
+.scene-canvas { background: linear-gradient(145deg, #f4efe3, #dfe5dc 48%, #cfd8d4); }
+.plan-wrapper { background: radial-gradient(circle at 50% 44%, rgba(25, 43, 64, .76), rgba(6, 16, 31, .98) 72%); }
+.room-fill { fill: rgba(14, 34, 54, .62); }
+.premium-create-menu {
+  transform: none !important;
+  translate: 0 0;
+}
+.premium-create-menu .create-choice-grid { max-height: min(260px, 36vh); overflow: auto; }
+.create-shortcut { display:grid; grid-template-columns:24px 1fr; align-items:center; gap:10px; width:100%; margin-top:10px; color:#ffeab9; text-align:left; border:1px solid rgba(255,255,255,.08); border-radius:16px; padding:12px; background:rgba(255,255,255,.055); cursor:pointer; }
+.create-shortcut:hover { transform:translateY(-1px); border-color:rgba(87,220,255,.45); background:rgba(87,220,255,.11); }
+@media (max-width: 1100px) {
+  .single-header { grid-template-columns: 1fr auto auto; }
+  .single-header .status-pill,
+  .single-header .file-button,
+  .single-header .ghost-button { display: none; }
+}
+
+.internal-room-fill {
+  fill: rgba(214, 169, 74, 0.13);
+  stroke: rgba(214, 169, 74, 0.24);
+  stroke-width: 0.035;
+}
+
+.detected-internal-room .room-outline {
+  stroke-dasharray: 0.18 0.12;
+  stroke: rgba(255, 214, 128, 0.75);
+}
+
+.room-loop-label {
+  fill: #ffd37a;
+  font-size: 0.18px;
+  font-weight: 800;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: rgba(6, 14, 26, 0.92);
+  stroke-width: 0.04px;
+}
+
+.pallet-top-board {
+  fill: #c9955c;
+  stroke: rgba(82, 49, 25, 0.7);
+  stroke-width: 0.022;
+}
+
+.pallet-cross-bearer {
+  fill: rgba(154, 106, 61, 0.72);
+  stroke: rgba(73, 42, 20, 0.55);
+  stroke-width: 0.018;
+}
+
+.pallet-block-plan {
+  fill: rgba(103, 66, 35, 0.55);
+  stroke: rgba(255, 232, 194, 0.3);
+  stroke-width: 0.012;
+}
+
+.pallet-outline {
+  fill: none;
+  stroke: rgba(255, 243, 211, 0.82);
+  stroke-width: 0.04;
+  pointer-events: none;
+}
+.rectangle-draft-preview rect { fill: rgba(217, 164, 65, .13); stroke: #f3c969; stroke-width: .07; stroke-dasharray: .2 .12; }
+.rectangle-draft-preview text { fill: #ffe9aa; font-size: .28px; font-weight: 900; paint-order: stroke; stroke: #07111f; stroke-width: .07; text-anchor: middle; }
+.compact-tip { border-style: dashed; }
+.plan-svg { cursor: crosshair; }

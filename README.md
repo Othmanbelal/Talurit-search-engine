@@ -1,0 +1,179 @@
+# Tool Inventory System
+
+Professional internal web application for replacing the Excel-based tool room workbook with a PostgreSQL-backed inventory system.
+
+The workbook `VERKTYGSRUM.xlsx` / `VERKTYGSRUM(1).xlsx` is treated as import/export data only. PostgreSQL is the source of truth after import.
+
+## Current Phase
+
+This repository currently contains Phase 0 through Phase 10 work:
+
+- permanent project instructions in `AGENTS.md`
+- implementation plan in `PLAN.md`
+- Docker Compose foundation with PostgreSQL
+- Express TypeScript API with auth, inventory, import/export, admin, and health routes
+- React TypeScript Vite client with Tailwind styling
+- Prisma domain schema and migrations
+- assisted Excel import with sheet selection, column mapping, staging rows, preview, and confirmation
+- structured inventory records for items, identifiers, attributes, locations, stock balances, and stock movements
+- admin invitation flow and SMTP email settings
+- line-count guardrail script
+
+## Requirements
+
+- Node.js 20+
+- npm 10+
+- Docker and Docker Compose
+- PostgreSQL client tools for backup scripts, if running backups outside Docker
+
+## Local Setup
+
+1. Copy the example environment file:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+
+3. Start PostgreSQL:
+
+   ```bash
+   docker compose up -d postgres
+   ```
+
+4. Run the first Prisma migration:
+
+   ```bash
+   npm run db:migrate
+   ```
+
+5. Start the development servers:
+
+   ```bash
+   npm run dev
+   ```
+
+Frontend: `http://localhost:5173`
+
+Backend health: `http://localhost:4000/api/health`
+
+## Excel Import Direction
+
+Excel is not copied into one large SQL table, and the app does not create physical tables per sheet.
+
+The assisted import flow is:
+
+```text
+Upload workbook -> choose sheets -> map columns -> stage rows -> fix warnings -> confirm import
+```
+
+Confirmed rows are written to normalized inventory records:
+
+- manufacturers
+- categories
+- inventory items
+- item identifiers
+- item attributes
+- storage locations
+- stock balances
+- stock movements
+- logical inventory groups and tables
+
+## Docker Compose
+
+Build and start all services:
+
+```bash
+docker compose up --build
+```
+
+The production compose file includes:
+
+- `postgres`
+- `server`
+- `client`
+
+## Email Setup
+
+Email is SMTP-first and does not require a paid email API. Configure initial fallback values in `.env` or your server environment:
+
+```env
+APP_PUBLIC_URL=http://localhost:5173
+SMTP_HOST=
+SMTP_PORT=587
+SMTP_USER=
+SMTP_PASS=
+SMTP_FROM=
+SMTP_SECURE=false
+ADMIN_SUMMARY_EMAIL=
+```
+
+`APP_PUBLIC_URL` is used for invitation links, for example:
+
+```text
+http://localhost:5173/accept-invite?token=...
+```
+
+If SMTP is not configured, the admin UI shows:
+
+```text
+Email is not configured. Invitations and weekly summaries cannot be sent yet.
+```
+
+Pending invitations remain stored and can be resent after SMTP is fixed.
+
+Admins can also configure SMTP from `/admin/settings`. Values saved there are stored in the database. The SMTP password is encrypted at rest and is not returned by API responses.
+
+## Root Commands
+
+```bash
+npm install
+npm run dev
+npm run dev:server
+npm run dev:client
+npm run db:migrate
+npm run db:seed
+npm run db:studio
+npm run build
+npm run lint
+npm run check:lines
+npm run backup:db
+npm run restore:db
+```
+
+## Backups
+
+Database backups are written to:
+
+```text
+backups/database
+```
+
+Excel export backups will be written to:
+
+```text
+backups/excel
+```
+
+A backup on the same server is not enough. A server disk failure, ransomware event, accidental deletion, or hosting account problem can destroy both the application and its local backups.
+
+Copy backups regularly to at least one location outside the application server, such as:
+
+- another company server
+- company NAS
+- SharePoint
+- external encrypted storage
+- secure cloud storage
+
+## Security Notes
+
+- Use a long random `SESSION_SECRET` in production.
+- Run the app behind HTTPS so session cookies and invitation links are protected in transit.
+- Admins invite users by email; users set their own passwords.
+- Invitation tokens are random, hashed in the database, expiring, and single-use.
+- Excel import is admin-only and size-limited. The required `xlsx` package currently has npm audit advisories with no direct npm fix, so only trusted admins should import trusted workbooks.

@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.env
+.env.local
+*.log
+coverage/
+.DS_Store
+Project.zip
+Future integration/
+.superpowers/
+backups/database/*
+backups/excel/*
+!backups/database/.gitkeep
+!backups/excel/.gitkeep
+uploads/*
+!uploads/.gitkeep

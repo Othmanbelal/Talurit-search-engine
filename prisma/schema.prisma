@@ -1,0 +1,1106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  admin    @map("ADMIN")
+  manager  @map("MANAGER")
+  employee @map("EMPLOYEE")
+  viewer   @map("VIEWER")
+}
+
+enum ResourceType {
+  inventory_table
+  inventory_group
+  warehouse
+}
+
+enum ToolStatus {
+  AVAILABLE
+  LOW_STOCK
+  MISSING
+  DAMAGED
+  MAINTENANCE
+  ARCHIVED
+}
+
+enum UrgentIssueStatus {
+  open
+  resolved
+}
+
+enum ImportStatus {
+  PREVIEWED
+  IMPORTED
+  PARTIAL
+  FAILED
+}
+
+enum IssueSeverity {
+  INFO
+  WARNING
+  ERROR
+}
+
+enum BackupType {
+  DATABASE
+  EXCEL
+}
+
+enum JobStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+model AppSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("app_settings")
+}
+
+model DynamicInventory {
+  id               String                   @id @default(cuid())
+  name             String
+  sourceFileName   String?
+  sourceSheetName  String?
+  importedByUserId String?
+  columns          DynamicInventoryColumn[]
+  rows             DynamicInventoryRow[]
+  assignments      UsedInAssignment[]
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
+
+  @@index([name])
+  @@index([sourceFileName])
+  @@map("dynamic_inventories")
+}
+
+model DynamicInventoryColumn {
+  id          String           @id @default(cuid())
+  inventoryId String
+  key         String
+  name        String
+  sourceIndex Int
+  dataType    String           @default("text")
+  inventory   DynamicInventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@unique([inventoryId, key])
+  @@index([inventoryId, sourceIndex])
+  @@map("dynamic_inventory_columns")
+}
+
+model DynamicInventoryRow {
+  id          String             @id @default(cuid())
+  inventoryId String
+  rowNumber   Int
+  data        Json               @default("{}")
+  inventory   DynamicInventory   @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+  assignments UsedInAssignment[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  @@index([inventoryId, rowNumber])
+  @@map("dynamic_inventory_rows")
+}
+
+model UsedInCard {
+  id               String                  @id @default(cuid())
+  name             String
+  description      String?
+  createdByUserId  String?
+  assignments      UsedInAssignment[]
+  spots            UsedInSpot[]
+  stockAssignments UsedInStockAssignment[]
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
+
+  @@index([name])
+  @@map("used_in_cards")
+}
+
+model UsedInSpot {
+  id          String                  @id @default(cuid())
+  cardId      String
+  name        String
+  sortOrder   Int                     @default(0)
+  card        UsedInCard              @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  assignments UsedInStockAssignment[]
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
+
+  @@unique([cardId, name])
+  @@index([cardId])
+  @@map("used_in_spots")
+}
+
+model UsedInAssignment {
+  id          String              @id @default(cuid())
+  cardId      String
+  inventoryId String
+  rowId       String
+  quantity    Int?
+  notes       String?
+  card        UsedInCard          @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  inventory   DynamicInventory    @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+  row         DynamicInventoryRow @relation(fields: [rowId], references: [id], onDelete: Cascade)
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  @@unique([cardId, rowId])
+  @@index([inventoryId])
+  @@index([rowId])
+  @@map("used_in_assignments")
+}
+
+model UsedInStockAssignment {
+  id                     String         @id @default(cuid())
+  cardId                 String
+  spotId                 String?
+  sourceStockBalanceId   String
+  sourceInventoryTableId String
+  itemId                 String
+  quantity               Decimal        @default(1)
+  notes                  String?
+  returnedAt             DateTime?
+  createdByUserId        String?
+  card                   UsedInCard     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  spot                   UsedInSpot?    @relation(fields: [spotId], references: [id], onDelete: SetNull)
+  sourceStockBalance     StockBalance   @relation(fields: [sourceStockBalanceId], references: [id], onDelete: Cascade)
+  sourceInventoryTable   InventoryTable @relation(fields: [sourceInventoryTableId], references: [id], onDelete: Cascade)
+  item                   InventoryItem  @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  createdByUser          User?          @relation("UsedInStockAssignmentUser", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+
+  @@index([cardId])
+  @@index([spotId])
+  @@index([sourceStockBalanceId])
+  @@index([sourceInventoryTableId])
+  @@index([itemId])
+  @@index([returnedAt])
+  @@map("used_in_stock_assignments")
+}
+
+model TakenStockItem {
+  id                     String         @id @default(cuid())
+  sourceStockBalanceId   String
+  sourceInventoryTableId String
+  itemId                 String
+  quantity               Decimal
+  notes                  String?
+  returnedAt             DateTime?
+  createdByUserId        String?
+  sourceStockBalance     StockBalance   @relation(fields: [sourceStockBalanceId], references: [id], onDelete: Cascade)
+  sourceInventoryTable   InventoryTable @relation(fields: [sourceInventoryTableId], references: [id], onDelete: Cascade)
+  item                   InventoryItem  @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  createdByUser          User?          @relation("TakenStockItemUser", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
+
+  @@index([sourceStockBalanceId])
+  @@index([sourceInventoryTableId])
+  @@index([itemId])
+  @@index([returnedAt])
+  @@map("taken_stock_items")
+}
+
+model User {
+  id                       String                    @id @default(cuid())
+  email                    String                    @unique
+  name                     String
+  passwordHash             String
+  role                     UserRole                  @default(viewer)
+  isActive                 Boolean                   @default(true)
+  lastLoginAt              DateTime?
+  profile                  UserProfile?
+  sessions                 Session[]
+  passwordResetTokens      PasswordResetToken[]
+  sentInvitations          UserInvitation[]          @relation("UserInvitationsSent")
+  importBatches            ImportBatch[]             @relation("ImportBatchUser")
+  structuredBatches        StructuredImportBatch[]   @relation("StructuredImportBatchUser")
+  historyChanges           ToolHistory[]             @relation("ToolHistoryUser")
+  stockMovements           StockMovement[]           @relation("StockMovementUser")
+  usedInStockAssignments   UsedInStockAssignment[]   @relation("UsedInStockAssignmentUser")
+  takenStockItems          TakenStockItem[]          @relation("TakenStockItemUser")
+  createdWarehouses        WarehouseLayout[]         @relation("WarehouseCreatedByUser")
+  assignedWarehouseSlots   WarehouseSlotAssignment[] @relation("WarehouseSlotAssignedByUser")
+  unassignedWarehouseSlots WarehouseSlotAssignment[] @relation("WarehouseSlotUnassignedByUser")
+  itemInteractionLogs      ItemInteractionLog[]      @relation("ItemInteractionLogUser")
+  managedResources         ResourceManager[]         @relation("UserManagedResources")
+  assignedManagers         ResourceManager[]         @relation("UserAssignedManagers")
+  itemNotes                ItemNote[]                @relation("ItemNoteAuthor")
+  sentUrgentIssues         UrgentIssue[]             @relation("UrgentIssueSender")
+  resolvedUrgentIssues     UrgentIssue[]             @relation("UrgentIssueResolver")
+  createdAt                DateTime                  @default(now())
+  updatedAt                DateTime                  @updatedAt
+
+  @@index([role])
+  @@index([isActive])
+  @@map("users")
+}
+
+model ResourceManager {
+  id           String       @id @default(cuid())
+  userId       String
+  resourceType ResourceType
+  resourceId   String
+  assignedById String?
+  assignedAt   DateTime     @default(now())
+
+  user         User         @relation("UserManagedResources", fields: [userId], references: [id], onDelete: Cascade)
+  assignedBy   User?        @relation("UserAssignedManagers", fields: [assignedById], references: [id], onDelete: SetNull)
+
+  @@unique([userId, resourceType, resourceId])
+  @@index([resourceType, resourceId])
+  @@index([userId])
+  @@map("resource_managers")
+}
+
+model UserProfile {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  firstName         String
+  lastName          String
+  phoneNumber       String?
+  profilePictureUrl String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([lastName, firstName])
+  @@map("user_profiles")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("password_reset_tokens")
+}
+
+model UserInvitation {
+  id              String    @id @default(cuid())
+  email           String
+  name            String?
+  role            UserRole
+  tokenHash       String    @unique
+  invitedByUserId String?
+  acceptedAt      DateTime?
+  expiresAt       DateTime
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  invitedByUser   User?     @relation("UserInvitationsSent", fields: [invitedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([email])
+  @@index([role])
+  @@index([acceptedAt])
+  @@index([expiresAt])
+  @@map("user_invitations")
+}
+
+model ToolType {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  tools       Tool[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("tool_types")
+}
+
+model Manufacturer {
+  id             String          @id @default(cuid())
+  name           String          @unique
+  normalizedName String          @unique
+  tools          Tool[]
+  inventoryItems InventoryItem[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@map("manufacturers")
+}
+
+model ToolCategory {
+  id               String          @id @default(cuid())
+  name             String
+  normalizedName   String          @unique
+  parentCategoryId String?
+  parentCategory   ToolCategory?   @relation("CategoryTree", fields: [parentCategoryId], references: [id], onDelete: SetNull)
+  childCategories  ToolCategory[]  @relation("CategoryTree")
+  inventoryItems   InventoryItem[]
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@index([parentCategoryId])
+  @@map("tool_categories")
+}
+
+model InventoryItem {
+  id                       String                    @id @default(cuid())
+  name                     String
+  normalizedName           String
+  manufacturerId           String?
+  categoryId               String?
+  grade                    String?
+  imageUrl                 String?
+  qrCodeImageUrl           String?
+  qrCodeId                 String                    @unique @default(cuid())
+  rawExamples              Json                      @default("{}")
+  manufacturer             Manufacturer?             @relation(fields: [manufacturerId], references: [id], onDelete: SetNull)
+  category                 ToolCategory?             @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  identifiers              ItemIdentifier[]
+  attributes               ItemAttribute[]
+  stockBalances            StockBalance[]
+  stockMovements           StockMovement[]
+  usedInStockAssignments   UsedInStockAssignment[]
+  takenStockItems          TakenStockItem[]
+  warehouseSlotAssignments WarehouseSlotAssignment[]
+  interactionLogs          ItemInteractionLog[]
+  stagingRows              ImportStagingRow[]        @relation("DetectedImportItem")
+  createdAt                DateTime                  @default(now())
+  updatedAt                DateTime                  @updatedAt
+
+  @@index([normalizedName])
+  @@index([manufacturerId])
+  @@index([categoryId])
+  @@map("inventory_items")
+}
+
+model ItemIdentifier {
+  id              String        @id @default(cuid())
+  itemId          String
+  type            String
+  value           String
+  normalizedValue String
+  item            InventoryItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  createdAt       DateTime      @default(now())
+
+  @@index([type, normalizedValue])
+  @@index([itemId])
+  @@map("item_identifiers")
+}
+
+model ItemAttribute {
+  id           String        @id @default(cuid())
+  itemId       String
+  name         String
+  rawValue     String?
+  numericValue Decimal?
+  unit         String?
+  sourceColumn String?
+  item         InventoryItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  createdAt    DateTime      @default(now())
+
+  @@index([itemId])
+  @@index([name])
+  @@map("item_attributes")
+}
+
+model StorageLocation {
+  id               String             @id @default(cuid())
+  code             String
+  normalizedCode   String             @unique
+  room             String             @default("Verktygsrum")
+  locationType     String             @default("stockroom_position")
+  planNumber       Int?
+  sectionLetter    String?
+  positionNumber   Int?
+  displayName      String?
+  isActive         Boolean            @default(true)
+  aliases          LocationAlias[]
+  stockBalances    StockBalance[]
+  stockMovements   StockMovement[]
+  stagingRows      ImportStagingRow[] @relation("DetectedImportLocation")
+  warehouseShelves WarehouseShelf[]
+  warehouseSlots   WarehouseSlot[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  @@index([code])
+  @@index([room])
+  @@index([isActive])
+  @@map("storage_locations")
+}
+
+model LocationAlias {
+  id              String          @id @default(cuid())
+  alias           String
+  normalizedAlias String          @unique
+  locationId      String
+  location        StorageLocation @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  createdAt       DateTime        @default(now())
+
+  @@index([locationId])
+  @@map("location_aliases")
+}
+
+model InventoryGroup {
+  id             String                        @id @default(cuid())
+  name           String
+  description    String?
+  tables         InventoryTable[]
+  batches        StructuredImportBatch[]
+  sheets         StructuredImportSheet[]
+  warehouseLinks WarehouseInventoryGroupLink[]
+  createdAt      DateTime                      @default(now())
+  updatedAt      DateTime                      @updatedAt
+
+  @@index([name])
+  @@map("inventory_groups")
+}
+
+model InventoryTable {
+  id                       String                        @id @default(cuid())
+  groupId                  String?
+  name                     String
+  sourceSheetName          String?
+  tableType                String
+  columnSettings           Json                          @default("{}")
+  group                    InventoryGroup?               @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  stockBalances            StockBalance[]
+  urgentIssues             UrgentIssue[]
+  targetSheets             StructuredImportSheet[]
+  usedInStockAssignments   UsedInStockAssignment[]
+  takenStockItems          TakenStockItem[]
+  warehouseLinks           WarehouseInventoryTableLink[]
+  warehouseSlotAssignments WarehouseSlotAssignment[]
+  interactionLogs          ItemInteractionLog[]
+  createdAt                DateTime                      @default(now())
+  updatedAt                DateTime                      @updatedAt
+
+  @@index([groupId])
+  @@index([name])
+  @@index([tableType])
+  @@map("inventory_tables")
+}
+
+model ImportProfile {
+  id                String                  @id @default(cuid())
+  name              String
+  sheetType         String
+  headerFingerprint String?                 @unique
+  rules             Json                    @default("{}")
+  batches           StructuredImportBatch[]
+  columnMappings    ImportColumnMapping[]
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+
+  @@index([name])
+  @@index([sheetType])
+  @@map("import_profiles")
+}
+
+model StructuredImportBatch {
+  id                     String                  @id @default(cuid())
+  fileName               String
+  uploadedByUserId       String?
+  status                 String                  @default("uploaded")
+  detectedProfileId      String?
+  targetInventoryGroupId String?
+  totalRows              Int                     @default(0)
+  readyRows              Int                     @default(0)
+  reviewRows             Int                     @default(0)
+  errorRows              Int                     @default(0)
+  uploadedByUser         User?                   @relation("StructuredImportBatchUser", fields: [uploadedByUserId], references: [id], onDelete: SetNull)
+  detectedProfile        ImportProfile?          @relation(fields: [detectedProfileId], references: [id], onDelete: SetNull)
+  targetInventoryGroup   InventoryGroup?         @relation(fields: [targetInventoryGroupId], references: [id], onDelete: SetNull)
+  sheets                 StructuredImportSheet[]
+  stagingRows            ImportStagingRow[]
+  createdAt              DateTime                @default(now())
+  confirmedAt            DateTime?
+
+  @@index([fileName])
+  @@index([status])
+  @@index([uploadedByUserId])
+  @@index([detectedProfileId])
+  @@index([targetInventoryGroupId])
+  @@map("structured_import_batches")
+}
+
+model StructuredImportSheet {
+  id                     String                @id @default(cuid())
+  importBatchId          String
+  sheetName              String
+  detectedSheetType      String?
+  userSelectedSheetType  String?
+  headerRowNumber        Int?
+  selectedForImport      Boolean               @default(false)
+  targetMode             String?
+  targetInventoryGroupId String?
+  targetInventoryTableId String?
+  importBatch            StructuredImportBatch @relation(fields: [importBatchId], references: [id], onDelete: Cascade)
+  targetInventoryGroup   InventoryGroup?       @relation(fields: [targetInventoryGroupId], references: [id], onDelete: SetNull)
+  targetInventoryTable   InventoryTable?       @relation(fields: [targetInventoryTableId], references: [id], onDelete: SetNull)
+  columnMappings         ImportColumnMapping[]
+  stagingRows            ImportStagingRow[]
+  createdAt              DateTime              @default(now())
+
+  @@index([importBatchId])
+  @@index([sheetName])
+  @@index([selectedForImport])
+  @@index([targetInventoryGroupId])
+  @@index([targetInventoryTableId])
+  @@map("structured_import_sheets")
+}
+
+model ImportColumnMapping {
+  id                    String                 @id @default(cuid())
+  importProfileId       String?
+  importSheetId         String?
+  excelHeader           String
+  normalizedExcelHeader String
+  columnIndex           Int
+  targetType            String
+  targetField           String?
+  attributeName         String?
+  attributeUnit         String?
+  attributeDataType     String?
+  sampleValues          Json                   @default("[]")
+  confidence            Decimal?
+  importProfile         ImportProfile?         @relation(fields: [importProfileId], references: [id], onDelete: Cascade)
+  importSheet           StructuredImportSheet? @relation(fields: [importSheetId], references: [id], onDelete: Cascade)
+  createdAt             DateTime               @default(now())
+
+  @@index([importProfileId])
+  @@index([importSheetId])
+  @@index([targetType])
+  @@map("import_column_mappings")
+}
+
+model ImportStagingRow {
+  id                 String                @id @default(cuid())
+  importBatchId      String
+  importSheetId      String
+  rowNumber          Int
+  rawRow             Json
+  mappedData         Json                  @default("{}")
+  detectedItemId     String?
+  detectedLocationId String?
+  status             String                @default("pending")
+  confidence         Decimal?
+  message            String?
+  importBatch        StructuredImportBatch @relation(fields: [importBatchId], references: [id], onDelete: Cascade)
+  importSheet        StructuredImportSheet @relation(fields: [importSheetId], references: [id], onDelete: Cascade)
+  detectedItem       InventoryItem?        @relation("DetectedImportItem", fields: [detectedItemId], references: [id], onDelete: SetNull)
+  detectedLocation   StorageLocation?      @relation("DetectedImportLocation", fields: [detectedLocationId], references: [id], onDelete: SetNull)
+  stockBalances      StockBalance[]
+  createdAt          DateTime              @default(now())
+
+  @@unique([importSheetId, rowNumber])
+  @@index([importBatchId])
+  @@index([status])
+  @@index([detectedItemId])
+  @@index([detectedLocationId])
+  @@map("import_staging_rows")
+}
+
+model StockBalance {
+  id                       String                    @id @default(cuid())
+  publicId                 String                    @unique @default(cuid())
+  inventoryTableId         String?
+  itemId                   String
+  locationId               String?
+  compartment              String?
+  quantity                 Decimal                   @default(0)
+  unit                     String                    @default("pcs")
+  unitPrice                Decimal?
+  currency                 String                    @default("SEK")
+  status                   String                    @default("active")
+  notes                    String?
+  archivedAt               DateTime?
+  archivedByUserId         String?
+  sourceImportRowId        String?
+  inventoryTable           InventoryTable?           @relation(fields: [inventoryTableId], references: [id], onDelete: SetNull)
+  item                     InventoryItem             @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  location                 StorageLocation?          @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  sourceImportRow          ImportStagingRow?         @relation(fields: [sourceImportRowId], references: [id], onDelete: SetNull)
+  movements                StockMovement[]
+  usedInAssignments        UsedInStockAssignment[]
+  takenItems               TakenStockItem[]
+  warehouseSlotAssignments WarehouseSlotAssignment[]
+  interactionLogs          ItemInteractionLog[]
+  itemNotes                ItemNote[]
+  urgentIssues             UrgentIssue[]
+  createdAt                DateTime                  @default(now())
+  updatedAt                DateTime                  @updatedAt
+
+  @@index([itemId])
+  @@index([locationId])
+  @@index([inventoryTableId])
+  @@index([status])
+  @@index([inventoryTableId, itemId, locationId, compartment])
+  @@map("stock_balances")
+}
+
+model StockMovement {
+  id              String           @id @default(cuid())
+  itemId          String
+  locationId      String?
+  stockBalanceId  String?
+  movementType    String
+  quantityChange  Decimal
+  quantityBefore  Decimal?
+  quantityAfter   Decimal?
+  reason          String?
+  createdByUserId String?
+  item            InventoryItem    @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  location        StorageLocation? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  stockBalance    StockBalance?    @relation(fields: [stockBalanceId], references: [id], onDelete: SetNull)
+  createdByUser   User?            @relation("StockMovementUser", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  createdAt       DateTime         @default(now())
+
+  @@index([itemId])
+  @@index([locationId])
+  @@index([stockBalanceId])
+  @@index([movementType])
+  @@map("stock_movements")
+}
+
+model WarehouseLayout {
+  id              String                        @id @default(cuid())
+  name            String
+  description     String?
+  layoutData      Json                          @default("{}")
+  version         Int                           @default(1)
+  isArchived      Boolean                       @default(false)
+  createdByUserId String?
+  createdByUser   User?                         @relation("WarehouseCreatedByUser", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  objects         WarehouseObject[]
+  shelves         WarehouseShelf[]
+  slots           WarehouseSlot[]
+  groupLinks      WarehouseInventoryGroupLink[]
+  tableLinks      WarehouseInventoryTableLink[]
+  assignments     WarehouseSlotAssignment[]
+  createdAt       DateTime                      @default(now())
+  updatedAt       DateTime                      @updatedAt
+
+  @@index([name])
+  @@index([isArchived])
+  @@index([createdByUserId])
+  @@map("warehouse_layouts")
+}
+
+model WarehouseObject {
+  id               String           @id @default(cuid())
+  warehouseId      String
+  externalObjectId String?
+  name             String
+  objectType       String
+  positionX        Float            @default(0)
+  positionY        Float            @default(0)
+  elevation        Float            @default(0)
+  rotation         Float            @default(0)
+  width            Float            @default(0)
+  depth            Float            @default(0)
+  height           Float            @default(0)
+  color            String?
+  locked           Boolean          @default(false)
+  metadata         Json             @default("{}")
+  warehouse        WarehouseLayout  @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  shelves          WarehouseShelf[]
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  @@index([warehouseId])
+  @@index([externalObjectId])
+  @@index([objectType])
+  @@map("warehouse_objects")
+}
+
+model WarehouseShelf {
+  id                String           @id @default(cuid())
+  warehouseId       String
+  warehouseObjectId String?
+  storageLocationId String?
+  code              String
+  normalizedCode    String
+  shelfKind         String           @default("location_reference")
+  levelNumber       Int?
+  displayName       String?
+  sortOrder         Int              @default(0)
+  positionX         Float            @default(0)
+  positionY         Float            @default(0)
+  positionZ         Float            @default(0)
+  width             Float            @default(0)
+  depth             Float            @default(0)
+  height            Float            @default(0)
+  metadata          Json             @default("{}")
+  warehouse         WarehouseLayout  @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  warehouseObject   WarehouseObject? @relation(fields: [warehouseObjectId], references: [id], onDelete: SetNull)
+  storageLocation   StorageLocation? @relation(fields: [storageLocationId], references: [id], onDelete: SetNull)
+  slots             WarehouseSlot[]
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@unique([warehouseId, normalizedCode])
+  @@index([warehouseObjectId])
+  @@index([warehouseObjectId, levelNumber])
+  @@index([storageLocationId])
+  @@index([shelfKind])
+  @@index([code])
+  @@map("warehouse_shelves")
+}
+
+model WarehouseSlot {
+  id                String                    @id @default(cuid())
+  warehouseId       String
+  shelfId           String
+  storageLocationId String?
+  code              String
+  normalizedCode    String
+  compartment       String
+  slotIndex         Int?
+  displayName       String?
+  sortOrder         Int                       @default(0)
+  positionX         Float                     @default(0)
+  positionY         Float                     @default(0)
+  positionZ         Float                     @default(0)
+  width             Float                     @default(0)
+  depth             Float                     @default(0)
+  height            Float                     @default(0)
+  palletWidth       Float                     @default(1.2)
+  palletDepth       Float                     @default(0.8)
+  maxAssignments    Int                       @default(1)
+  isActive          Boolean                   @default(true)
+  metadata          Json                      @default("{}")
+  warehouse         WarehouseLayout           @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  shelf             WarehouseShelf            @relation(fields: [shelfId], references: [id], onDelete: Cascade)
+  storageLocation   StorageLocation?          @relation(fields: [storageLocationId], references: [id], onDelete: SetNull)
+  assignments       WarehouseSlotAssignment[]
+  createdAt         DateTime                  @default(now())
+  updatedAt         DateTime                  @updatedAt
+
+  @@unique([warehouseId, normalizedCode, compartment])
+  @@index([shelfId])
+  @@index([shelfId, slotIndex])
+  @@index([storageLocationId])
+  @@index([isActive])
+  @@map("warehouse_slots")
+}
+
+model WarehouseInventoryGroupLink {
+  id               String          @id @default(cuid())
+  warehouseId      String
+  inventoryGroupId String
+  warehouse        WarehouseLayout @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  inventoryGroup   InventoryGroup  @relation(fields: [inventoryGroupId], references: [id], onDelete: Cascade)
+  createdAt        DateTime        @default(now())
+
+  @@unique([warehouseId, inventoryGroupId])
+  @@index([inventoryGroupId])
+  @@map("warehouse_inventory_group_links")
+}
+
+model WarehouseInventoryTableLink {
+  id               String          @id @default(cuid())
+  warehouseId      String
+  inventoryTableId String
+  warehouse        WarehouseLayout @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  inventoryTable   InventoryTable  @relation(fields: [inventoryTableId], references: [id], onDelete: Cascade)
+  createdAt        DateTime        @default(now())
+
+  @@unique([warehouseId, inventoryTableId])
+  @@index([inventoryTableId])
+  @@map("warehouse_inventory_table_links")
+}
+
+model WarehouseSlotAssignment {
+  id                 String          @id @default(cuid())
+  warehouseId        String
+  slotId             String
+  stockBalanceId     String
+  inventoryTableId   String?
+  itemId             String
+  quantity           Decimal         @default(1)
+  activeSlotKey      String?         @unique
+  notes              String?
+  assignedByUserId   String?
+  unassignedByUserId String?
+  assignedAt         DateTime        @default(now())
+  unassignedAt       DateTime?
+  warehouse          WarehouseLayout @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  slot               WarehouseSlot   @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  stockBalance       StockBalance    @relation(fields: [stockBalanceId], references: [id], onDelete: Cascade)
+  inventoryTable     InventoryTable? @relation(fields: [inventoryTableId], references: [id], onDelete: SetNull)
+  item               InventoryItem   @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  assignedByUser     User?           @relation("WarehouseSlotAssignedByUser", fields: [assignedByUserId], references: [id], onDelete: SetNull)
+  unassignedByUser   User?           @relation("WarehouseSlotUnassignedByUser", fields: [unassignedByUserId], references: [id], onDelete: SetNull)
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  @@index([warehouseId])
+  @@index([slotId])
+  @@index([stockBalanceId])
+  @@index([inventoryTableId])
+  @@index([itemId])
+  @@index([unassignedAt])
+  @@map("warehouse_slot_assignments")
+}
+
+model Location {
+  id          String   @id @default(cuid())
+  rawLabel    String?
+  shelf       String?
+  drawer      String?
+  compartment String?
+  mapRow      Int?
+  mapColumn   Int?
+  sourceSheet String?
+  description String?
+  rawData     Json     @default("{}")
+  tools       Tool[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([rawLabel])
+  @@index([shelf, compartment])
+  @@index([sourceSheet, mapRow, mapColumn])
+  @@map("locations")
+}
+
+model Machine {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  tools       Tool[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("machines")
+}
+
+model Tool {
+  id                       String        @id @default(cuid())
+  productName              String
+  manufacturerId           String?
+  articleNumber            String?
+  alternativeArticleNumber String?
+  grade                    String?
+  mounting                 String?
+  toolTypeId               String?
+  diameter                 String?
+  cuttingLength            String?
+  cuttingSize              String?
+  holder                   String?
+  holderSecondary          String?
+  overhang                 String?
+  stockRaw                 String?
+  quantity                 Int?
+  quantitySecondary        Int?
+  countRaw                 String?
+  priceRaw                 String?
+  totalPriceRaw            String?
+  locationId               String?
+  machineId                String?
+  machineRaw               String?
+  notes                    String?
+  status                   ToolStatus    @default(AVAILABLE)
+  isArchived               Boolean       @default(false)
+  sourceSheet              String?
+  sourceRowNumber          Int?
+  rawData                  Json          @default("{}")
+  importBatchId            String?
+  manufacturer             Manufacturer? @relation(fields: [manufacturerId], references: [id])
+  toolType                 ToolType?     @relation(fields: [toolTypeId], references: [id])
+  location                 Location?     @relation(fields: [locationId], references: [id])
+  machine                  Machine?      @relation(fields: [machineId], references: [id])
+  importBatch              ImportBatch?  @relation(fields: [importBatchId], references: [id])
+  history                  ToolHistory[]
+  createdAt                DateTime      @default(now())
+  updatedAt                DateTime      @updatedAt
+
+  @@index([articleNumber])
+  @@index([productName])
+  @@index([manufacturerId])
+  @@index([toolTypeId])
+  @@index([locationId])
+  @@index([machineId])
+  @@index([status, isArchived])
+  @@index([sourceSheet, sourceRowNumber])
+  @@map("tools")
+}
+
+model ToolHistory {
+  id              String   @id @default(cuid())
+  toolId          String
+  action          String
+  fieldName       String?
+  oldValue        String?
+  newValue        String?
+  changedByUserId String?
+  tool            Tool     @relation(fields: [toolId], references: [id], onDelete: Cascade)
+  changedByUser   User?    @relation("ToolHistoryUser", fields: [changedByUserId], references: [id], onDelete: SetNull)
+  createdAt       DateTime @default(now())
+
+  @@index([toolId])
+  @@index([changedByUserId])
+  @@index([action])
+  @@map("tool_history")
+}
+
+model ImportBatch {
+  id               String           @id @default(cuid())
+  fileName         String
+  sheetName        String?
+  importedByUserId String?
+  totalRows        Int              @default(0)
+  validRows        Int              @default(0)
+  invalidRows      Int              @default(0)
+  duplicateRows    Int              @default(0)
+  status           ImportStatus     @default(PREVIEWED)
+  importedByUser   User?            @relation("ImportBatchUser", fields: [importedByUserId], references: [id], onDelete: SetNull)
+  tools            Tool[]
+  issues           ImportRowIssue[]
+  createdAt        DateTime         @default(now())
+
+  @@index([fileName])
+  @@index([sheetName])
+  @@index([status])
+  @@map("import_batches")
+}
+
+model ImportRowIssue {
+  id            String        @id @default(cuid())
+  importBatchId String
+  sheetName     String
+  rowNumber     Int?
+  severity      IssueSeverity @default(WARNING)
+  message       String
+  rawData       Json          @default("{}")
+  importBatch   ImportBatch   @relation(fields: [importBatchId], references: [id], onDelete: Cascade)
+  createdAt     DateTime      @default(now())
+
+  @@index([importBatchId])
+  @@index([sheetName, rowNumber])
+  @@index([severity])
+  @@map("import_row_issues")
+}
+
+model WeeklySummaryLog {
+  id             String    @id @default(cuid())
+  recipientEmail String
+  subject        String
+  status         JobStatus @default(PENDING)
+  sentAt         DateTime?
+  message        String?
+
+  @@index([status])
+  @@index([sentAt])
+  @@map("weekly_summary_logs")
+}
+
+model BackupLog {
+  id        String     @id @default(cuid())
+  type      BackupType
+  fileName  String?
+  filePath  String?
+  status    JobStatus  @default(PENDING)
+  message   String?
+  createdAt DateTime   @default(now())
+
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+  @@map("backup_logs")
+}
+
+model ItemInteractionLog {
+  id               String         @id @default(cuid())
+  // action values: add, edit, archive, restore, delete, take, return, use_in, return_used
+  action           String
+  stockBalanceId   String?
+  inventoryTableId String?
+  itemId           String?
+  userId           String?
+  quantity         Decimal?
+  notes            String?
+  // Snapshot fields preserved after item/user deletion
+  itemName         String?
+  tableName        String?
+  userName         String?
+  stockBalance     StockBalance?   @relation(fields: [stockBalanceId], references: [id], onDelete: SetNull)
+  inventoryTable   InventoryTable? @relation(fields: [inventoryTableId], references: [id], onDelete: SetNull)
+  item             InventoryItem?  @relation(fields: [itemId], references: [id], onDelete: SetNull)
+  user             User?           @relation("ItemInteractionLogUser", fields: [userId], references: [id], onDelete: SetNull)
+  createdAt        DateTime        @default(now())
+
+  @@index([stockBalanceId])
+  @@index([itemId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("item_interaction_logs")
+}
+
+model ItemNote {
+  id             String       @id @default(cuid())
+  stockBalanceId String
+  authorId       String?
+  content        String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  stockBalance   StockBalance @relation(fields: [stockBalanceId], references: [id], onDelete: Cascade)
+  author         User?        @relation("ItemNoteAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([stockBalanceId])
+  @@index([authorId])
+  @@map("item_notes")
+}
+
+model UrgentIssue {
+  id             String            @id @default(cuid())
+  tableId        String
+  stockBalanceId String
+  senderId       String?
+  resolvedById   String?
+  message        String
+  itemSnapshot   Json
+  status         UrgentIssueStatus @default(open)
+  resolvedAt     DateTime?
+  createdAt      DateTime          @default(now())
+  table          InventoryTable    @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  stockBalance   StockBalance      @relation(fields: [stockBalanceId], references: [id], onDelete: Cascade)
+  sender         User?             @relation("UrgentIssueSender", fields: [senderId], references: [id], onDelete: SetNull)
+  resolvedBy     User?             @relation("UrgentIssueResolver", fields: [resolvedById], references: [id], onDelete: SetNull)
+
+  @@index([tableId])
+  @@index([stockBalanceId])
+  @@index([senderId])
+  @@index([status])
+  @@index([resolvedAt])
+  @@map("urgent_issues")
+}

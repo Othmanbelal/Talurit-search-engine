@@ -1,0 +1,104 @@
+.context-selection-chip {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  z-index: 42;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: min(820px, calc(100% - 48px));
+  padding: 8px 9px 8px 13px;
+  border: 1px solid rgba(84, 216, 255, .22);
+  box-shadow: 0 20px 70px rgba(2, 8, 18, .34);
+  animation: premiumPop 150ms ease-out;
+}
+.selection-chip-main {
+  min-width: 240px;
+  max-width: 390px;
+}
+.selection-chip-main strong,
+.selection-chip-main span {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.selection-chip-main strong {
+  color: #f8fcff;
+  font-size: .87rem;
+  letter-spacing: .01em;
+}
+.selection-chip-main span {
+  margin-top: 2px;
+  color: rgba(221, 239, 250, .62);
+  font-size: .72rem;
+}
+.context-selection-chip button {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 999px;
+  color: #eaf7ff;
+  background: rgba(255,255,255,.06);
+  cursor: pointer;
+}
+.context-selection-chip button:hover {
+  border-color: rgba(84, 216, 255, .46);
+  background: rgba(84, 216, 255, .12);
+}
+.context-selection-chip button:disabled {
+  opacity: .42;
+  cursor: not-allowed;
+}
+.context-selection-chip .selection-chip-primary {
+  width: auto;
+  gap: 6px;
+  padding: 0 12px;
+  border-radius: 999px;
+  color: #0d1724;
+  background: linear-gradient(135deg, #ccefff, #d8b65c);
+  font-weight: 850;
+}
+.context-selection-chip .danger:hover {
+  border-color: rgba(255, 100, 124, .55);
+  color: #ffd7de;
+  background: rgba(255, 100, 124, .15);
+}
+.context-selection-chip em {
+  padding: 7px 9px;
+  border-radius: 999px;
+  font-size: .68rem;
+  font-style: normal;
+  font-weight: 850;
+  white-space: nowrap;
+}
+.context-selection-chip em[data-state="ok"] {
+  color: #bfffe2;
+  background: rgba(114,230,178,.12);
+}
+.context-selection-chip em[data-state="warning"] {
+  color: #ffd39e;
+  background: rgba(255,184,74,.13);
+}
+.context-selection-chip em[data-state="error"] {
+  color: #ffd7de;
+  background: rgba(255,100,124,.14);
+}
+.selection-chip-close {
+  opacity: .78;
+}
+@media (max-width: 820px) {
+  .context-selection-chip {
+    left: 12px;
+    right: 12px;
+    transform: none;
+    flex-wrap: wrap;
+  }
+  .selection-chip-main {
+    min-width: 100%;
+  }
+}

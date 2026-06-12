@@ -1,0 +1,66 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: tool_inventory_postgres
+    environment:
+      POSTGRES_DB: tool_inventory
+      POSTGRES_USER: tool_user
+      POSTGRES_PASSWORD: tool_password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tool_user -d tool_inventory"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    container_name: tool_inventory_server
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 4000
+      CLIENT_URL: http://localhost:5173
+      APP_PUBLIC_URL: ${APP_PUBLIC_URL:-http://localhost:5173}
+      DATABASE_URL: postgresql://tool_user:tool_password@postgres:5432/tool_inventory
+      SESSION_SECRET: change_me_long_random_secret
+      COOKIE_NAME: tool_inventory_session
+      SESSION_DAYS: 7
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      ADMIN_NAME: ${ADMIN_NAME:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+      SMTP_SECURE: ${SMTP_SECURE:-false}
+      ADMIN_SUMMARY_EMAIL: ${ADMIN_SUMMARY_EMAIL:-}
+      BACKUP_DIR: /app/backups
+      UPLOAD_DIR: /app/uploads
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./backups:/app/backups
+      - ./uploads:/app/uploads
+    command: sh -c "npm --workspace server run db:migrate:deploy && npm --workspace server run start"
+
+  client:
+    build:
+      context: .
+      dockerfile: client/Dockerfile
+    container_name: tool_inventory_client
+    depends_on:
+      - server
+    ports:
+      - "5173:80"
+
+volumes:
+  postgres_data:

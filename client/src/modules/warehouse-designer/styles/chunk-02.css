@@ -1,0 +1,232 @@
+
+.section-heading {
+  margin-bottom: 12px;
+}
+
+.object-library,
+.issue-list,
+.inspector {
+  display: grid;
+  gap: 10px;
+}
+
+.library-card {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 34px 1fr 18px;
+  gap: 10px;
+  text-align: left;
+  align-items: center;
+  padding: 12px;
+  cursor: pointer;
+}
+
+.library-card small {
+  display: block;
+  margin-top: 3px;
+  color: var(--text-soft);
+  line-height: 1.25;
+}
+
+.library-icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  color: var(--gold);
+  background: var(--gold-soft);
+}
+
+.issue-section {
+  margin-top: 22px;
+}
+
+.issue-card {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 10px;
+  text-align: left;
+  padding: 11px;
+  color: #e8f1ff;
+  cursor: pointer;
+}
+
+.issue-card[data-severity="error"] {
+  border-color: rgba(255, 107, 107, 0.45);
+  background: rgba(255, 107, 107, 0.1);
+}
+
+.issue-card[data-severity="warning"] {
+  border-color: rgba(229, 184, 90, 0.34);
+  background: rgba(229, 184, 90, 0.09);
+}
+
+.issue-card[data-severity="info"] {
+  border-color: rgba(99, 210, 151, 0.34);
+  background: rgba(99, 210, 151, 0.08);
+}
+
+.plan-wrapper,
+.scene-canvas {
+  min-height: 0;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+}
+
+.plan-wrapper {
+  padding: 14px;
+}
+
+.plan-svg {
+  width: 100%;
+  height: 100%;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at center, rgba(255, 255, 255, 0.07), transparent 45%),
+    #071225;
+  touch-action: none;
+}
+
+.room-fill {
+  fill: rgba(22, 44, 73, 0.86);
+}
+
+.room-outline {
+  fill: none;
+  stroke: var(--gold);
+  stroke-width: 0.055;
+}
+
+.grid-line {
+  stroke: rgba(255, 255, 255, 0.09);
+  stroke-width: 0.012;
+}
+
+.grid-line.major {
+  stroke: rgba(229, 184, 90, 0.23);
+  stroke-width: 0.018;
+}
+
+.dimension-label,
+.object-text,
+.object-measure {
+  fill: #f5f8ff;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  paint-order: stroke;
+  stroke: rgba(4, 10, 20, 0.88);
+  stroke-width: 0.035;
+  font-weight: 800;
+  pointer-events: none;
+}
+
+.dimension-label {
+  font-size: 0.34px;
+  fill: var(--gold);
+}
+
+.object-text {
+  font-size: 0.18px;
+}
+
+.object-measure {
+  font-size: 0.13px;
+  fill: #dbeafe;
+}
+
+.plan-object polygon {
+  stroke: rgba(255, 255, 255, 0.58);
+  stroke-width: 0.035;
+  opacity: 0.8;
+}
+
+.plan-object circle {
+  fill: #fff;
+  stroke: #08101e;
+  stroke-width: 0.02;
+}
+
+.plan-object.selected polygon {
+  stroke: var(--gold);
+  stroke-width: 0.06;
+  opacity: 1;
+}
+
+.plan-object.has-error polygon {
+  stroke: var(--red);
+}
+
+.plan-object.has-warning polygon {
+  stroke: var(--gold);
+}
+
+.plan-object.locked polygon {
+  opacity: 0.48;
+}
+
+.object-direction {
+  stroke: #fff;
+  stroke-width: 0.03;
+  pointer-events: none;
+}
+
+.clearance-preview {
+  fill: rgba(229, 184, 90, 0.05);
+  stroke: rgba(229, 184, 90, 0.48);
+  stroke-dasharray: 0.08 0.07;
+  stroke-width: 0.025;
+}
+
+.scene-canvas {
+  display: block;
+  outline: none;
+  background: #02060c;
+}
+
+.inspector section {
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.inspector section:last-child {
+  border-bottom: 0;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.field,
+.toggle-field {
+  display: grid;
+  gap: 6px;
+  color: var(--text-soft);
+  font-size: 0.82rem;
+}
+
+.field.full-width {
+  margin-bottom: 10px;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0 10px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+  outline: none;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: rgba(229, 184, 90, 0.5);
+  box-shadow: 0 0 0 3px rgba(229, 184, 90, 0.08);
+}

@@ -1,0 +1,230 @@
+
+.hover-title {
+  margin-bottom: 9px;
+  color: #fff;
+}
+
+.hover-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+
+.hover-metrics span,
+.hover-issues span,
+.hover-row,
+.hover-ok {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 6px 7px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 0.76rem;
+}
+
+.object-hover-card p {
+  margin: 8px 0 0;
+  color: var(--premium-soft);
+  font-size: 0.78rem;
+}
+
+.hover-row {
+  color: #ffe9aa !important;
+  background: rgba(242, 200, 107, 0.08);
+}
+
+.hover-ok {
+  color: #dfffee !important;
+  background: rgba(99, 210, 151, 0.08);
+}
+
+.hover-issues {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.hover-issues span[data-severity="error"] {
+  color: #ffd2d2;
+  border-color: rgba(255, 107, 107, 0.25);
+  background: rgba(255, 107, 107, 0.08);
+}
+
+.hover-issues span[data-severity="warning"] {
+  color: #ffe9aa;
+  border-color: rgba(242, 200, 107, 0.25);
+  background: rgba(242, 200, 107, 0.08);
+}
+
+.command-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: start center;
+  padding-top: 12vh;
+  background: rgba(1, 5, 12, 0.48);
+  backdrop-filter: blur(8px);
+}
+
+.command-palette {
+  width: min(720px, calc(100vw - 32px));
+  max-height: min(680px, 76vh);
+  border-radius: 28px;
+  overflow: hidden;
+  border-color: rgba(242, 200, 107, 0.25);
+  background: linear-gradient(180deg, rgba(10, 22, 42, 0.98), rgba(3, 8, 18, 0.98));
+  animation: commandIn 160ms ease-out;
+}
+
+.command-search {
+  min-height: 66px;
+  display: grid;
+  grid-template-columns: 26px 1fr 34px;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.command-search input {
+  height: 42px;
+  border: 0;
+  outline: 0;
+  color: #fff;
+  background: transparent;
+  font-size: 1rem;
+}
+
+.command-search button {
+  height: 34px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: #fff;
+  background: rgba(255,255,255,0.06);
+  cursor: pointer;
+}
+
+.command-list {
+  display: grid;
+  gap: 6px;
+  padding: 10px;
+  overflow: auto;
+  max-height: calc(76vh - 68px);
+}
+
+.command-list button {
+  min-height: 58px;
+  display: grid;
+  grid-template-columns: 38px 1fr;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid transparent;
+  border-radius: 18px;
+  padding: 8px 10px;
+  color: #eef6ff;
+  text-align: left;
+  background: rgba(255,255,255,0.035);
+  cursor: pointer;
+  transition: 140ms ease;
+}
+
+.command-list button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(242, 200, 107, 0.24);
+  background: rgba(242, 200, 107, 0.09);
+}
+
+.command-list button:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.command-icon {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: var(--premium-gold);
+  background: rgba(242, 200, 107, 0.1);
+}
+
+.command-list strong,
+.command-list small {
+  display: block;
+}
+
+.command-list small {
+  margin-top: 3px;
+  color: var(--premium-soft);
+}
+
+.smart-status-bar {
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 14px 0 86px;
+  border-top: 1px solid rgba(242, 200, 107, 0.16);
+  background: linear-gradient(90deg, rgba(3, 7, 18, 0.94), rgba(8, 17, 31, 0.9));
+  box-shadow: 0 -16px 40px rgba(0, 0, 0, 0.24);
+}
+
+.status-left,
+.status-right,
+.status-selection,
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.status-left,
+.status-right {
+  min-width: 0;
+}
+
+.status-right {
+  flex-wrap: nowrap;
+}
+
+.status-selection {
+  min-width: 0;
+  color: #e8f2ff;
+  font-size: 0.82rem;
+}
+
+.status-selection strong {
+  white-space: nowrap;
+}
+
+.status-selection em {
+  color: var(--premium-soft);
+  font-style: normal;
+  white-space: nowrap;
+}
+
+.status-selection.muted {
+  color: var(--premium-soft);
+}
+
+.status-chip {
+  min-height: 26px;
+  flex: none;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 999px;
+  padding: 4px 9px;
+  color: #dbeafe;
+  background: rgba(255,255,255,0.045);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.status-chip.ok {
+  color: #dcffee;
+  border-color: rgba(99,210,151,0.26);
+  background: rgba(99,210,151,0.08);
+}
+

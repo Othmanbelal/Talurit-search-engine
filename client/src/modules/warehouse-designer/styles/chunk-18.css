@@ -1,0 +1,58 @@
+/* Phase 1 navigation cleanup: one header, workflow dock, hidden-by-default drawers. */
+.navigation-phase-header {
+  grid-template-columns: minmax(260px, 1fr) auto auto auto auto auto;
+  min-height: 60px;
+  padding: 8px 12px;
+  gap: 10px;
+}
+.compact-brand strong { display: block; color: #f8fbff; font-size: .95rem; line-height: 1; }
+.compact-brand .project-name { margin-top: 3px; max-width: 280px; }
+.compact-issues { min-width: 88px; justify-content: center; white-space: nowrap; }
+.compact-file,
+.compact-reset { min-height: 38px; padding: 0 10px; white-space: nowrap; }
+.workflow-dock { width: 86px; padding: 12px 8px; gap: 8px; }
+.workflow-dock .dock-button { min-height: 58px; padding: 8px 4px; border-radius: 18px; }
+.workflow-dock .dock-button span { font-size: .69rem; letter-spacing: .01em; }
+.workflow-drawer { width: min(380px, calc(100vw - 116px)); }
+.workflow-drawer .drawer-header h2 { margin: 0; }
+.workflow-drawer .drawer-header span { display: block; color: var(--premium-soft); font-size: .78rem; margin-top: 4px; line-height: 1.35; }
+.workflow-drawer .drawer-content { display: grid; gap: 12px; }
+.canvas-only-card { position: relative; padding: 0; }
+.canvas-only-card .view-header { display: none; }
+.view-badge {
+  position: absolute;
+  z-index: 8;
+  top: 12px;
+  left: 12px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(8, 18, 33, .72);
+  border: 1px solid rgba(255, 255, 255, .1);
+  color: #f6fbff;
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  backdrop-filter: blur(10px);
+}
+.canvas-only-card .plan-wrapper,
+.canvas-only-card .scene3d-wrapper { border-radius: 24px; }
+.embedded-layer-panel {
+  position: static;
+  width: 100%;
+  max-height: none;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.embedded-layer-panel header { padding: 0 0 8px; }
+.embedded-layer-panel .layer-section { margin-top: 10px; }
+.room-tools .level-manager { display: none; }
+@media (max-width: 1080px) {
+  .navigation-phase-header { grid-template-columns: 1fr auto auto; }
+  .compact-file,
+  .compact-reset,
+  .compact-issues { display: none; }
+  .workflow-drawer { width: min(360px, calc(100vw - 98px)); }
+}

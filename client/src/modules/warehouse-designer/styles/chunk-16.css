@@ -1,0 +1,66 @@
+.layer-space-card {
+  border: 1px solid rgba(214, 169, 74, 0.24);
+  background: linear-gradient(135deg, rgba(214, 169, 74, 0.12), rgba(66, 217, 255, 0.06));
+  border-radius: 16px;
+  padding: 10px;
+  display: grid;
+  gap: 8px;
+}
+
+.layer-space-card strong {
+  display: block;
+  color: var(--text);
+}
+
+.layer-space-card span {
+  display: block;
+  color: var(--muted);
+  font-size: .72rem;
+  margin-top: 3px;
+}
+
+.layer-space-card input {
+  width: 100%;
+  border: 1px solid rgba(255,255,255,.1);
+  background: rgba(3, 10, 20, .46);
+  color: var(--text);
+  border-radius: 12px;
+  padding: 9px 10px;
+  outline: none;
+}
+
+.layer-space-card input:focus {
+  border-color: rgba(214, 169, 74, 0.62);
+  box-shadow: 0 0 0 3px rgba(214, 169, 74, 0.12);
+}
+
+.layer-level-group {
+  display: grid;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 18px;
+  background: rgba(255,255,255,.025);
+}
+
+.layer-level-group > p {
+  margin: 0;
+  color: rgba(255, 247, 220, .72);
+  font-size: .72rem;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+}
+
+.stair-plan-symbol polygon {
+  stroke: rgba(255, 236, 174, 0.9);
+  stroke-width: 0.035;
+}
+.stair-step-line {
+  stroke: rgba(7, 17, 31, 0.5);
+  stroke-width: 0.025;
+}
+.stair-arrow-line {
+  stroke: rgba(255, 255, 255, 0.95);
+  stroke-width: 0.055;
+  marker-end: none;
+}

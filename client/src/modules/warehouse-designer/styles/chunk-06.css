@@ -1,0 +1,232 @@
+.premium-dock {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  align-items: center;
+  padding: 10px 7px;
+  border: 1px solid var(--premium-border);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(8, 17, 31, 0.94), rgba(5, 12, 24, 0.9));
+  box-shadow: var(--premium-shadow);
+  backdrop-filter: blur(20px);
+}
+
+.dock-logo,
+.dock-button {
+  width: 46px;
+  min-height: 46px;
+  border-radius: 17px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: grid;
+  place-items: center;
+}
+
+.dock-logo {
+  color: #1a1204;
+  background: linear-gradient(135deg, #ffe9a8, #be862d);
+  box-shadow: 0 12px 28px rgba(242, 200, 107, 0.18);
+}
+
+.dock-button {
+  cursor: pointer;
+  color: #dce8f7;
+  background: rgba(255, 255, 255, 0.045);
+  transition: 160ms ease;
+  position: relative;
+}
+
+.dock-button span,
+.dock-hint span {
+  position: absolute;
+  left: 56px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  white-space: nowrap;
+  opacity: 0;
+  padding: 7px 10px;
+  border: 1px solid var(--premium-border);
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(8, 18, 33, 0.95);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.34);
+  transition: 140ms ease;
+}
+
+.dock-button:hover span,
+.dock-hint:hover span {
+  opacity: 1;
+}
+
+.dock-button:hover,
+.dock-button.active {
+  transform: translateY(-1px);
+  color: var(--premium-gold);
+  border-color: rgba(242, 200, 107, 0.42);
+  background: rgba(242, 200, 107, 0.12);
+}
+
+.dock-spacer {
+  flex: 1;
+}
+
+.dock-hint {
+  width: 46px;
+  height: 46px;
+  border-radius: 17px;
+  display: grid;
+  place-items: center;
+  color: var(--premium-soft);
+  position: relative;
+}
+
+.tool-drawer,
+.inspector-drawer {
+  position: absolute;
+  top: 14px;
+  bottom: 14px;
+  z-index: 15;
+  border-radius: 26px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, rgba(10, 22, 40, 0.96), rgba(4, 10, 21, 0.94));
+  border-color: var(--premium-border);
+}
+
+.tool-drawer {
+  /* 90px column + 14px gap + 4px breathing room */
+  left: 108px;
+  width: min(360px, calc(100vw - 160px));
+}
+
+.inspector-drawer {
+  right: 14px;
+  width: min(420px, calc(100vw - 150px));
+  z-index: 22;
+}
+
+.drawer-header {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--premium-line);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.drawer-header h2 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.drawer-content {
+  overflow: auto;
+  padding: 16px;
+}
+
+.mini-close {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--premium-line);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  font-size: 1.25rem;
+}
+
+.mini-close:hover {
+  border-color: rgba(242, 200, 107, 0.45);
+  background: rgba(242, 200, 107, 0.12);
+}
+
+.canvas-stage {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 12px;
+}
+
+.stage-toolbar {
+  min-height: 58px;
+  border-radius: 22px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  background: linear-gradient(90deg, rgba(9, 21, 39, 0.86), rgba(7, 15, 29, 0.72));
+  border-color: var(--premium-border);
+}
+
+.stage-toolbar strong {
+  display: inline-block;
+  margin-right: 10px;
+  color: #fff;
+}
+
+.stage-toolbar span {
+  color: var(--premium-soft);
+  font-size: 0.88rem;
+}
+
+.view-split {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(480px, 1.18fr) minmax(390px, 0.82fr);
+  gap: 12px;
+}
+
+.premium-view-card {
+  border-radius: 26px;
+  border-color: var(--premium-border);
+  background: linear-gradient(180deg, rgba(8, 18, 33, 0.76), rgba(3, 8, 18, 0.74));
+}
+
+.slim-view-header {
+  min-height: 62px;
+  padding: 10px 14px;
+  background: linear-gradient(90deg, rgba(7, 15, 29, 0.8), rgba(16, 33, 57, 0.52));
+}
+
+.plan-wrapper {
+  position: relative;
+}
+
+.plan-svg {
+  background:
+    radial-gradient(circle at 50% 40%, rgba(115, 213, 255, 0.05), transparent 22vw),
+    linear-gradient(135deg, rgba(2, 6, 14, 0.94), rgba(5, 15, 29, 0.95));
+}
+
+.room-fill {
+  fill: rgba(13, 27, 48, 0.84);
+}
+
+.grid-line {
+  stroke: rgba(148, 163, 184, 0.1);
+}
+
+.grid-line.major {
+  stroke: rgba(242, 200, 107, 0.16);
+}
+
+.room-outline {
+  stroke: rgba(242, 200, 107, 0.72);
+  stroke-width: 0.035;
+  filter: drop-shadow(0 0 0.08rem rgba(242, 200, 107, 0.35));
+}
+
+.plan-object polygon {
+  stroke: rgba(255, 255, 255, 0.26);
+  stroke-width: 0.035;
+}
+
+.plan-object.selected polygon {
+  stroke: var(--premium-gold);
+  stroke-width: 0.06;
+}

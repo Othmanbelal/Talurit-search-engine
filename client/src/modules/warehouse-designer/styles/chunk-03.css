@@ -1,0 +1,231 @@
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 6px;
+}
+
+.field-row em {
+  min-width: 30px;
+  color: var(--gold);
+  font-style: normal;
+  font-weight: 700;
+}
+
+.toggle-field {
+  grid-column: span 2;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 9px;
+  padding: 9px 0;
+}
+
+.selected-section {
+  padding-top: 2px;
+}
+
+.rack-settings {
+  margin: 12px 0;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.rack-settings h4 {
+  margin: 0 0 10px;
+}
+
+.button-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.button-grid button {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.button-grid button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.button-grid .danger {
+  grid-column: span 2;
+  border-color: rgba(255, 107, 107, 0.34);
+}
+
+.room-tools {
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.tool-card {
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.tool-card p {
+  margin: 0 0 12px;
+  color: var(--text-soft);
+  line-height: 1.35;
+  font-size: 0.84rem;
+}
+
+.tool-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.tool-actions button,
+.compact-danger {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: #eef4ff;
+  background: rgba(255, 255, 255, 0.055);
+  cursor: pointer;
+}
+
+.tool-actions button:hover,
+.compact-danger:hover,
+.tool-actions button.active {
+  border-color: rgba(229, 184, 90, 0.44);
+  background: rgba(229, 184, 90, 0.13);
+}
+
+.tool-actions button:disabled,
+.compact-danger:disabled {
+  opacity: 0.44;
+  cursor: not-allowed;
+}
+
+.tool-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.tool-meta span {
+  border: 1px solid rgba(229, 184, 90, 0.24);
+  border-radius: 999px;
+  padding: 4px 8px;
+  color: #ffe9aa;
+  background: rgba(229, 184, 90, 0.08);
+  font-size: 0.74rem;
+}
+
+.compact-danger {
+  width: 100%;
+  margin-top: 10px;
+  color: #ffd5d5;
+  border-color: rgba(255, 107, 107, 0.3);
+}
+
+.plan-svg.drawing-room {
+  cursor: crosshair;
+}
+
+.room-vertex {
+  fill: #fff4ca;
+  stroke: #0a1220;
+  stroke-width: 0.035;
+  cursor: grab;
+}
+
+.room-vertex:hover {
+  fill: #ffffff;
+  stroke: var(--gold);
+}
+
+.draft-boundary {
+  fill: none;
+  stroke: #63d297;
+  stroke-width: 0.07;
+  stroke-dasharray: 0.12 0.08;
+}
+
+.draft-point {
+  fill: #63d297;
+  stroke: #062014;
+  stroke-width: 0.035;
+}
+
+.draft-hint {
+  fill: #dfffee;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  paint-order: stroke;
+  stroke: rgba(4, 10, 20, 0.95);
+  stroke-width: 0.04;
+  font-weight: 800;
+  font-size: 0.18px;
+  pointer-events: none;
+}
+
+.draft-hint.big {
+  font-size: 0.26px;
+}
+
+.plan-object.type-wall-segment polygon {
+  stroke-width: 0.045;
+}
+
+.plan-object.type-door polygon,
+.plan-object.type-window polygon {
+  opacity: 0.62;
+  stroke-dasharray: 0.09 0.05;
+}
+
+.plan-object.type-door polygon {
+  stroke: #8ff2bd;
+}
+
+.plan-object.type-window polygon {
+  stroke: #b9efff;
+}
+
+.warehouse-tools {
+  padding-bottom: 18px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+}
+
+.warehouse-card {
+  margin-bottom: 12px;
+}
+
+.warehouse-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: #fff2c6;
+}
+
+.metric-row,
+.generator-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-top: 10px;
+}

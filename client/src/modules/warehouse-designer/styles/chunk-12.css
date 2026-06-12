@@ -1,0 +1,232 @@
+
+.workspace-mode-presentation .view-card {
+  box-shadow: 0 36px 120px rgba(0, 0, 0, 0.42);
+}
+
+.presentation-plaque {
+  position: absolute;
+  left: 28px;
+  top: 28px;
+  width: min(720px, calc(100vw - 56px));
+  padding: 18px;
+  border-radius: 26px;
+  pointer-events: auto;
+  animation: premium-pop 220ms ease-out;
+}
+
+.presentation-title-row p {
+  margin: 4px 0 0;
+  color: var(--muted);
+}
+
+.presentation-metrics {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.presentation-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.presentation-verdict {
+  position: absolute;
+  right: 28px;
+  bottom: 28px;
+  width: 360px;
+  border-radius: 22px;
+  padding: 14px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  pointer-events: auto;
+}
+
+.presentation-verdict strong,
+.presentation-verdict p {
+  display: block;
+  margin: 0;
+}
+
+.presentation-verdict p {
+  color: var(--muted);
+  font-size: .8rem;
+  margin-top: 4px;
+  line-height: 1.35;
+}
+
+@keyframes premium-pop {
+  from { opacity: 0; transform: translateY(8px) scale(.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 1200px) {
+  .premium-guide { width: 280px; }
+  .layer-navigator { width: 310px; }
+  .presentation-metrics { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Premium Interaction Phase 5 */
+.theme-arctic-graphite {
+  --gold: #38bdf8;
+  --gold-soft: rgba(56, 189, 248, 0.18);
+  --blue: #93c5fd;
+  --green: #a7f3d0;
+  --navy-0: #020617;
+  --navy-1: #0f172a;
+  --navy-2: #1e293b;
+}
+
+.theme-emerald-logistics {
+  --gold: #65e6a5;
+  --gold-soft: rgba(101, 230, 165, 0.18);
+  --blue: #5eead4;
+  --green: #86efac;
+  --navy-0: #031612;
+  --navy-1: #06231d;
+  --navy-2: #0f3f34;
+}
+
+.theme-light-presentation {
+  color-scheme: light;
+  color: #0f172a;
+  --navy-0: #f8fafc;
+  --navy-1: #eef4ff;
+  --navy-2: #dbeafe;
+  --navy-3: #bfdbfe;
+  --gold: #b7791f;
+  --gold-soft: rgba(183, 121, 31, 0.14);
+  --blue: #1d4ed8;
+  --red: #dc2626;
+  --green: #047857;
+  --text-soft: #475569;
+  --border: rgba(15, 23, 42, 0.12);
+}
+
+.theme-light-presentation .topbar,
+.theme-light-presentation .glass-panel,
+.theme-light-presentation .tool-drawer,
+.theme-light-presentation .premium-view-card {
+  background: rgba(255, 255, 255, 0.78);
+  color: #0f172a;
+  box-shadow: 0 24px 60px rgba(30, 58, 138, 0.13);
+}
+
+.ambience-presentation .view-header,
+.ambience-presentation .stage-toolbar {
+  background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(214,169,74,0.12));
+}
+
+.accent-action {
+  border-color: rgba(214, 169, 74, 0.38) !important;
+  background: linear-gradient(135deg, rgba(214, 169, 74, 0.22), rgba(66, 217, 255, 0.08)) !important;
+}
+
+.premium-experience-panel {
+  position: absolute;
+  right: 24px;
+  top: 96px;
+  width: min(430px, calc(100vw - 320px));
+  max-height: calc(100vh - 190px);
+  overflow: auto;
+  z-index: 36;
+  border-radius: 28px;
+  padding: 18px;
+  border: 1px solid rgba(255,255,255,0.13);
+  background:
+    linear-gradient(145deg, rgba(9, 21, 38, 0.92), rgba(8, 16, 30, 0.78)),
+    radial-gradient(circle at top right, rgba(214, 169, 74, 0.18), transparent 38%);
+  backdrop-filter: blur(24px);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.42);
+  animation: phase5PanelIn 180ms ease-out both;
+}
+
+@keyframes phase5PanelIn {
+  from { opacity: 0; transform: translateY(-8px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.experience-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.experience-header h2,
+.experience-header p,
+.experience-header span {
+  margin: 0;
+}
+
+.experience-header h2 {
+  font-size: 1.22rem;
+}
+
+.experience-header span {
+  color: var(--text-soft);
+  font-size: 0.82rem;
+}
+
+.experience-tabs,
+.segmented-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 12px 0 16px;
+}
+
+.experience-tabs button,
+.segmented-row button {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 9px 10px;
+  background: rgba(255,255,255,0.055);
+  color: var(--text-soft);
+  cursor: pointer;
+}
+
+.experience-tabs button.active,
+.segmented-row button.active {
+  color: #fff;
+  border-color: rgba(214, 169, 74, 0.55);
+  background: linear-gradient(135deg, rgba(214, 169, 74, 0.24), rgba(66, 217, 255, 0.08));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.045), 0 12px 26px rgba(0,0,0,0.18);
+}
+
+.template-grid,
+.theme-grid,
+.wizard-layout {
+  display: grid;
+  gap: 12px;
+}
+
+.template-card,
+.theme-card,
+.recipe-card {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  text-align: left;
+  padding: 14px;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,0.075), rgba(255,255,255,0.025));
+  cursor: pointer;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.premium-hover-card:hover,
+.recipe-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(214, 169, 74, 0.48);
+  background: linear-gradient(145deg, rgba(214, 169, 74, 0.14), rgba(66, 217, 255, 0.06));
+  box-shadow: 0 18px 40px rgba(0,0,0,0.24);
+}
+
+.template-card strong,
+.theme-card strong,
+.recipe-card strong {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 0.95rem;
+}

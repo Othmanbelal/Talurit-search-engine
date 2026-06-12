@@ -1,0 +1,29 @@
+{
+  "name": "tool-inventory-system",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "npm --workspace server run dev",
+    "dev:client": "npm --workspace client run dev",
+    "db:migrate": "npm --workspace server run db:migrate",
+    "db:seed": "npm --workspace server run db:seed",
+    "db:studio": "npm --workspace server run db:studio",
+    "build": "npm --workspace server run build && npm --workspace client run build",
+    "lint": "npm --workspace server run lint && npm --workspace client run lint",
+    "check:lines": "node scripts/check-file-lines.mjs",
+    "backup:db": "bash scripts/backup-database.sh",
+    "restore:db": "bash scripts/restore-database.sh"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  }
+}

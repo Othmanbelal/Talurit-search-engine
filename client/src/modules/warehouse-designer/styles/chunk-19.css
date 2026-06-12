@@ -1,0 +1,96 @@
+/* Phase 2 drawer organization: every workflow has purpose-built sections. */
+.organized-drawer { padding: 12px; }
+.organized-drawer-header { align-items: flex-start; }
+.drawer-title-row { display: flex; gap: 10px; align-items: flex-start; }
+.drawer-title-icon {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  color: #8fe8ff;
+  background: rgba(66, 217, 255, .12);
+  border: 1px solid rgba(66, 217, 255, .22);
+}
+.drawer-help-strip {
+  display: grid;
+  gap: 6px;
+  margin: 10px 0 12px;
+}
+.drawer-help-strip span {
+  display: block;
+  padding: 8px 10px;
+  border-radius: 14px;
+  color: rgba(235, 244, 255, .8);
+  font-size: .72rem;
+  line-height: 1.25;
+  background: rgba(255, 255, 255, .045);
+  border: 1px solid rgba(255, 255, 255, .07);
+}
+.organized-drawer-content { display: grid; gap: 12px; }
+.drawer-block { display: grid; gap: 12px; }
+.drawer-section-card {
+  padding: 12px;
+  border-radius: 20px;
+  background: rgba(7, 17, 31, .44);
+  border: 1px solid rgba(255, 255, 255, .08);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05);
+}
+.drawer-section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.drawer-section-title h3 { margin: 0; color: #f7fbff; font-size: .98rem; }
+.drawer-section-title span { display: block; margin-top: 3px; color: var(--premium-soft); font-size: .72rem; line-height: 1.3; }
+.compact-library-section { padding: 10px; }
+.categorized-library { display: grid; gap: 8px; }
+.compact-library-card {
+  min-height: auto;
+  padding: 10px;
+  border-radius: 16px;
+  align-items: center;
+}
+.compact-library-card .library-icon { width: 34px; height: 34px; border-radius: 13px; }
+.compact-library-card strong { font-size: .82rem; }
+.compact-library-card small { font-size: .69rem; line-height: 1.25; }
+.compact-library-card em {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 5px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  color: rgba(255, 229, 170, .9);
+  background: rgba(214, 169, 74, .1);
+  border: 1px solid rgba(214, 169, 74, .16);
+  font-size: .62rem;
+  font-style: normal;
+  font-weight: 800;
+}
+.issue-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.issue-summary-grid div {
+  padding: 10px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .045);
+  border: 1px solid rgba(255, 255, 255, .08);
+}
+.issue-summary-grid strong { display: block; color: #fff; font-size: 1rem; }
+.issue-summary-grid span { color: var(--premium-soft); font-size: .68rem; }
+.issue-summary-grid [data-state="error"] strong { color: #ff8ca0; }
+.issue-summary-grid [data-state="warning"] strong { color: #ffd082; }
+.issue-summary-grid [data-state="ok"] strong { color: #83f0bd; }
+.issue-group .issue-list { margin-top: 0; }
+.compact-empty { margin: 0; font-size: .75rem; color: var(--premium-soft); }
+.object-library-block + .warehouse-tools { margin-top: 0; }
+.workflow-drawer .room-tools > .section-heading { display: none; }
+.workflow-drawer .warehouse-tools > .section-heading { display: none; }
+@media (max-width: 860px) {
+  .drawer-help-strip span:nth-child(n+3) { display: none; }
+  .issue-summary-grid { grid-template-columns: 1fr; }
+}

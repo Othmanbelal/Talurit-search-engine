@@ -1,0 +1,28 @@
+import type { Request, Response } from "express";
+import { successResponse } from "../../utils/api-response";
+import { AppError } from "../../utils/AppError";
+import { changePasswordSchema, updateProfileSchema } from "./profile.schemas";
+import { changePassword, getProfile, updateProfile, uploadProfilePicture } from "./profile.service";
+
+export async function getProfileController(request: Request, response: Response) {
+  const profile = await getProfile(request.user!.id);
+  return response.json(successResponse({ profile }));
+}
+
+export async function updateProfileController(request: Request, response: Response) {
+  const input = updateProfileSchema.parse(request.body);
+  const profile = await updateProfile(request.user!.id, input);
+  return response.json(successResponse({ profile }));
+}
+
+export async function changePasswordController(request: Request, response: Response) {
+  const input = changePasswordSchema.parse(request.body);
+  await changePassword(request.user!.id, input);
+  return response.json(successResponse({ message: "Password changed successfully." }));
+}
+
+export async function uploadProfilePictureController(request: Request, response: Response) {
+  if (!request.file) throw new AppError("Upload a PNG, JPG, WEBP, or GIF image.", 400);
+  const result = await uploadProfilePicture(request.user!.id, request.file.filename);
+  return response.json(successResponse(result));
+}
