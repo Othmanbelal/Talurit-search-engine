@@ -40,7 +40,7 @@ export function QrScannerModal({ canMove = true, canWrite = true, onClose, onMov
       // TRY_HARDER improves detection for codes that are partially obscured or off-angle.
       // 150ms scan interval is fast enough for real-time use without hammering the CPU.
       const hints = new Map<DecodeHintType, unknown>([[DecodeHintType.TRY_HARDER, true]]);
-      const reader = new BrowserQRCodeReader(hints, 150);
+      const reader = new BrowserQRCodeReader(hints, { timeBetweenDecodingAttempts: 150 });
       // Request 720p so there are enough pixels to resolve small QR codes.
       // facingMode ideal "environment" prefers rear camera on mobile, falls back to webcam on desktop.
       const constraints: MediaStreamConstraints = {
