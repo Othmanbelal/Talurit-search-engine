@@ -94,8 +94,8 @@ export function QrScannerModal({ canMove = true, canWrite = true, onClose, onMov
   }
 
   return (
-    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
-      <section className="flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-xl border border-line bg-slate-950 shadow-2xl">
+    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 backdrop-blur-sm sm:p-4">
+      <section className="flex h-full w-full flex-col overflow-hidden bg-slate-950 shadow-2xl sm:h-auto sm:max-h-[92vh] sm:max-w-3xl sm:rounded-xl sm:border sm:border-line">
         <header className="flex items-start justify-between gap-4 border-b border-line p-5">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">QR scanner</p>
