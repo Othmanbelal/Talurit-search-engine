@@ -43,7 +43,7 @@ export function WarehouseCard({
 
       <h2 className="mt-5 text-xl font-semibold text-white">{warehouse.name}</h2>
       <p className="mt-2 min-h-10 text-sm text-slate-400">{warehouse.description || "No description recorded."}</p>
-      <div className="mt-4 grid grid-cols-3 gap-2 text-sm">
+      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-sm">
         <Metric icon={<Boxes size={14} />} label="Shelves" value={warehouse.counts.shelves} />
         <Metric label="Slots" value={warehouse.counts.slots} />
         <Metric label="Assigned" value={warehouse.counts.assignments} />

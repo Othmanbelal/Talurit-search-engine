@@ -85,7 +85,7 @@ export function StockRowMovementModal({
 
 function ModeTabs({ mode, onChange }: { mode: "take" | "use_in"; onChange: (mode: "take" | "use_in") => void }) {
   return (
-    <div className="grid grid-cols-2 gap-2">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
       {(["take", "use_in"] as const).map((option) => (
         <button className={`rounded-md border px-3 py-2 text-sm font-semibold ${mode === option ? "border-accent bg-accent/15 text-accent" : "border-line text-slate-300"}`} key={option} onClick={() => onChange(option)} type="button">
           {option === "take" ? "Take" : "Use in"}
