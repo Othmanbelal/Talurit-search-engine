@@ -27,7 +27,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 4000
-      CLIENT_URL: http://localhost:5173
+      CLIENT_URL: ${CLIENT_URL:-http://localhost:5173}
       APP_PUBLIC_URL: ${APP_PUBLIC_URL:-http://localhost:5173}
       DATABASE_URL: postgresql://tool_user:tool_password@postgres:5432/tool_inventory
       SESSION_SECRET: change_me_long_random_secret
