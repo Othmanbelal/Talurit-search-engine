@@ -370,6 +370,15 @@ Avoid:
 - A warehouse slot may show the assigned row's existing placement and FACK, but must not rewrite those fields.
 - Inventory rows with an active warehouse slot assignment should expose a 3D action that opens and focuses the assigned warehouse slot.
 
+## Local Network Hosting Rules
+
+- The application may be hosted fully on a local server/workstation with Docker Compose.
+- Local network hosting uses local PostgreSQL, local backend, and local frontend containers.
+- Users on the same network access the app through the host machine LAN IP and port 5173.
+- Supabase database data can be copied into local PostgreSQL with `scripts/pull-supabase-to-local.ps1`.
+- The Supabase database URL is a one-time migration secret and must not be committed.
+- Supabase Storage media references need a separate storage migration before Supabase can be shut down completely.
+
 ## Phase Completion Format
 
 At the end of each phase, report:

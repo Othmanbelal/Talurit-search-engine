@@ -1315,6 +1315,25 @@ Verification:
 - npm run lint passed.
 - npm run build passed.
 
+## Local Network Hosting Preparation - Completed
+
+Completed:
+- Added a local-network hosting runbook to README.
+- Added `scripts/pull-supabase-to-local.ps1` for copying Supabase PostgreSQL data into local Docker PostgreSQL.
+- Added root command `npm run db:pull:supabase`.
+- Docker Compose now reads `SESSION_SECRET`, `COOKIE_NAME`, and `SESSION_DAYS` from `.env`.
+- Documented that the Supabase database URL is a one-time migration secret and must not be committed.
+- Documented that Supabase Storage media needs a separate migration if the app must become fully offline.
+
+Remaining:
+- Actual Supabase-to-local data pull requires the real Supabase database URL in the local shell as `SUPABASE_DATABASE_URL`.
+
+Verification:
+- PowerShell script syntax check passed.
+- npm run check:lines passed.
+- npm run lint passed.
+- npm run build passed, with existing Vite bundle-size warnings.
+
 ## Known Risks
 
 - Excel columns vary between sheets.

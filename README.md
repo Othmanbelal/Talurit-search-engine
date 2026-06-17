@@ -98,6 +98,83 @@ The production compose file includes:
 - `server`
 - `client`
 
+## Local Network Hosting
+
+Use this mode when the application should run only inside the company/local network.
+
+Architecture:
+
+```text
+Local server or workstation
+-> Docker PostgreSQL
+-> Docker Express backend
+-> Docker Nginx/React frontend
+-> users open http://SERVER_LAN_IP:5173
+```
+
+1. Find the LAN IP address of the machine that will host the app:
+
+   ```powershell
+   ipconfig
+   ```
+
+2. Set `.env` to the local address, replacing the IP with the host machine IP:
+
+   ```env
+   CLIENT_URL=http://192.168.1.50:5173
+   APP_PUBLIC_URL=http://192.168.1.50:5173
+   DATABASE_URL=postgresql://tool_user:tool_password@localhost:5432/tool_inventory
+   ```
+
+3. Start the local stack:
+
+   ```powershell
+   docker compose up -d --build
+   ```
+
+4. Open the app:
+
+   ```text
+   http://192.168.1.50:5173
+   ```
+
+5. If other computers cannot open it, allow inbound Windows Firewall traffic for TCP ports:
+
+   ```text
+   5173 frontend
+   4000 backend, normally only needed for diagnostics
+   ```
+
+### Pull Supabase Data Into Local PostgreSQL
+
+This replaces the local Docker database with a copy of the Supabase database. It does not change Supabase.
+
+Set the Supabase database URL only in the current PowerShell session:
+
+```powershell
+$env:SUPABASE_DATABASE_URL="postgresql://..."
+```
+
+Then run:
+
+```powershell
+npm run db:pull:supabase -- -Force
+```
+
+The script:
+
+- starts local PostgreSQL
+- stops local app containers before restore
+- backs up the existing local database into `backups/database`
+- dumps Supabase into `backups/database`
+- replaces the local Docker database with that dump
+- starts the backend and frontend again
+
+Important:
+
+- Do not put the real `SUPABASE_DATABASE_URL` in Git.
+- Uploaded pictures and QR images may still be stored in Supabase Storage if the database contains `supabase://...` media references. For a fully offline server, migrate storage files to local or company-hosted object storage before shutting down Supabase.
+
 ## File Storage
 
 Uploaded item pictures, QR images, and profile pictures use Supabase Storage in production. PostgreSQL stores only storage references; image bytes are not stored in normal database text fields, and Render/local disk is not used for production uploads.
