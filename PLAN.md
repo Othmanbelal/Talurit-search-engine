@@ -1326,7 +1326,7 @@ Completed:
 - Documented that Supabase Storage media needs a separate migration if the app must become fully offline.
 
 Remaining:
-- Actual Supabase-to-local data pull requires the real Supabase database URL in the local shell as `SUPABASE_DATABASE_URL`.
+- Actual Supabase-to-local data pull requires the real Supabase database URL as `SUPABASE_DATABASE_URL` in the local shell or ignored local `.env`.
 
 Verification:
 - PowerShell script syntax check passed.

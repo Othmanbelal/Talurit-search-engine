@@ -155,6 +155,8 @@ Set the Supabase database URL only in the current PowerShell session:
 $env:SUPABASE_DATABASE_URL="postgresql://..."
 ```
 
+Alternatively, add `SUPABASE_DATABASE_URL=postgresql://...` to your local `.env` file. The `.env` file is ignored by Git.
+
 Then run:
 
 ```powershell

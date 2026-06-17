@@ -6,10 +6,6 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-if (-not $SourceDatabaseUrl) {
-  throw "SUPABASE_DATABASE_URL is required. Set it only in your local shell, not in Git."
-}
-
 if (-not $Force) {
   throw "This replaces the local Docker database. Re-run with -Force after confirming you have the correct Supabase URL."
 }
@@ -19,6 +15,26 @@ $backupDir = Join-Path $root "backups\database"
 $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $remoteDumpName = "supabase-pull-$timestamp.dump"
 $localBackupName = "local-before-supabase-pull-$timestamp.dump"
+
+function Read-DotEnvValue {
+  param([string]$Key)
+  $envFile = Join-Path $root ".env"
+  if (-not (Test-Path $envFile)) { return $null }
+
+  $line = Get-Content $envFile | Where-Object { $_ -match "^$Key=" } | Select-Object -First 1
+  if (-not $line) { return $null }
+
+  # Split only on the first equals sign so URLs and passwords keep their content.
+  return $line.Substring($Key.Length + 1).Trim().Trim('"').Trim("'")
+}
+
+if (-not $SourceDatabaseUrl) {
+  $SourceDatabaseUrl = Read-DotEnvValue "SUPABASE_DATABASE_URL"
+}
+
+if (-not $SourceDatabaseUrl) {
+  throw "SUPABASE_DATABASE_URL is required. Set it in your local shell or local .env file. Do not commit the real value."
+}
 
 function Invoke-Step {
   param([string]$Message, [scriptblock]$Command)
