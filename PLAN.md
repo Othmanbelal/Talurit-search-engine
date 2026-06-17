@@ -1298,6 +1298,23 @@ Verification:
 - npm run lint passed.
 - npm run build passed.
 
+## Warehouse Explicit Slot Assignment - Completed
+
+Completed:
+- Warehouse shelf/map occupancy now uses explicit WarehouseSlotAssignment records instead of automatic location-code matching.
+- Slot assignment search is limited to inventory rows from tables or groups linked to the warehouse.
+- Slot assignment validates linked-table ownership before saving.
+- Slot assignment does not alter stock quantity, location, FACK, or movement history.
+- Added warehouse-specific QR lookup for assigning linked inventory rows by item QR code.
+- Slot assignment UI now supports Select from linked table and Scan item QR workflows.
+- Inventory rows with active warehouse placement now expose a 3D action in the table.
+- 3D navigation opens the warehouse and focuses/highlights the assigned pallet slot.
+
+Verification:
+- npm run check:lines passed.
+- npm run lint passed.
+- npm run build passed.
+
 ## Known Risks
 
 - Excel columns vary between sheets.

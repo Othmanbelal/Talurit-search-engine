@@ -42,6 +42,7 @@ import {
   getAssignmentByStockController,
   listSlotAssignmentsController,
   listWarehouseAssignmentsController,
+  scanInventoryRowsController,
   searchInventoryRowsController,
   unassignSlotController,
 } from "./warehouse-assignments.controller";
@@ -83,6 +84,7 @@ warehouseRoutes.delete("/:id/slots/:slotId", requireResourceAccess("warehouse", 
 // Slot assignments
 warehouseRoutes.get("/:id/assignments", asyncHandler(listWarehouseAssignmentsController));
 warehouseRoutes.get("/:id/inventory-rows", asyncHandler(searchInventoryRowsController));
+warehouseRoutes.post("/:id/inventory-rows/scan", asyncHandler(scanInventoryRowsController));
 warehouseRoutes.get("/:id/slots/:slotId/assignments", asyncHandler(listSlotAssignmentsController));
 warehouseRoutes.post("/:id/slots/:slotId/assign", requireResourceAccess("warehouse", (req) => req.params.id), asyncHandler(assignSlotController));
 warehouseRoutes.delete("/:id/assignments/:assignmentId", requireResourceAccess("warehouse", (req) => req.params.id), asyncHandler(unassignSlotController));

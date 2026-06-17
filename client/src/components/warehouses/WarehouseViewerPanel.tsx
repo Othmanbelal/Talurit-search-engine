@@ -12,12 +12,13 @@ const Warehouse3DView = lazy(() =>
 );
 
 type Props = {
+  focusSlotId?: string | null;
   onRackSelect?: (id: string) => void;
   reloadSignal?: number;
   warehouse: WarehouseLayout;
 };
 
-export function WarehouseViewerPanel({ onRackSelect, reloadSignal, warehouse }: Props) {
+export function WarehouseViewerPanel({ focusSlotId, onRackSelect, reloadSignal, warehouse }: Props) {
   const shelfView = useWarehouseShelfView(warehouse.id);
   const scene = useWarehouseSceneObjects(warehouse.id);
   const [expanded, setExpanded] = useState(false);
@@ -60,12 +61,13 @@ export function WarehouseViewerPanel({ onRackSelect, reloadSignal, warehouse }: 
     const layout = warehouse.layoutData as Record<string, unknown>;
     const baseObjects = (layout?.objects as SceneObject[] | undefined) ?? [];
     if (!shelfView.data) return layout;
-    const pallets = buildPalletObjects(shelfView.data.shelves, baseObjects);
+    const pallets = buildPalletObjects(shelfView.data.shelves, baseObjects, focusSlotId);
     return { ...layout, objects: [...baseObjects, ...pallets] };
-  }, [warehouse.layoutData, shelfView.data]);
+  }, [warehouse.layoutData, shelfView.data, focusSlotId]);
 
   // Filter objects to the selected level for the 3D view
   const filteredLayout = useMemo(() => {
+    if (focusSlotId) return mergedLayout;
     if (!showLevelTabs) return mergedLayout;
     const all = (mergedLayout.objects as SceneObject[] | undefined) ?? [];
     const filtered = all.filter((obj) => {
@@ -77,7 +79,7 @@ export function WarehouseViewerPanel({ onRackSelect, reloadSignal, warehouse }: 
       return Math.abs((obj.elevation ?? 0) - selectedElevation) < LEVEL_EPS;
     });
     return { ...mergedLayout, objects: filtered };
-  }, [mergedLayout, showLevelTabs, selectedElevation, nextElevation]);
+  }, [focusSlotId, mergedLayout, showLevelTabs, selectedElevation, nextElevation]);
 
   const occupiedCount = shelfView.data?.shelves.reduce(
     (sum, shelf) => sum + shelf.slots.filter((s) => s.items.length > 0).length,
@@ -124,6 +126,7 @@ export function WarehouseViewerPanel({ onRackSelect, reloadSignal, warehouse }: 
   const canvas3d = (
     <Suspense fallback={<div className="animate-pulse bg-white/[0.03]" style={{ height: expanded ? "calc(100vh - 52px)" : 520 }} />}>
       <Warehouse3DView
+        focusObjectId={focusSlotId ? `pallet-${focusSlotId}` : undefined}
         height={expanded ? (typeof window !== "undefined" ? window.innerHeight - 52 : 760) : 520}
         layout={filteredLayout}
         onRackClick={onRackSelect}
@@ -143,7 +146,7 @@ export function WarehouseViewerPanel({ onRackSelect, reloadSignal, warehouse }: 
   }
 
   return (
-    <section className="overflow-hidden rounded-xl border border-white/10 bg-[#060d18]">
+    <section className="overflow-hidden rounded-xl border border-white/10 bg-[#060d18]" id="warehouse-3d-view">
       {header}
       {levelTabs}
       {canvas3d}
@@ -155,7 +158,7 @@ export function WarehouseViewerPanel({ onRackSelect, reloadSignal, warehouse }: 
  * Compute synthetic euro-pallet SceneObjects for all occupied slots.
  * Uses each rack's saved position/rotation/dimensions to place pallets.
  */
-function buildPalletObjects(shelves: ShelfViewShelf[], baseObjects: SceneObject[]): SceneObject[] {
+function buildPalletObjects(shelves: ShelfViewShelf[], baseObjects: SceneObject[], focusSlotId?: string | null): SceneObject[] {
   const pallets: SceneObject[] = [];
 
   const byObject = new Map<string, ShelfViewShelf[]>();
@@ -208,7 +211,7 @@ function buildPalletObjects(shelves: ShelfViewShelf[], baseObjects: SceneObject[
           width: sectionWidth - 0.04, // 4 cm gap between adjacent pallets
           depth: slot.palletDepth - 0.04,
           height: 0.15,
-          color: "#f0a500",
+          color: slot.id === focusSlotId ? "#22c55e" : "#f0a500",
           locked: true,
         });
       }

@@ -86,7 +86,7 @@ export function WarehouseRackSlotDesigner({ availableCodes = [], existingShelves
         <div>
           <h3 className="text-lg font-semibold text-white">{object.name}</h3>
           <p className="text-sm text-slate-400">
-            {object.width} m wide · {object.height} m tall · click a slot to assign a location code
+            {object.width} m wide | {object.height} m tall | click a slot to name its physical ID
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -175,7 +175,7 @@ export function WarehouseRackSlotDesigner({ availableCodes = [], existingShelves
           </p>
           <div className="flex flex-wrap gap-3">
             <label className="block flex-1 min-w-40 text-xs font-semibold uppercase tracking-[0.1em] text-slate-400">
-              Location code
+              Slot ID / label
               <input
                 autoFocus
                 className="mt-1.5 w-full rounded-md border border-line bg-slate-950 px-3 py-2 text-sm text-white"
@@ -184,7 +184,7 @@ export function WarehouseRackSlotDesigner({ availableCodes = [], existingShelves
                 placeholder="e.g. P10A:1"
                 value={selectedSlot.code}
               />
-              {availableCodes.length > 0 ? <span className="mt-1 block text-[10px] text-slate-500">Suggestions from linked inventory</span> : null}
+              {availableCodes.length > 0 ? <span className="mt-1 block text-[10px] text-slate-500">Linked inventory placement suggestions</span> : null}
             </label>
             <label className="block w-28 text-xs font-semibold uppercase tracking-[0.1em] text-slate-400">
               FACK
@@ -208,7 +208,7 @@ export function WarehouseRackSlotDesigner({ availableCodes = [], existingShelves
         </div>
       ) : (
         <p className="rounded-md border border-line bg-white/[0.02] p-3 text-sm text-slate-400">
-          Click a slot above to assign its inventory location code.
+          Click a slot above to name its physical ID. Assign items from the slot map using linked inventory or QR scanning.
         </p>
       )}
 

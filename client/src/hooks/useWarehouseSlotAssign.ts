@@ -4,6 +4,7 @@ import {
   assignSlotRequest,
   listSlotAssignmentsRequest,
   listWarehouseAssignmentsRequest,
+  scanWarehouseInventoryRowsRequest,
   searchInventoryRowsRequest,
   unassignSlotRequest,
 } from "../services/warehouse.service";
@@ -64,6 +65,20 @@ export function useSlotAssignPanel(warehouseId: string, slotId: string | null) {
     }
   }, [warehouseId]);
 
+  const scan = useCallback(async (code: string) => {
+    try {
+      const result = await scanWarehouseInventoryRowsRequest(warehouseId, code);
+      setSearchRows(result.rows);
+      if (!result.matched) setError("No unassigned linked inventory row matches this QR code.");
+      else setError(null);
+      return result;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to scan QR code.";
+      setError(message);
+      throw err;
+    }
+  }, [warehouseId]);
+
   useEffect(() => {
     void loadAssignments();
     void search("");
@@ -98,5 +113,5 @@ export function useSlotAssignPanel(warehouseId: string, slotId: string | null) {
     }
   }
 
-  return { assignments, searchRows, searchQuery, isLoading, isSaving, error, search, assign, unassign };
+  return { assignments, searchRows, searchQuery, isLoading, isSaving, error, search, scan, assign, unassign };
 }

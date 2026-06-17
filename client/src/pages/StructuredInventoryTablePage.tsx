@@ -174,6 +174,11 @@ export function StructuredInventoryTablePage() {
             onMove={canTakeReturn ? setMovingRow : undefined}
             onOpen={setSelectedRow}
             onRestore={canManageInventory ? (row) => void inventory.restoreRow(row.id) : undefined}
+            onView3d={(row) => {
+              const placement = row.warehousePlacement;
+              if (!placement) return;
+              navigate(`/warehouses/${placement.warehouseId}?view=3d&slot=${placement.slotId}&stock=${row.id}`);
+            }}
           />
           <TablePagination rows={inventory.rows} onPage={(page) => inventory.loadRows(search, inventory.archived, filters, page)} />
         </>

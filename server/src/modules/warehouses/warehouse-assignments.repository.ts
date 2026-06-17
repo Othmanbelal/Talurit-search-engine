@@ -18,6 +18,7 @@ const assignmentInclude = {
         select: {
           id: true,
           name: true,
+          identifiers: { select: { type: true, value: true } },
           manufacturer: { select: { id: true, name: true } },
         },
       },
@@ -25,7 +26,7 @@ const assignmentInclude = {
       inventoryTable: { select: { id: true, name: true } },
     },
   },
-  assignedByUser: { select: { id: true, email: true } },
+  assignedByUser: { select: { id: true, name: true, email: true } },
 } satisfies Prisma.WarehouseSlotAssignmentInclude;
 
 export type AssignmentRecord = Prisma.WarehouseSlotAssignmentGetPayload<{ include: typeof assignmentInclude }>;
@@ -74,11 +75,15 @@ export function countActiveSlotAssignments(slotId: string) {
   return prisma.warehouseSlotAssignment.count({ where: { slotId, unassignedAt: null } });
 }
 
-export function searchAssignableRows(warehouseId: string, search: string, tableId: string | undefined, limit: number) {
+export function searchAssignableRows(tableIds: string[], search: string, tableId: string | undefined, limit: number) {
+  if (tableIds.length === 0) return Promise.resolve([]);
+  const allowedTableIds = tableId ? (tableIds.includes(tableId) ? [tableId] : []) : tableIds;
+  if (allowedTableIds.length === 0) return Promise.resolve([]);
   const searchWhere: Prisma.StockBalanceWhereInput = search.trim() ? {
     OR: [
       { item: { name: { contains: search, mode: "insensitive" } } },
       { item: { manufacturer: { is: { name: { contains: search, mode: "insensitive" } } } } },
+      { item: { identifiers: { some: { value: { contains: search, mode: "insensitive" } } } } },
       { location: { code: { contains: search, mode: "insensitive" } } },
     ],
   } : {};
@@ -87,7 +92,7 @@ export function searchAssignableRows(warehouseId: string, search: string, tableI
     archivedAt: null,
     status: "active",
     warehouseSlotAssignments: { none: { unassignedAt: null } },
-    ...(tableId ? { inventoryTableId: tableId } : {}),
+    inventoryTableId: { in: allowedTableIds },
     ...searchWhere,
   };
 
@@ -98,6 +103,7 @@ export function searchAssignableRows(warehouseId: string, search: string, tableI
         select: {
           id: true,
           name: true,
+          identifiers: { select: { type: true, value: true } },
           manufacturer: { select: { id: true, name: true } },
         },
       },
@@ -105,6 +111,39 @@ export function searchAssignableRows(warehouseId: string, search: string, tableI
       inventoryTable: { select: { id: true, name: true } },
     },
     orderBy: { item: { name: "asc" } },
+    take: limit,
+  });
+}
+
+export function findAssignableRowsByQrCandidates(tableIds: string[], candidates: string[], limit: number) {
+  if (tableIds.length === 0 || candidates.length === 0) return Promise.resolve([]);
+  return prisma.stockBalance.findMany({
+    where: {
+      archivedAt: null,
+      status: "active",
+      inventoryTableId: { in: tableIds },
+      warehouseSlotAssignments: { none: { unassignedAt: null } },
+      item: {
+        OR: [
+          { qrCodeId: { in: candidates } },
+          { id: { in: candidates } },
+          { identifiers: { some: { value: { in: candidates } } } },
+        ],
+      },
+    },
+    include: {
+      item: {
+        select: {
+          id: true,
+          name: true,
+          identifiers: { select: { type: true, value: true } },
+          manufacturer: { select: { id: true, name: true } },
+        },
+      },
+      location: { select: { id: true, code: true } },
+      inventoryTable: { select: { id: true, name: true } },
+    },
+    orderBy: [{ inventoryTable: { name: "asc" } }, { item: { name: "asc" } }],
     take: limit,
   });
 }

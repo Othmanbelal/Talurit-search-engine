@@ -26,13 +26,14 @@ import { hexToColor3 } from "../../modules/warehouse-designer/engine/babylonCore
 import type { ProjectData, Room, SceneObject } from "../../modules/warehouse-designer/types";
 
 type Props = {
+  focusObjectId?: string;
   height?: number;
   layout: Record<string, unknown> | null | undefined;
   onRackClick?: (id: string) => void;
   rackIds?: Set<string>;
 };
 
-export function Warehouse3DView({ height = 520, layout, onRackClick, rackIds }: Props) {
+export function Warehouse3DView({ focusObjectId, height = 520, layout, onRackClick, rackIds }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const engineRef = useRef<Engine | null>(null);
   const onRackClickRef = useRef(onRackClick);
@@ -85,6 +86,7 @@ export function Warehouse3DView({ height = 520, layout, onRackClick, rackIds }: 
 
     // Override the designer's light-beige room materials with dark industrial theme
     applyDarkTheme(scene);
+    if (focusObjectId) focusObject(scene, camera, focusObjectId);
 
     // Click: distinguish click from camera drag
     let downX = 0, downY = 0;
@@ -107,7 +109,7 @@ export function Warehouse3DView({ height = 520, layout, onRackClick, rackIds }: 
       engine.dispose();
       engineRef.current = null;
     };
-  }, [layout]);
+  }, [focusObjectId, layout]);
 
   return (
     <canvas
@@ -115,6 +117,25 @@ export function Warehouse3DView({ height = 520, layout, onRackClick, rackIds }: 
       style={{ width: "100%", height, display: "block", borderRadius: "0.75rem", outline: "none" }}
     />
   );
+}
+
+function focusObject(scene: Scene, camera: ArcRotateCamera, objectId: string) {
+  const meshes = scene.meshes.filter((mesh) => mesh.metadata?.objectId === objectId);
+  if (meshes.length === 0) return;
+  const center = meshes.reduce((sum, mesh) => sum.add(mesh.getBoundingInfo().boundingBox.centerWorld), Vector3.Zero()).scale(1 / meshes.length);
+  camera.setTarget(center);
+  camera.radius = Math.max(2.2, Math.min(camera.radius, 4.5));
+  for (const mesh of meshes) {
+    if (mesh.material instanceof StandardMaterial) {
+      const material = mesh.material.clone(`${mesh.material.name}-focus`);
+      material.emissiveColor = new Color3(0.15, 0.55, 0.25);
+      mesh.material = material;
+    } else if (mesh.material instanceof PBRMaterial) {
+      const material = mesh.material.clone(`${mesh.material.name}-focus`);
+      material.emissiveColor = new Color3(0.12, 0.48, 0.22);
+      mesh.material = material;
+    }
+  }
 }
 
 /** Override the designer's light beige room materials for a dark premium look. */

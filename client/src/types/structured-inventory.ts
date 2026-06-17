@@ -92,6 +92,15 @@ export type StructuredStockRow = {
   archivedAt?: string | null;
   usageTags: { cardId: string; cardName: string; quantity: number }[];
   activityTags?: ActivityTag[];
+  warehousePlacement?: {
+    assignmentId: string;
+    warehouseId: string;
+    warehouseName: string;
+    slotId: string;
+    slotCode: string;
+    slotCompartment: string;
+    slotDisplayName?: string | null;
+  } | null;
   item: {
     id: string;
     name: string;

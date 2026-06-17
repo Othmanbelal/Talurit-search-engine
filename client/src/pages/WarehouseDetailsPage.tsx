@@ -1,7 +1,7 @@
 import type React from "react";
 import { ArrowLeft, Archive, Boxes, Link2, Map, Pencil, RotateCcw, Trash2, Warehouse } from "lucide-react";
-import { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { InlineManagerStrip } from "../components/InlineManagerStrip";
 import { WarehouseDetailsPanel } from "../components/warehouses/WarehouseDetailsPanel";
 import { WarehouseInventoryLinksPanel } from "../components/warehouses/WarehouseInventoryLinksPanel";
@@ -18,6 +18,7 @@ type Tab = "shelves" | "map" | "inventory";
 export function WarehouseDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   useAuth();
   const warehouse = useWarehouse(id);
   const [activeTab, setActiveTab] = useState<Tab>("shelves");
@@ -28,6 +29,13 @@ export function WarehouseDetailsPage() {
   const canEdit = canManageWarehouses;
   const canArchive = canManageWarehouses;
   const canDelete = canManageWarehouses;
+  const focusSlotId = searchParams.get("slot");
+
+  useEffect(() => {
+    if (!focusSlotId) return;
+    const timer = setTimeout(() => document.getElementById("warehouse-3d-view")?.scrollIntoView({ behavior: "smooth", block: "center" }), 100);
+    return () => clearTimeout(timer);
+  }, [focusSlotId]);
 
   function handleTabChange(tab: Tab) {
     if (tab === "map") setMapKey((k) => k + 1);
@@ -106,10 +114,11 @@ export function WarehouseDetailsPage() {
               warehouse={warehouse.warehouse}
             />
           ) : null}
-          {activeTab === "map" ? <WarehouseSlotMapPanel key={mapKey} warehouseId={warehouse.warehouse.id} /> : null}
+          {activeTab === "map" ? <WarehouseSlotMapPanel canEdit={canEdit} key={mapKey} warehouseId={warehouse.warehouse.id} /> : null}
           {activeTab === "inventory" ? <WarehouseInventoryLinksPanel canEdit={canEdit} warehouseId={warehouse.warehouse.id} /> : null}
           <WarehouseViewerPanel
             onRackSelect={canEdit ? handleRackSelect : undefined}
+            focusSlotId={focusSlotId}
             reloadSignal={reloadSignal}
             warehouse={warehouse.warehouse}
           />

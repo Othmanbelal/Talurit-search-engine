@@ -197,6 +197,7 @@ export type WarehouseSlotAssignment = {
     inventoryTable?: { id: string; name: string } | null;
   };
   assignedByUserId?: string | null;
+  assignedByUserName?: string | null;
 };
 
 export type AssignableInventoryRow = {
@@ -235,6 +236,7 @@ export type ShelfViewItem = {
   quantity: number;
   unit: string;
   compartment?: string | null;
+  locationCode?: string | null;
   tableId: string;
   tableName: string;
 };

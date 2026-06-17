@@ -189,7 +189,7 @@ function ViewBody({
             </div>
             <Link
               className="inline-flex shrink-0 items-center gap-2 rounded-md border border-accent px-3 py-2 text-sm font-semibold text-accent hover:bg-accent hover:text-slate-950"
-              to={`/warehouses/${warehousePlacement.warehouseId}`}
+              to={`/warehouses/${warehousePlacement.warehouseId}?view=3d&slot=${warehousePlacement.slotId}&stock=${row.id}`}
             >
               <Warehouse size={15} /> View in warehouse
             </Link>

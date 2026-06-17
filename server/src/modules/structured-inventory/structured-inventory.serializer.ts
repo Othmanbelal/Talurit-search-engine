@@ -43,9 +43,15 @@ type TakenItemRecord = Prisma.TakenStockItemGetPayload<{}> & {
   createdByUser?: { name: string } | null;
 };
 
+type WarehousePlacementRecord = Prisma.WarehouseSlotAssignmentGetPayload<{}> & {
+  warehouse: { id: string; name: string };
+  slot: { id: string; code: string; compartment: string; displayName: string | null };
+};
+
 type StockRowRecord = Omit<BaseStockRowRecord, "usedInAssignments"> & {
   usedInAssignments: UsedInAssignmentRecord[];
   takenItems?: TakenItemRecord[];
+  warehouseSlotAssignments?: WarehousePlacementRecord[];
 };
 
 export function serializeGroup(group: GroupRecord) {
@@ -114,6 +120,7 @@ export function serializeStockRow(row: StockRowRecord) {
     archivedAt: row.archivedAt,
     usageTags: usageTags(row),
     activityTags: activityTags(row),
+    warehousePlacement: warehousePlacement(row),
     item: {
       id: row.item.id,
       name: row.item.name,
@@ -143,6 +150,20 @@ export function serializeStockRow(row: StockRowRecord) {
       : null,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
+  };
+}
+
+function warehousePlacement(row: StockRowRecord) {
+  const assignment = row.warehouseSlotAssignments?.[0];
+  if (!assignment) return null;
+  return {
+    assignmentId: assignment.id,
+    warehouseId: assignment.warehouse.id,
+    warehouseName: assignment.warehouse.name,
+    slotId: assignment.slot.id,
+    slotCode: assignment.slot.code,
+    slotCompartment: assignment.slot.compartment,
+    slotDisplayName: assignment.slot.displayName,
   };
 }
 

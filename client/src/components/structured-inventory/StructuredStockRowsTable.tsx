@@ -1,5 +1,5 @@
 import type React from "react";
-import { Archive, ChevronRight, Eye, PackageMinus, RotateCcw, Trash2 } from "lucide-react";
+import { Archive, ChevronRight, Eye, PackageMinus, RotateCcw, Trash2, Warehouse } from "lucide-react";
 import type { StructuredInventoryTable, StructuredStockRow, TableColumnSettings } from "../../types/structured-inventory";
 
 export type StockColumnKey = string;
@@ -23,6 +23,7 @@ export function StructuredStockRowsTable({
   onMove,
   onOpen,
   onRestore,
+  onView3d,
   rows,
   table,
   highlightedRowId,
@@ -33,6 +34,7 @@ export function StructuredStockRowsTable({
   onMove?: (row: StructuredStockRow) => void;
   onOpen: (row: StructuredStockRow) => void;
   onRestore?: (row: StructuredStockRow) => void;
+  onView3d?: (row: StructuredStockRow) => void;
   rows: StructuredStockRow[];
   table: StructuredInventoryTable | null;
 }) {
@@ -99,7 +101,7 @@ export function StructuredStockRowsTable({
                   {visibleColumns.map((column) => (
                     <Cell key={column} strong={column === "item"}>{renderStockCell(row, column)}</Cell>
                   ))}
-                  <Cell><RowActions row={row} onArchive={onArchive} onDelete={onDelete} onMove={onMove} onOpen={onOpen} onRestore={onRestore} /></Cell>
+                  <Cell><RowActions row={row} onArchive={onArchive} onDelete={onDelete} onMove={onMove} onOpen={onOpen} onRestore={onRestore} onView3d={onView3d} /></Cell>
                 </tr>
               ))}
             </tbody>
@@ -110,23 +112,33 @@ export function StructuredStockRowsTable({
   );
 }
 
-function RowActions({ onArchive, onDelete, onMove, onOpen, onRestore, row }: {
+function RowActions({ onArchive, onDelete, onMove, onOpen, onRestore, onView3d, row }: {
   onArchive?: (row: StructuredStockRow) => void;
   onDelete?: (row: StructuredStockRow) => void;
   onMove?: (row: StructuredStockRow) => void;
   onOpen: (row: StructuredStockRow) => void;
   onRestore?: (row: StructuredStockRow) => void;
+  onView3d?: (row: StructuredStockRow) => void;
   row: StructuredStockRow;
 }) {
   return (
     <div className="flex gap-2">
       <IconButton label="Open" onClick={() => onOpen(row)}><Eye size={15} /></IconButton>
       {onMove ? <IconButton label="Take out / Use in" onClick={() => onMove(row)}><PackageMinus size={15} /></IconButton> : null}
+      {onView3d && row.warehousePlacement ? <TextIconButton label="3D" onClick={() => onView3d(row)}><Warehouse size={14} /></TextIconButton> : null}
       {row.status === "archived"
         ? (onRestore ? <IconButton label="Restore" onClick={() => onRestore(row)}><RotateCcw size={15} /></IconButton> : null)
         : (onArchive ? <IconButton label="Archive" onClick={() => onArchive(row)}><Archive size={15} /></IconButton> : null)}
       {onDelete ? <IconButton danger label="Remove" onClick={() => onDelete(row)}><Trash2 size={15} /></IconButton> : null}
     </div>
+  );
+}
+
+function TextIconButton({ children, label, onClick }: { children: React.ReactNode; label: string; onClick: () => void }) {
+  return (
+    <button className="inline-flex items-center gap-1.5 rounded-md border border-line bg-white/[0.04] px-2.5 py-2 text-xs font-semibold text-slate-300 hover:border-accent hover:text-accent" onClick={onClick} title={label} type="button">
+      {children} {label}
+    </button>
   );
 }
 

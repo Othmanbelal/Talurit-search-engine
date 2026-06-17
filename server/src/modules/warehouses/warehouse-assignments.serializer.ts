@@ -19,6 +19,7 @@ export function serializeAssignment(assignment: AssignmentRecord) {
       id: assignment.stockBalance.id,
       itemName: assignment.stockBalance.item.name,
       manufacturer: assignment.stockBalance.item.manufacturer?.name ?? null,
+      articleNumber: assignment.stockBalance.item.identifiers.find((identifier) => identifier.type === "manufacturer_article")?.value ?? null,
       quantity: Number(assignment.stockBalance.quantity),
       unit: assignment.stockBalance.unit,
       location: assignment.stockBalance.location,
@@ -26,5 +27,6 @@ export function serializeAssignment(assignment: AssignmentRecord) {
       inventoryTable: assignment.stockBalance.inventoryTable,
     },
     assignedByUserId: assignment.assignedByUserId,
+    assignedByUserName: assignment.assignedByUser?.name ?? null,
   };
 }

@@ -10,21 +10,22 @@ type Props = {
 
 export function WarehouseSlotCard({ items, isSelected, onSelect, slot }: Props) {
   const occupied = items.length > 0;
-  const hasLocation = slot.locationAssigned;
+  const hasLabel = slot.locationAssigned;
+  const label = slot.displayName ?? slot.code;
 
   return (
     <button
-      className={slotClass(isSelected, occupied, hasLocation)}
+      className={slotClass(isSelected, occupied, hasLabel)}
       onClick={onSelect}
-      title={slot.displayName ?? slot.code}
+      title={label}
       type="button"
     >
       <div className="flex items-center justify-between gap-1">
         {occupied
           ? <Package className="shrink-0 text-emerald-300" size={13} />
           : <PackageX className="shrink-0 text-slate-500" size={13} />}
-        <span className={`truncate text-[11px] font-semibold ${occupied ? "text-emerald-200" : hasLocation ? "text-slate-200" : "text-slate-500"}`}>
-          {hasLocation ? slot.code : "No ID"}
+        <span className={`truncate text-[11px] font-semibold ${occupied ? "text-emerald-200" : hasLabel ? "text-slate-200" : "text-slate-500"}`}>
+          {hasLabel ? label : "No ID"}
         </span>
       </div>
       {slot.slotIndex !== undefined && slot.slotIndex !== null ? (

@@ -361,6 +361,15 @@ Avoid:
 - Active taken-out items should display quantity and the user who took the item.
 - Returned movements must disappear from active row tags because their returnedAt value is set.
 
+## Warehouse Assignment Rules
+
+- Warehouse slot assignment is a visual mapping layer only.
+- Assigning an inventory row to a warehouse slot must not change quantity, placement, FACK, or stock movement history.
+- Slot assignments must link to an existing StockBalance row from a table or group linked to the warehouse.
+- Slot assignment should support selecting from linked inventory rows and scanning an item QR code.
+- A warehouse slot may show the assigned row's existing placement and FACK, but must not rewrite those fields.
+- Inventory rows with an active warehouse slot assignment should expose a 3D action that opens and focuses the assigned warehouse slot.
+
 ## Phase Completion Format
 
 At the end of each phase, report:

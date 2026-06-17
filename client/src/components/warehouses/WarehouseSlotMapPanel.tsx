@@ -1,11 +1,13 @@
-import { ChevronRight, Link2Off, Map as MapIcon, Package, X } from "lucide-react";
+import { ChevronRight, Link2Off, Map as MapIcon, Package, Settings2, X } from "lucide-react";
 import { Modal } from "../Modal";
 import { useState } from "react";
 import { useWarehouseShelfView } from "../../hooks/useWarehouseShelfView";
 import type { ShelfViewItem, ShelfViewShelf, ShelfViewSlot } from "../../types/warehouse";
 import { WarehouseSlotCard } from "./WarehouseSlotCard";
+import { WarehouseSlotAssignPanel } from "./WarehouseSlotAssignPanel";
 
 type Props = {
+  canEdit?: boolean;
   warehouseId: string;
 };
 
@@ -17,9 +19,10 @@ type RackGroup = {
   occupiedSlots: number;
 };
 
-export function WarehouseSlotMapPanel({ warehouseId }: Props) {
-  const { data, isLoading, error } = useWarehouseShelfView(warehouseId);
+export function WarehouseSlotMapPanel({ canEdit = false, warehouseId }: Props) {
+  const { data, isLoading, error, reload } = useWarehouseShelfView(warehouseId);
   const [selectedSlot, setSelectedSlot] = useState<ShelfViewSlot | null>(null);
+  const [assignSlot, setAssignSlot] = useState<ShelfViewSlot | null>(null);
 
   if (isLoading) return <div className="h-40 animate-pulse rounded-lg border border-line bg-white/5" />;
 
@@ -68,8 +71,9 @@ export function WarehouseSlotMapPanel({ warehouseId }: Props) {
       </div>
 
       {selectedSlot ? (
-        <SlotDetailPanel onClose={() => setSelectedSlot(null)} slot={selectedSlot} />
+        <SlotDetailPanel canEdit={canEdit} onAssign={() => setAssignSlot(selectedSlot)} onClose={() => setSelectedSlot(null)} slot={selectedSlot} />
       ) : null}
+      {assignSlot ? <WarehouseSlotAssignPanel canEdit={canEdit} onClose={() => { setAssignSlot(null); void reload(); }} slot={assignSlot} warehouseId={warehouseId} /> : null}
     </section>
   );
 }
@@ -144,7 +148,7 @@ function ShelfLevelSection({ onSelect, selectedSlot, shelf }: {
   );
 }
 
-function SlotDetailPanel({ onClose, slot }: { onClose: () => void; slot: ShelfViewSlot }) {
+function SlotDetailPanel({ canEdit, onAssign, onClose, slot }: { canEdit: boolean; onAssign: () => void; onClose: () => void; slot: ShelfViewSlot }) {
   const label = slot.displayName ?? slot.code ?? "Unlabeled slot";
   const fack = slot.compartment ? ` / FACK ${slot.compartment}` : "";
 
@@ -155,18 +159,23 @@ function SlotDetailPanel({ onClose, slot }: { onClose: () => void; slot: ShelfVi
           <h3 className="font-semibold text-white">{label}{fack}</h3>
           <p className="text-xs text-slate-400">{slot.items.length} item{slot.items.length !== 1 ? "s" : ""} at this slot</p>
         </div>
-        <button className="rounded-md p-1.5 text-slate-400 hover:bg-white/5 hover:text-white" onClick={onClose} type="button">
-          <X size={18} />
-        </button>
+        <div className="flex items-center gap-2">
+          {canEdit ? (
+            <button className="inline-flex items-center gap-2 rounded-md border border-accent/40 px-3 py-2 text-sm font-semibold text-accent hover:border-accent" onClick={onAssign} type="button">
+              <Settings2 size={15} /> Manage assignment
+            </button>
+          ) : null}
+          <button className="rounded-md p-1.5 text-slate-400 hover:bg-white/5 hover:text-white" onClick={onClose} type="button">
+            <X size={18} />
+          </button>
+        </div>
       </div>
       <div className="flex-1 overflow-y-auto p-4">
         {slot.items.length === 0 ? (
           <div className="rounded-lg border border-dashed border-line p-6 text-center">
             <Package className="mx-auto mb-2 text-slate-600" size={24} />
             <p className="text-sm text-slate-500">
-              {slot.locationAssigned
-                ? "No items from linked tables found at this location."
-                : "This slot has no location ID assigned yet."}
+              No inventory row is assigned to this warehouse slot.
             </p>
           </div>
         ) : (
@@ -189,6 +198,7 @@ function ItemCard({ item }: { item: ShelfViewItem }) {
         <span className="rounded-full border border-line px-2 py-0.5 text-[11px] text-slate-400">{item.tableName}</span>
       </div>
       {item.compartment ? <p className="mt-1 text-xs text-slate-500">FACK {item.compartment}</p> : null}
+      {item.locationCode ? <p className="mt-1 text-xs text-slate-500">Placement {item.locationCode}</p> : null}
     </div>
   );
 }

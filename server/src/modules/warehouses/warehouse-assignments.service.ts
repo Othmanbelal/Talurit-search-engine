@@ -7,13 +7,15 @@ import {
   findActiveAssignmentsForSlot,
   findActiveAssignmentsForWarehouse,
   findAssignment,
+  findAssignableRowsByQrCandidates,
   findSlotForAssignment,
   findStockBalanceItemId,
   searchAssignableRows,
 } from "./warehouse-assignments.repository";
 import { serializeAssignment } from "./warehouse-assignments.serializer";
 import { getWarehouse } from "./warehouse.service";
-import type { AssignSlotInput, SearchInventoryRowsQuery } from "./warehouse.schemas";
+import { findLinkedTableIds } from "./warehouse-shelf-view.repository";
+import type { AssignSlotInput, ScanInventoryRowsInput, SearchInventoryRowsQuery } from "./warehouse.schemas";
 
 export async function listWarehouseAssignments(warehouseId: string) {
   await getWarehouse(warehouseId);
@@ -43,18 +45,34 @@ export async function getAssignmentByStock(stockBalanceId: string) {
 
 export async function searchAssignableInventoryRows(warehouseId: string, query: SearchInventoryRowsQuery) {
   await getWarehouse(warehouseId);
-  const rows = await searchAssignableRows(warehouseId, query.search ?? "", query.tableId, query.limit);
-  return rows.map((row) => ({
+  const tableIds = await findLinkedTableIds(warehouseId);
+  const rows = await searchAssignableRows(tableIds, query.search ?? "", query.tableId, query.limit);
+  return rows.map(serializeAssignableRow);
+}
+
+export async function scanAssignableInventoryRows(warehouseId: string, input: ScanInventoryRowsInput) {
+  await getWarehouse(warehouseId);
+  const tableIds = await findLinkedTableIds(warehouseId);
+  const rows = await findAssignableRowsByQrCandidates(tableIds, qrCandidates(input.code), input.limit);
+  return {
+    matched: rows.length > 0,
+    rows: rows.map(serializeAssignableRow),
+  };
+}
+
+function serializeAssignableRow(row: Awaited<ReturnType<typeof searchAssignableRows>>[number]) {
+  return {
     id: row.id,
     itemName: row.item.name,
     manufacturer: row.item.manufacturer?.name ?? null,
+    articleNumber: row.item.identifiers.find((identifier) => identifier.type === "manufacturer_article")?.value ?? null,
     quantity: Number(row.quantity),
     unit: row.unit,
     locationCode: row.location?.code ?? null,
     compartment: row.compartment,
     tableId: row.inventoryTableId,
     tableName: row.inventoryTable?.name ?? null,
-  }));
+  };
 }
 
 export async function assignSlot(warehouseId: string, slotId: string, input: AssignSlotInput, userId?: string) {
@@ -65,13 +83,17 @@ export async function assignSlot(warehouseId: string, slotId: string, input: Ass
   if (!slot.isActive) throw new AppError("Slot is inactive.", 409);
 
   const activeCount = await countActiveSlotAssignments(slotId);
-  if (activeCount >= slot.maxAssignments) throw new AppError("Slot is already at maximum capacity.", 409);
+  if (activeCount >= 1 || activeCount >= slot.maxAssignments) throw new AppError("Slot is already assigned.", 409);
 
   const existing = await findActiveAssignmentByStock(input.stockBalanceId);
   if (existing) throw new AppError("This inventory row is already assigned to a warehouse slot.", 409);
 
   const stockRow = await findStockBalanceItemId(input.stockBalanceId);
   if (!stockRow) throw new AppError("Inventory row not found.", 404);
+  const tableIds = await findLinkedTableIds(warehouseId);
+  if (!stockRow.inventoryTableId || !tableIds.includes(stockRow.inventoryTableId)) {
+    throw new AppError("Inventory row must belong to a table linked to this warehouse.", 403);
+  }
 
   const activeSlotKey = slotId;
   const assignment = await createAssignment({
@@ -85,6 +107,23 @@ export async function assignSlot(warehouseId: string, slotId: string, input: Ass
     activeSlotKey,
   });
   return serializeAssignment(assignment);
+}
+
+function qrCandidates(value: string) {
+  const raw = value.trim();
+  const candidates = new Set<string>([raw]);
+  try {
+    const url = new URL(raw);
+    for (const key of ["qr", "code", "item", "itemId", "id"]) {
+      const param = url.searchParams.get(key)?.trim();
+      if (param) candidates.add(param);
+    }
+    const lastPath = url.pathname.split("/").filter(Boolean).at(-1);
+    if (lastPath) candidates.add(lastPath);
+  } catch {
+    // Plain QR values are valid; URL parsing is only an additional convenience.
+  }
+  return Array.from(candidates);
 }
 
 export async function unassignSlot(warehouseId: string, assignmentId: string, userId?: string) {

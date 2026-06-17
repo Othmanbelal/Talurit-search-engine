@@ -41,24 +41,13 @@ export async function findShelvesWithItems(warehouseId: string, tableIds: string
       slots: {
         where: { isActive: true },
         orderBy: [{ slotIndex: "asc" }, { sortOrder: "asc" }],
-        select: {
-          id: true,
-          code: true,
-          normalizedCode: true,
-          compartment: true,
-          displayName: true,
-          slotIndex: true,
-          storageLocationId: true,
-          palletWidth: true,
-          palletDepth: true,
-        },
+        select: slotSelect(),
       },
     },
     orderBy: [{ sortOrder: "asc" }],
   });
 
-  // locationAssigned is derived: has a storageLocationId and code is not a placeholder
-  const withFlag = shelves.map((shelf) => ({
+  const withFlags = shelves.map((shelf) => ({
     ...shelf,
     slots: shelf.slots.map((slot) => ({
       ...slot,
@@ -69,81 +58,59 @@ export async function findShelvesWithItems(warehouseId: string, tableIds: string
   }));
 
   if (tableIds.length === 0) {
-    return withFlag.map((shelf) => ({
+    return withFlags.map((shelf) => ({
       ...shelf,
-      slots: shelf.slots.map((slot) => ({ ...slot, items: [] })),
+      slots: shelf.slots.map((slot) => ({ ...slot, items: [] as ShelfViewItem[] })),
     }));
   }
 
-  const locationCodes = [
-    ...new Set(
-      withFlag
-        .flatMap((s) => s.slots)
-        .filter((slot) => slot.locationAssigned && slot.normalizedCode)
-        .map((slot) => slot.normalizedCode),
-    ),
-  ];
-
-  if (locationCodes.length === 0) {
-    return withFlag.map((shelf) => ({
-      ...shelf,
-      slots: shelf.slots.map((slot) => ({ ...slot, items: [] })),
-    }));
-  }
-
-  const stockRows = await prisma.stockBalance.findMany({
+  const assignments = await prisma.warehouseSlotAssignment.findMany({
     where: {
-      archivedAt: null,
-      status: "active",
+      warehouseId,
+      unassignedAt: null,
       inventoryTableId: { in: tableIds },
-      location: { normalizedCode: { in: locationCodes } },
+      stockBalance: { archivedAt: null, status: "active" },
     },
     select: {
-      id: true,
-      quantity: true,
-      unit: true,
-      compartment: true,
-      location: { select: { normalizedCode: true } },
-      item: { select: { name: true, manufacturer: { select: { name: true } } } },
-      inventoryTable: { select: { id: true, name: true } },
+      slotId: true,
+      stockBalance: {
+        select: {
+          id: true,
+          quantity: true,
+          unit: true,
+          compartment: true,
+          location: { select: { code: true } },
+          item: { select: { name: true, manufacturer: { select: { name: true } } } },
+          inventoryTable: { select: { id: true, name: true } },
+        },
+      },
     },
   });
 
-  // Build lookup: bare location code → items, and location+compartment → items
-  const itemsByKey = new Map<string, typeof stockRows>();
-  for (const row of stockRows) {
-    const locCode = row.location?.normalizedCode ?? "";
-    if (!locCode) continue;
-    const bareList = itemsByKey.get(locCode) ?? [];
-    bareList.push(row);
-    itemsByKey.set(locCode, bareList);
-    if (row.compartment) {
-      const fackKey = `${locCode}::${row.compartment}`;
-      const fackList = itemsByKey.get(fackKey) ?? [];
-      fackList.push(row);
-      itemsByKey.set(fackKey, fackList);
-    }
+  // Warehouse occupancy is explicit: assigned stock rows create pallets, not location-code guesses.
+  const assignmentsBySlot = new Map<string, typeof assignments>();
+  for (const assignment of assignments) {
+    const list = assignmentsBySlot.get(assignment.slotId) ?? [];
+    list.push(assignment);
+    assignmentsBySlot.set(assignment.slotId, list);
   }
 
-  return withFlag.map((shelf) => ({
+  return withFlags.map((shelf) => ({
     ...shelf,
-    slots: shelf.slots.map((slot) => {
-      if (!slot.locationAssigned || !slot.normalizedCode) return { ...slot, items: [] };
-      const key = slot.compartment
-        ? `${slot.normalizedCode}::${slot.compartment}`
-        : slot.normalizedCode;
-      const items = (itemsByKey.get(key) ?? []).map((row) => ({
-        id: row.id,
-        itemName: row.item.name,
-        manufacturer: row.item.manufacturer?.name ?? null,
-        quantity: Number(row.quantity),
-        unit: row.unit,
-        compartment: row.compartment,
-        tableId: row.inventoryTable?.id ?? "",
-        tableName: row.inventoryTable?.name ?? "",
-      }));
-      return { ...slot, items };
-    }),
+    slots: shelf.slots.map((slot) => ({
+      ...slot,
+      items: (assignmentsBySlot.get(slot.id) ?? []).map(({ stockBalance }) => ({
+        id: stockBalance.id,
+        itemName: stockBalance.item.name,
+        manufacturer: stockBalance.item.manufacturer?.name ?? null,
+        quantity: Number(stockBalance.quantity),
+        unit: stockBalance.unit,
+        compartment: stockBalance.compartment,
+        locationCode: stockBalance.location?.code ?? null,
+        tableId: stockBalance.inventoryTable?.id ?? "",
+        tableName: stockBalance.inventoryTable?.name ?? "",
+      })),
+    })),
   }));
 }
 
@@ -162,5 +129,31 @@ export async function findAvailableLocationCodes(warehouseId: string, tableIds: 
     select: { code: true },
     orderBy: { code: "asc" },
   });
-  return [...new Set(locations.map((l) => l.code))];
+  return [...new Set(locations.map((location) => location.code))];
 }
+
+function slotSelect() {
+  return {
+    id: true,
+    code: true,
+    normalizedCode: true,
+    compartment: true,
+    displayName: true,
+    slotIndex: true,
+    storageLocationId: true,
+    palletWidth: true,
+    palletDepth: true,
+  } as const;
+}
+
+type ShelfViewItem = {
+  id: string;
+  itemName: string;
+  manufacturer: string | null;
+  quantity: number;
+  unit: string;
+  compartment: string | null;
+  locationCode: string | null;
+  tableId: string;
+  tableName: string;
+};

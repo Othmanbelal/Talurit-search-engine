@@ -146,6 +146,11 @@ export const searchInventoryRowsQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(100).default(20),
 });
 
+export const scanInventoryRowsSchema = z.object({
+  code: z.string().trim().min(1),
+  limit: z.coerce.number().int().min(1).max(25).default(10),
+});
+
 export const assignSlotSchema = z.object({
   stockBalanceId: z.string().min(1),
   inventoryTableId: z.string().optional(),
@@ -164,6 +169,7 @@ export type LinkTableInput = z.infer<typeof linkTableSchema>;
 export type GroupLinkParam = z.infer<typeof groupLinkParamSchema>;
 export type TableLinkParam = z.infer<typeof tableLinkParamSchema>;
 export type SearchInventoryRowsQuery = z.infer<typeof searchInventoryRowsQuerySchema>;
+export type ScanInventoryRowsInput = z.infer<typeof scanInventoryRowsSchema>;
 export type AssignSlotInput = z.infer<typeof assignSlotSchema>;
 export type AssignmentParam = z.infer<typeof assignmentParamSchema>;
 

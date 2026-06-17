@@ -185,6 +185,13 @@ export function searchInventoryRowsRequest(id: string, params: { search?: string
   return apiRequest<{ rows: AssignableInventoryRow[] }>(`/api/warehouses/${id}/inventory-rows?${query.toString()}`);
 }
 
+export function scanWarehouseInventoryRowsRequest(id: string, code: string) {
+  return apiRequest<{ matched: boolean; rows: AssignableInventoryRow[] }>(`/api/warehouses/${id}/inventory-rows/scan`, {
+    method: "POST",
+    body: JSON.stringify({ code }),
+  });
+}
+
 export function assignSlotRequest(id: string, slotId: string, input: AssignSlotInput) {
   return apiRequest<{ assignment: WarehouseSlotAssignment }>(`/api/warehouses/${id}/slots/${slotId}/assign`, {
     method: "POST",

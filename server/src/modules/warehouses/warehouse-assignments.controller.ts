@@ -5,6 +5,7 @@ import {
   assignSlotSchema,
   byStockParamSchema,
   idParamSchema,
+  scanInventoryRowsSchema,
   searchInventoryRowsQuerySchema,
   slotParamSchema,
 } from "./warehouse.schemas";
@@ -13,6 +14,7 @@ import {
   getAssignmentByStock,
   listSlotAssignments,
   listWarehouseAssignments,
+  scanAssignableInventoryRows,
   searchAssignableInventoryRows,
   unassignSlot,
 } from "./warehouse-assignments.service";
@@ -40,6 +42,13 @@ export async function searchInventoryRowsController(request: Request, response: 
   const query = searchInventoryRowsQuerySchema.parse(request.query);
   const rows = await searchAssignableInventoryRows(id, query);
   return response.json(successResponse({ rows }));
+}
+
+export async function scanInventoryRowsController(request: Request, response: Response) {
+  const { id } = idParamSchema.parse(request.params);
+  const input = scanInventoryRowsSchema.parse(request.body);
+  const result = await scanAssignableInventoryRows(id, input);
+  return response.json(successResponse(result));
 }
 
 export async function assignSlotController(request: Request, response: Response) {
