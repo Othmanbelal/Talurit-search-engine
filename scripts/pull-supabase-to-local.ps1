@@ -1,5 +1,5 @@
 param(
-  [string]$SourceDatabaseUrl = $env:SUPABASE_DATABASE_URL,
+  [string]$SourceDatabaseUrl,
   [switch]$Force,
   [switch]$SkipLocalBackup
 )
@@ -16,24 +16,12 @@ $timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $remoteDumpName = "supabase-pull-$timestamp.dump"
 $localBackupName = "local-before-supabase-pull-$timestamp.dump"
 
-function Read-DotEnvValue {
-  param([string]$Key)
-  $envFile = Join-Path $root ".env"
-  if (-not (Test-Path $envFile)) { return $null }
-
-  $line = Get-Content $envFile | Where-Object { $_ -match "^$Key=" } | Select-Object -First 1
-  if (-not $line) { return $null }
-
-  # Split only on the first equals sign so URLs and passwords keep their content.
-  return $line.Substring($Key.Length + 1).Trim().Trim('"').Trim("'")
+if (-not $SourceDatabaseUrl) {
+  $SourceDatabaseUrl = Read-Host "Paste Supabase database URL for this one-time import"
 }
 
 if (-not $SourceDatabaseUrl) {
-  $SourceDatabaseUrl = Read-DotEnvValue "SUPABASE_DATABASE_URL"
-}
-
-if (-not $SourceDatabaseUrl) {
-  throw "SUPABASE_DATABASE_URL is required. Set it in your local shell or local .env file. Do not commit the real value."
+  throw "A Supabase source database URL is required for the one-time pull."
 }
 
 function Invoke-Step {

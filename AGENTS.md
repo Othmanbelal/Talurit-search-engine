@@ -376,7 +376,7 @@ Avoid:
 - Local network hosting uses local PostgreSQL, local backend, and local frontend containers.
 - Users on the same network access the app through the host machine LAN IP and port 5173.
 - Supabase database data can be copied into local PostgreSQL with `scripts/pull-supabase-to-local.ps1`.
-- The Supabase database URL is a one-time migration secret. Keep it only in the shell or ignored local `.env`; never commit it.
+- The Supabase source database URL is a one-time migration secret. Pass it only to the pull script when running the migration; do not store it in `.env` or Git.
 - Supabase Storage media references need a separate storage migration before Supabase can be shut down completely.
 
 ## Phase Completion Format

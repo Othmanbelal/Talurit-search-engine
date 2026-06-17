@@ -149,19 +149,15 @@ Local server or workstation
 
 This replaces the local Docker database with a copy of the Supabase database. It does not change Supabase.
 
-Set the Supabase database URL only in the current PowerShell session:
+This is a one-time migration from Supabase into the local Docker database. Do not add the Supabase source URL to `.env`.
 
-```powershell
-$env:SUPABASE_DATABASE_URL="postgresql://..."
-```
-
-Alternatively, add `SUPABASE_DATABASE_URL=postgresql://...` to your local `.env` file. The `.env` file is ignored by Git.
-
-Then run:
+Run:
 
 ```powershell
 npm run db:pull:supabase -- -Force
 ```
+
+The script prompts for the Supabase database URL, uses it once, and does not save it.
 
 The script:
 
@@ -174,7 +170,8 @@ The script:
 
 Important:
 
-- Do not put the real `SUPABASE_DATABASE_URL` in Git.
+- Do not put the real Supabase source database URL in `.env` or Git.
+- After this one-time pull, the local app uses the local Docker PostgreSQL database.
 - Uploaded pictures and QR images may still be stored in Supabase Storage if the database contains `supabase://...` media references. For a fully offline server, migrate storage files to local or company-hosted object storage before shutting down Supabase.
 
 ## File Storage

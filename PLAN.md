@@ -1322,11 +1322,11 @@ Completed:
 - Added `scripts/pull-supabase-to-local.ps1` for copying Supabase PostgreSQL data into local Docker PostgreSQL.
 - Added root command `npm run db:pull:supabase`.
 - Docker Compose now reads `SESSION_SECRET`, `COOKIE_NAME`, and `SESSION_DAYS` from `.env`.
-- Documented that the Supabase database URL is a one-time migration secret and must not be committed.
+- Documented that the Supabase source database URL is only used during the one-time migration and must not be stored in `.env` or Git.
 - Documented that Supabase Storage media needs a separate migration if the app must become fully offline.
 
 Remaining:
-- Actual Supabase-to-local data pull requires the real Supabase database URL as `SUPABASE_DATABASE_URL` in the local shell or ignored local `.env`.
+- Actual Supabase-to-local data pull requires pasting the real Supabase source database URL into the pull script prompt once.
 
 Verification:
 - PowerShell script syntax check passed.
