@@ -91,6 +91,7 @@ export type StructuredStockRow = {
   notes?: string | null;
   archivedAt?: string | null;
   usageTags: { cardId: string; cardName: string; quantity: number }[];
+  activityTags?: ActivityTag[];
   item: {
     id: string;
     name: string;
@@ -107,6 +108,14 @@ export type StructuredStockRow = {
   location?: { id: string; code: string; displayName?: string | null; locationType: string; room: string } | null;
   createdAt: string;
   updatedAt: string;
+};
+
+export type ActivityTag = {
+  type: "used_in" | "taken";
+  quantity: number;
+  userName: string;
+  cardId?: string;
+  cardName?: string;
 };
 
 export type StructuredStockRowsResponse = {

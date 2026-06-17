@@ -1284,6 +1284,20 @@ Verification:
 - npm run lint passed.
 - npm run build passed.
 
+## Stock Movement Tags - Completed
+
+Completed:
+- Inventory rows now expose active activity tags from the database.
+- Used In tags include quantity, card name, and the user who assigned the item.
+- Taken-out tags include quantity and the user who took the item.
+- The inventory table renders both tag types under the item name on desktop and mobile.
+- Returned items are excluded because only records with returnedAt = null are shown.
+
+Verification:
+- npm run check:lines passed.
+- npm run lint passed.
+- npm run build passed.
+
 ## Known Risks
 
 - Excel columns vary between sheets.

@@ -27,13 +27,26 @@ type TableRecord = Prisma.InventoryTableGetPayload<{
   include: { group: true; _count: { select: { stockBalances: true } } };
 }>;
 
-type StockRowRecord = Prisma.StockBalanceGetPayload<{
+type BaseStockRowRecord = Prisma.StockBalanceGetPayload<{
   include: {
     item: { include: { manufacturer: true; category: true; identifiers: true; attributes: true } };
     location: true;
     usedInAssignments: { include: { card: true } };
   };
 }>;
+
+type UsedInAssignmentRecord = Prisma.UsedInStockAssignmentGetPayload<{ include: { card: true } }> & {
+  createdByUser?: { name: string } | null;
+};
+
+type TakenItemRecord = Prisma.TakenStockItemGetPayload<{}> & {
+  createdByUser?: { name: string } | null;
+};
+
+type StockRowRecord = Omit<BaseStockRowRecord, "usedInAssignments"> & {
+  usedInAssignments: UsedInAssignmentRecord[];
+  takenItems?: TakenItemRecord[];
+};
 
 export function serializeGroup(group: GroupRecord) {
   return {
@@ -100,6 +113,7 @@ export function serializeStockRow(row: StockRowRecord) {
     notes: row.notes,
     archivedAt: row.archivedAt,
     usageTags: usageTags(row),
+    activityTags: activityTags(row),
     item: {
       id: row.item.id,
       name: row.item.name,
@@ -149,3 +163,42 @@ function usageTags(row: StockRowRecord) {
   }
   return Array.from(byCard.values());
 }
+
+function activityTags(row: StockRowRecord) {
+  const tags = new Map<string, ActivityTag>();
+  for (const assignment of row.usedInAssignments) {
+    const userName = displayUserName(assignment.createdByUser?.name);
+    const key = `used_in:${assignment.cardId}:${userName}`;
+    const current = tags.get(key) ?? {
+      type: "used_in" as const,
+      cardId: assignment.cardId,
+      cardName: assignment.card.name,
+      quantity: 0,
+      userName,
+    };
+    current.quantity += toNumber(assignment.quantity);
+    tags.set(key, current);
+  }
+
+  for (const taken of row.takenItems ?? []) {
+    const userName = displayUserName(taken.createdByUser?.name);
+    const key = `taken:${userName}`;
+    const current = tags.get(key) ?? { type: "taken" as const, quantity: 0, userName };
+    current.quantity += toNumber(taken.quantity);
+    tags.set(key, current);
+  }
+
+  return Array.from(tags.values());
+}
+
+function displayUserName(name?: string | null) {
+  return name?.trim() || "Unknown user";
+}
+
+type ActivityTag = {
+  type: "used_in" | "taken";
+  quantity: number;
+  userName: string;
+  cardId?: string;
+  cardName?: string;
+};

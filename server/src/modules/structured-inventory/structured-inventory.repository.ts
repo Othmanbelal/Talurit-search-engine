@@ -73,7 +73,8 @@ export function findStockRows(tableId: string, query: ListStockRowsQuery) {
       include: {
         item: { include: { manufacturer: true, category: true, identifiers: true, attributes: true } },
         location: true,
-        usedInAssignments: { where: { returnedAt: null }, include: { card: true } },
+        usedInAssignments: { where: { returnedAt: null }, include: { card: true, createdByUser: userNameSelect() } },
+        takenItems: { where: { returnedAt: null }, include: { createdByUser: userNameSelect() } },
       },
       orderBy: [{ location: { code: "asc" } }, { compartment: "asc" }, { item: { name: "asc" } }],
       skip,
@@ -131,9 +132,14 @@ export function findStockRow(tableId: string, rowId: string) {
     include: {
       item: { include: { manufacturer: true, category: true, identifiers: true, attributes: true } },
       location: true,
-      usedInAssignments: { where: { returnedAt: null }, include: { card: true } },
+      usedInAssignments: { where: { returnedAt: null }, include: { card: true, createdByUser: userNameSelect() } },
+      takenItems: { where: { returnedAt: null }, include: { createdByUser: userNameSelect() } },
     },
   });
+}
+
+function userNameSelect() {
+  return { select: { name: true } } as const;
 }
 
 function buildStockWhere(tableId: string, query: ListStockRowsQuery): Prisma.StockBalanceWhereInput {

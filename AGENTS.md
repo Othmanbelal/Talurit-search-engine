@@ -354,6 +354,13 @@ Avoid:
 - Scan result actions should allow permitted users to add item notes or report urgent issues.
 - "Take me there" must route to the correct inventory table and highlight the matching row.
 
+## Stock Movement Visibility Rules
+
+- Inventory table rows must show active stock movement tags under the item name.
+- Active Used In assignments should display quantity, card name, and the user who assigned the item.
+- Active taken-out items should display quantity and the user who took the item.
+- Returned movements must disappear from active row tags because their returnedAt value is set.
+
 ## Phase Completion Format
 
 At the end of each phase, report:

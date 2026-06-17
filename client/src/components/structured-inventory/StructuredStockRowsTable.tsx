@@ -74,16 +74,9 @@ export function StructuredStockRowsTable({
                 <ChevronRight className="text-slate-500" size={16} />
               </div>
             </div>
-            {row.usageTags.length > 0 ? (
+            {rowActivityTags(row).length > 0 ? (
               <div className="mt-2 flex flex-wrap gap-1">
-                {row.usageTags.map((tag) => (
-                  <span
-                    className="rounded border border-accent/40 bg-accent/10 px-2 py-0.5 text-[11px] text-accent"
-                    key={tag.cardId}
-                  >
-                    {tag.quantity} used in {tag.cardName}
-                  </span>
-                ))}
+                {rowActivityTags(row).map((tag) => <ActivityTagPill key={activityTagKey(tag)} tag={tag} />)}
               </div>
             ) : null}
           </button>
@@ -169,20 +162,37 @@ export function renderStockCell(row: StructuredStockRow, key: StockColumnKey): R
 }
 
 function ItemCell({ row }: { row: StructuredStockRow }) {
+  const tags = rowActivityTags(row);
   return (
     <div>
       <div>{row.item.name}</div>
-      {row.usageTags.length > 0 ? (
+      {tags.length > 0 ? (
         <div className="mt-1 flex flex-wrap gap-1">
-          {row.usageTags.map((tag) => (
-            <span className="rounded border border-accent/40 bg-accent/10 px-2 py-0.5 text-[11px] text-accent" key={tag.cardId}>
-              {tag.quantity} used in {tag.cardName}
-            </span>
-          ))}
+          {tags.map((tag) => <ActivityTagPill key={activityTagKey(tag)} tag={tag} />)}
         </div>
       ) : null}
     </div>
   );
+}
+
+function ActivityTagPill({ tag }: { tag: NonNullable<StructuredStockRow["activityTags"]>[number] }) {
+  const isTaken = tag.type === "taken";
+  const tone = isTaken ? "border-orange-400/40 bg-orange-500/10 text-orange-200" : "border-accent/40 bg-accent/10 text-accent";
+  return <span className={`rounded border px-2 py-0.5 text-[11px] ${tone}`}>{activityTagLabel(tag)}</span>;
+}
+
+function activityTagLabel(tag: NonNullable<StructuredStockRow["activityTags"]>[number]) {
+  if (tag.type === "taken") return `x${formatNumber(tag.quantity)} taken by ${tag.userName}`;
+  return `x${formatNumber(tag.quantity)} used in ${tag.cardName ?? "card"} by ${tag.userName}`;
+}
+
+function activityTagKey(tag: NonNullable<StructuredStockRow["activityTags"]>[number]) {
+  return `${tag.type}:${tag.cardId ?? ""}:${tag.cardName ?? ""}:${tag.userName}`;
+}
+
+function rowActivityTags(row: StructuredStockRow) {
+  if (row.activityTags?.length) return row.activityTags;
+  return row.usageTags.map((tag) => ({ ...tag, type: "used_in" as const, userName: "Unknown user" }));
 }
 
 function formatPlacement(location: StructuredStockRow["location"]) {
