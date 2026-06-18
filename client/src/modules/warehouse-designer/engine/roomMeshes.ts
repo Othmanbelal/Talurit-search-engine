@@ -1,10 +1,10 @@
-import { Color3, Color4, DynamicTexture, Mesh, MeshBuilder, PBRMaterial, Scene, StandardMaterial, VertexData } from "@babylonjs/core";
+import { Color3, Color4, DynamicTexture, Mesh, MeshBuilder, Scene, StandardMaterial, VertexData } from "@babylonjs/core";
 import type { Room, SceneObject, Vec2 } from "../types";
 import { objectCorners, polygonBounds, polygonCenter, wallCenterlineEndpoints } from "../utils/geometry";
 import { detectRoomLoops } from "../utils/roomDetection";
 import { makeMaterial, objectElevation, setObjectMetadata, worldXFromPlan, worldZFromPlan } from "./babylonCore";
 
-function createPolygonSlab(scene: Scene, room: Room, name: string, boundary: Vec2[], material: PBRMaterial, y = 0, thickness = 0.16) {
+function createPolygonSlab(scene: Scene, room: Room, name: string, boundary: Vec2[], material: StandardMaterial, y = 0, thickness = 0.16) {
   const mesh = new Mesh(name, scene);
   const center = polygonCenter(boundary);
   const bounds = polygonBounds(boundary);
@@ -41,7 +41,7 @@ function createPolygonSlab(scene: Scene, room: Room, name: string, boundary: Vec
   mesh.isPickable = false;
 }
 
-function createRectSlabPiece(scene: Scene, room: Room, name: string, bounds: { minX: number; maxX: number; minY: number; maxY: number }, material: PBRMaterial, y: number, thickness: number) {
+function createRectSlabPiece(scene: Scene, room: Room, name: string, bounds: { minX: number; maxX: number; minY: number; maxY: number }, material: StandardMaterial, y: number, thickness: number) {
   const width = bounds.maxX - bounds.minX;
   const depth = bounds.maxY - bounds.minY;
   if (width < 0.05 || depth < 0.05) return;
@@ -70,7 +70,7 @@ function stairOpeningForLoop(loop: ReturnType<typeof detectRoomLoops>[number], s
   };
 }
 
-function createSlabWithOptionalOpening(scene: Scene, room: Room, loop: ReturnType<typeof detectRoomLoops>[number], material: PBRMaterial, stairs: SceneObject[]) {
+function createSlabWithOptionalOpening(scene: Scene, room: Room, loop: ReturnType<typeof detectRoomLoops>[number], material: StandardMaterial, stairs: SceneObject[]) {
   const y = loop.elevation + (loop.type === "warehouse" ? 0 : 0.018);
   const hole = stairOpeningForLoop(loop, stairs);
   if (!hole) return createPolygonSlab(scene, room, `${loop.id}-floor-slab`, loop.points, material, y, loop.floorThickness);
@@ -84,7 +84,7 @@ function createSlabWithOptionalOpening(scene: Scene, room: Room, loop: ReturnTyp
   pieces.forEach((piece, index) => createRectSlabPiece(scene, room, `${loop.id}-floor-slab-${index}`, piece, material, y, loop.floorThickness));
 }
 
-function wallBox(scene: Scene, room: Room, wall: SceneObject, a: Vec2, b: Vec2, height: number, y: number, name: string, material: PBRMaterial, selectedId?: string | null) {
+function wallBox(scene: Scene, room: Room, wall: SceneObject, a: Vec2, b: Vec2, height: number, y: number, name: string, material: StandardMaterial, selectedId?: string | null) {
   const dx = b.x - a.x;
   const dy = b.y - a.y;
   const length = Math.hypot(dx, dy);
@@ -118,7 +118,7 @@ function openingsOnWall(a: Vec2, b: Vec2, openings: SceneObject[], thickness: nu
   }).sort((left, right) => left.start - right.start);
 }
 
-function createWallWithOpenings(scene: Scene, room: Room, wall: SceneObject, index: number, material: PBRMaterial, openings: SceneObject[], selectedId?: string | null) {
+function createWallWithOpenings(scene: Scene, room: Room, wall: SceneObject, index: number, material: StandardMaterial, openings: SceneObject[], selectedId?: string | null) {
   const [a, b] = wallCenterlineEndpoints(wall);
   const length = Math.hypot(b.x - a.x, b.y - a.y) || 1;
   const pointAt = (distance: number) => ({ x: a.x + ((b.x - a.x) * distance) / length, y: a.y + ((b.y - a.y) * distance) / length });

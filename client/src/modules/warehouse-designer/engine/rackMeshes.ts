@@ -1,22 +1,21 @@
-import { MeshBuilder, PBRMaterial, Scene, TransformNode } from "@babylonjs/core";
+import { MeshBuilder, Scene, StandardMaterial, TransformNode } from "@babylonjs/core";
 import type { Room, SceneObject } from "../types";
-import { createBoxPart, makeMaterial, objectElevation, setObjectMetadata, worldX, worldZ } from "./babylonCore";
+import { createBoxPart, objectElevation, setObjectMetadata, worldX, worldZ } from "./babylonCore";
+import { flatMaterial, getPalette } from "./materialPalette";
+import { finalizeMergedObject } from "./meshMerge";
 
 export function createRackMesh(scene: Scene, room: Room, object: SceneObject) {
   const rack = object.rack;
-  const parent = new TransformNode(object.id, scene);
-  parent.position.set(worldX(object, room), objectElevation(object), worldZ(object, room));
-  parent.rotation.y = -object.rotation;
-  parent.metadata = { objectId: object.id };
+  const palette = getPalette(scene);
+  const root = new TransformNode(`${object.id}__build`, scene); // built at origin
 
   const isLightShelf = object.type === "storage-shelf";
-  const uprightColor = isLightShelf ? "#536875" : "#334b5b";
-  const beamColor = object.color || (isLightShelf ? "#5f8ea2" : "#e1a522");
-  const upright = makeMaterial(scene, `${object.id}-uprights`, uprightColor, 0.62, 0.32);
-  const beamMaterial = makeMaterial(scene, `${object.id}-beams`, beamColor, 0.42, 0.38);
-  const shelfMaterial = makeMaterial(scene, `${object.id}-shelves`, "#aeb9bd", 0.48, 0.46);
-  const braceMaterial = makeMaterial(scene, `${object.id}-braces`, "#6f8088", 0.58, 0.38);
-  const footMaterial = makeMaterial(scene, `${object.id}-feet`, "#202b31", 0.64, 0.34);
+  const upright = palette.structure;
+  // Beam keeps the object's accent color (status/inventory color-coding) but via shared cache.
+  const beamMaterial = object.color ? flatMaterial(scene, "beam", object.color) : palette.structureAlt;
+  const shelfMaterial = palette.shelf;
+  const braceMaterial = palette.structureAlt;
+  const footMaterial = palette.structure;
 
   const t = rack?.uprightThickness ?? (isLightShelf ? 0.035 : 0.06);
   const beam = rack?.beamThickness ?? 0.06;
@@ -26,59 +25,28 @@ export function createRackMesh(scene: Scene, room: Room, object: SceneObject) {
   const halfD = object.depth / 2 - t / 2;
 
   [
-    { x: -halfW, z: -halfD },
-    { x: halfW, z: -halfD },
-    { x: -halfW, z: halfD },
-    { x: halfW, z: halfD },
+    { x: -halfW, z: -halfD }, { x: halfW, z: -halfD },
+    { x: -halfW, z: halfD }, { x: halfW, z: halfD },
   ].forEach((position, index) => {
-    createBoxPart(scene, parent, object, `${object.id}-upright-${index}`, {
-      width: t,
-      depth: t,
-      height: object.height,
-    }, {
-      x: position.x,
-      y: object.height / 2,
-      z: position.z,
-    }, upright);
-    createBoxPart(scene, parent, object, `${object.id}-foot-${index}`, {
-      width: t * 3.2,
-      depth: t * 3.2,
-      height: 0.025,
-    }, {
-      x: position.x,
-      y: 0.0125,
-      z: position.z,
-    }, footMaterial);
+    createBoxPart(scene, root, object, `${object.id}-upright-${index}`, { width: t, depth: t, height: object.height }, { x: position.x, y: object.height / 2, z: position.z }, upright);
+    createBoxPart(scene, root, object, `${object.id}-foot-${index}`, { width: t * 3.2, depth: t * 3.2, height: 0.025 }, { x: position.x, y: 0.0125, z: position.z }, footMaterial);
   });
 
   for (let level = 0; level < levels; level += 1) {
     const y = ((level + 1) / levels) * object.height;
-    createShelfDeck(scene, parent, object, level, y, boardH, shelfMaterial);
-    createBoxPart(scene, parent, object, `${object.id}-beam-front-${level}`, {
-      width: object.width,
-      depth: beam,
-      height: beam * 1.45,
-    }, {
-      x: 0,
-      y: y - boardH / 2,
-      z: object.depth / 2 - beam / 2,
-    }, beamMaterial);
-    createBoxPart(scene, parent, object, `${object.id}-beam-back-${level}`, {
-      width: object.width,
-      depth: beam,
-      height: beam * 1.45,
-    }, {
-      x: 0,
-      y: y - boardH / 2,
-      z: -object.depth / 2 + beam / 2,
-    }, beamMaterial);
+    createShelfDeck(scene, root, object, level, y, boardH, shelfMaterial);
+    createBoxPart(scene, root, object, `${object.id}-beam-front-${level}`, { width: object.width, depth: beam, height: beam * 1.45 }, { x: 0, y: y - boardH / 2, z: object.depth / 2 - beam / 2 }, beamMaterial);
+    createBoxPart(scene, root, object, `${object.id}-beam-back-${level}`, { width: object.width, depth: beam, height: beam * 1.45 }, { x: 0, y: y - boardH / 2, z: -object.depth / 2 + beam / 2 }, beamMaterial);
   }
 
   if (!isLightShelf) {
-    addSideBracing(scene, parent, object, -halfW, t, braceMaterial);
-    addSideBracing(scene, parent, object, halfW, t, braceMaterial);
+    addSideBracing(scene, root, object, -halfW, t, braceMaterial);
+    addSideBracing(scene, root, object, halfW, t, braceMaterial);
   }
-  return parent;
+
+  return finalizeMergedObject(scene, root, object.id, {
+    x: worldX(object, room), y: objectElevation(object), z: worldZ(object, room), rotationY: -object.rotation,
+  });
 }
 
 function createShelfDeck(
@@ -88,7 +56,7 @@ function createShelfDeck(
   level: number,
   y: number,
   boardHeight: number,
-  material: PBRMaterial,
+  material: StandardMaterial,
 ) {
   const deckCount = 1;
   const deckWidth = object.width / deckCount;
@@ -111,7 +79,7 @@ function addSideBracing(
   object: SceneObject,
   x: number,
   thickness: number,
-  material: PBRMaterial,
+  material: StandardMaterial,
 ) {
   const sections = Math.max(2, Math.min(3, Math.round(object.height / 1.8)));
   const sectionHeight = object.height / sections;

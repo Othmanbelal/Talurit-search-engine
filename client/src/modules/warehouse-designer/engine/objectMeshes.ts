@@ -2,10 +2,12 @@ import { MeshBuilder, Scene, TransformNode } from "@babylonjs/core";
 import type { Room, SceneObject } from "../types";
 import type { AisleGuide } from "../utils/warehouse";
 import { polygonBounds, polygonCenter } from "../utils/geometry";
-import { makeMaterial, makeTransparentMaterial, objectElevation, setObjectMetadata, worldX, worldXFromPlan, worldZ, worldZFromPlan } from "./babylonCore";
+import { objectElevation, setObjectMetadata, worldX, worldXFromPlan, worldZ, worldZFromPlan } from "./babylonCore";
+import { flatMaterial } from "./materialPalette";
+import { finalizeMergedObject } from "./meshMerge";
 
 export function createColumnMesh(scene: Scene, room: Room, object: SceneObject) {
-  const material = makeMaterial(scene, `${object.id}-mat`, object.color, 0.05, 0.58);
+  const material = flatMaterial(scene, "column", object.color);
   const mesh = MeshBuilder.CreateBox(object.id, { width: object.width, depth: object.depth, height: object.height }, scene);
   mesh.position.set(worldX(object, room), objectElevation(object) + object.height / 2, worldZ(object, room));
   mesh.rotation.y = -object.rotation;
@@ -15,7 +17,7 @@ export function createColumnMesh(scene: Scene, room: Room, object: SceneObject) 
 }
 
 export function createWallSegmentMesh(scene: Scene, room: Room, object: SceneObject) {
-  const material = makeMaterial(scene, `${object.id}-mat`, object.color, 0.02, 0.75);
+  const material = flatMaterial(scene, "wallseg", object.color);
   const mesh = MeshBuilder.CreateBox(object.id, { width: object.width, depth: object.depth, height: object.height }, scene);
   mesh.position.set(worldX(object, room), objectElevation(object) + object.height / 2, worldZ(object, room));
   mesh.rotation.y = -object.rotation;
@@ -26,7 +28,7 @@ export function createWallSegmentMesh(scene: Scene, room: Room, object: SceneObj
 
 export function createOpeningMesh(scene: Scene, room: Room, object: SceneObject) {
   const isWindow = object.type === "window";
-  const material = makeTransparentMaterial(scene, `${object.id}-opening`, object.color, isWindow ? 0.38 : 0.28);
+  const material = flatMaterial(scene, isWindow ? "window" : "door", object.color, isWindow ? 0.38 : 0.28);
   const sill = object.opening?.sillHeight ?? 0;
   const height = Math.max(object.height, 0.05);
   const mesh = MeshBuilder.CreateBox(object.id, { width: object.width, depth: object.depth, height }, scene);
@@ -47,7 +49,7 @@ export function createOpeningMesh(scene: Scene, room: Room, object: SceneObject)
 }
 
 export function createNoGoZoneMesh(scene: Scene, room: Room, object: SceneObject) {
-  const material = makeTransparentMaterial(scene, `${object.id}-mat`, object.color, 0.38);
+  const material = flatMaterial(scene, "nogo", object.color, 0.38);
   const mesh = MeshBuilder.CreateBox(object.id, { width: object.width, depth: object.depth, height: 0.05 }, scene);
   mesh.position.set(worldX(object, room), objectElevation(object) + 0.04, worldZ(object, room));
   mesh.rotation.y = -object.rotation;
@@ -59,7 +61,7 @@ export function createNoGoZoneMesh(scene: Scene, room: Room, object: SceneObject
 export function createAisleGuideMesh(scene: Scene, room: Room, guide: AisleGuide) {
   const bounds = polygonBounds(guide.points);
   const center = polygonCenter(guide.points);
-  const material = makeTransparentMaterial(scene, `${guide.id}-mat`, guide.ok ? "#63d297" : "#ff6b6b", 0.24);
+  const material = flatMaterial(scene, "aisle", guide.ok ? "#8fae93" : "#c19a86", 0.3);
   const mesh = MeshBuilder.CreateBox(guide.id, { width: Math.max(0.02, bounds.maxX - bounds.minX), depth: Math.max(0.02, bounds.maxY - bounds.minY), height: 0.018 }, scene);
   mesh.position.set(worldXFromPlan(center.x, room), 0.055, worldZFromPlan(center.y, room));
   mesh.material = material;
@@ -68,7 +70,7 @@ export function createAisleGuideMesh(scene: Scene, room: Room, guide: AisleGuide
 }
 
 
-function addPalletPart(parent: TransformNode, scene: Scene, object: SceneObject, name: string, size: { width: number; depth: number; height: number }, position: { x: number; y: number; z: number }, material: ReturnType<typeof makeMaterial>) {
+function addPalletPart(parent: TransformNode, scene: Scene, object: SceneObject, name: string, size: { width: number; depth: number; height: number }, position: { x: number; y: number; z: number }, material: ReturnType<typeof flatMaterial>) {
   const mesh = MeshBuilder.CreateBox(`${object.id}-${name}`, size, scene);
   mesh.parent = parent;
   mesh.position.set(position.x, position.y, position.z);
@@ -78,12 +80,10 @@ function addPalletPart(parent: TransformNode, scene: Scene, object: SceneObject,
 }
 
 export function createEuroPalletDetailMesh(scene: Scene, room: Room, object: SceneObject) {
-  const topWood = makeMaterial(scene, `${object.id}-top-wood`, object.color || "#c9955c", 0.01, 0.76);
-  const sideWood = makeMaterial(scene, `${object.id}-side-wood`, "#b77d46", 0.01, 0.82);
-  const darkWood = makeMaterial(scene, `${object.id}-dark-wood`, "#8f5f35", 0.01, 0.86);
-  const parent = new TransformNode(object.id, scene);
-  parent.position.set(worldX(object, room), objectElevation(object) + object.height / 2, worldZ(object, room));
-  parent.rotation.y = -object.rotation;
+  const topWood = flatMaterial(scene, "pallet-top", object.color || "#c9955c");
+  const sideWood = flatMaterial(scene, "pallet-side", "#b77d46");
+  const darkWood = flatMaterial(scene, "pallet-dark", "#8f5f35");
+  const root = new TransformNode(`${object.id}__build`, scene);
 
   const width = object.width;
   const depth = object.depth;
@@ -104,28 +104,30 @@ export function createEuroPalletDetailMesh(scene: Scene, room: Room, object: Sce
   boardWidths.forEach((boardWidth, index) => {
     const x = cursor + boardWidth / 2;
     cursor += boardWidth + gap;
-    addPalletPart(parent, scene, object, `top-board-${index}`, { width: boardWidth, depth: depth * 0.98, height: boardH }, { x, y: topY, z: 0 }, topWood);
+    addPalletPart(root, scene, object, `top-board-${index}`, { width: boardWidth, depth: depth * 0.98, height: boardH }, { x, y: topY, z: 0 }, topWood);
   });
 
   [-0.4, 0, 0.4].forEach((zRatio, index) => {
-    addPalletPart(parent, scene, object, `cross-bearer-${index}`, { width: width * 0.94, depth: 0.105, height: bearerH }, { x: 0, y: bearerY, z: zRatio * depth }, sideWood);
+    addPalletPart(root, scene, object, `cross-bearer-${index}`, { width: width * 0.94, depth: 0.105, height: bearerH }, { x: 0, y: bearerY, z: zRatio * depth }, sideWood);
   });
 
   [-0.36, 0, 0.36].forEach((xRatio, index) => {
-    addPalletPart(parent, scene, object, `bottom-runner-${index}`, { width: 0.105, depth: depth * 0.96, height: bottomH }, { x: xRatio * width, y: bottomY, z: 0 }, sideWood);
+    addPalletPart(root, scene, object, `bottom-runner-${index}`, { width: 0.105, depth: depth * 0.96, height: bottomH }, { x: xRatio * width, y: bottomY, z: 0 }, sideWood);
   });
 
   [-0.36, 0, 0.36].forEach((xRatio) => {
     [-0.4, 0, 0.4].forEach((zRatio) => {
-      addPalletPart(parent, scene, object, `block-${xRatio}-${zRatio}`, { width: 0.105, depth: 0.145, height: blockH }, { x: xRatio * width, y: blockY, z: zRatio * depth }, darkWood);
+      addPalletPart(root, scene, object, `block-${xRatio}-${zRatio}`, { width: 0.105, depth: 0.145, height: blockH }, { x: xRatio * width, y: blockY, z: zRatio * depth }, darkWood);
     });
   });
 
-  return parent;
+  return finalizeMergedObject(scene, root, object.id, {
+    x: worldX(object, room), y: objectElevation(object) + object.height / 2, z: worldZ(object, room), rotationY: -object.rotation,
+  });
 }
 
 export function createEuroPalletMesh(scene: Scene, room: Room, object: SceneObject) {
-  const material = makeMaterial(scene, `${object.id}-pallet-mat`, object.color || "#c9955c", 0.01, 0.76);
+  const material = flatMaterial(scene, "pallet-top", object.color || "#c9955c");
   const mesh = MeshBuilder.CreateBox(object.id, { width: object.width, depth: object.depth, height: object.height }, scene);
   mesh.position.set(worldX(object, room), objectElevation(object) + object.height / 2, worldZ(object, room));
   mesh.rotation.y = -object.rotation;
@@ -136,20 +138,21 @@ export function createEuroPalletMesh(scene: Scene, room: Room, object: SceneObje
 
 
 export function createStairMesh(scene: Scene, room: Room, object: SceneObject) {
-  const stepMaterial = makeMaterial(scene, `${object.id}-stair`, object.color || "#d6a94a", 0.02, 0.62);
-  const parent = new TransformNode(object.id, scene);
-  parent.position.set(worldX(object, room), objectElevation(object), worldZ(object, room));
-  parent.rotation.y = -object.rotation;
+  const stepMaterial = flatMaterial(scene, "stair", object.color || "#d6a94a");
+  const root = new TransformNode(`${object.id}__build`, scene);
   const count = Math.max(3, object.stair?.stepCount ?? Math.ceil(object.height / 0.18));
   const run = Math.max(0.12, object.depth / count);
   const rise = Math.max(0.04, object.height / count);
 
   for (let i = 0; i < count; i++) {
     const tread = MeshBuilder.CreateBox(`${object.id}-step-${i}`, { width: object.width, depth: run, height: rise }, scene);
-    tread.parent = parent;
+    tread.parent = root;
     tread.position.set(0, rise * (i + 0.5), -object.depth / 2 + run * (i + 0.5));
     tread.material = stepMaterial;
     setObjectMetadata(tread, object);
   }
-  return parent;
+
+  return finalizeMergedObject(scene, root, object.id, {
+    x: worldX(object, room), y: objectElevation(object), z: worldZ(object, room), rotationY: -object.rotation,
+  });
 }
