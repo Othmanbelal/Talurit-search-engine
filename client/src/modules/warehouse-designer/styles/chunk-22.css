@@ -1,0 +1,327 @@
+/* Industrial visualization system: one visual language across editor, plan, and 3D. */
+.premium-overhaul {
+  --industrial-bg: #0a0f14;
+  --industrial-panel: #10171e;
+  --industrial-panel-2: #151e26;
+  --industrial-line: rgba(184, 205, 214, .14);
+  --industrial-line-strong: rgba(195, 216, 224, .24);
+  --industrial-text: #edf3f5;
+  --industrial-muted: #91a2aa;
+  --industrial-cyan: #69b7ca;
+  --industrial-yellow: #e5ad2d;
+  --industrial-orange: #d98526;
+  background:
+    linear-gradient(rgba(255, 255, 255, .012) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, .012) 1px, transparent 1px),
+    radial-gradient(circle at 38% -10%, rgba(76, 125, 140, .16), transparent 38%),
+    #090e13;
+  background-size: 24px 24px, 24px 24px, auto, auto;
+}
+
+.warehouse-designer-shell.app-shell {
+  border-color: rgba(176, 199, 208, .16);
+  border-radius: 12px;
+  box-shadow: 0 26px 70px rgba(0, 0, 0, .46), inset 0 1px rgba(255, 255, 255, .035);
+}
+
+.premium-overhaul .topbar {
+  min-height: 66px;
+  border-bottom-color: var(--industrial-line);
+  background:
+    linear-gradient(180deg, rgba(19, 28, 36, .98), rgba(11, 17, 23, .97));
+  box-shadow: 0 12px 30px rgba(0, 0, 0, .24);
+  backdrop-filter: blur(22px);
+}
+
+.premium-overhaul .brand-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  color: #17150e;
+  background: linear-gradient(145deg, #f2c34a, #c8871f);
+  box-shadow: 0 8px 20px rgba(216, 151, 36, .2), inset 0 1px rgba(255, 255, 255, .38);
+}
+
+.premium-overhaul .compact-brand strong {
+  color: var(--industrial-text);
+  letter-spacing: -.015em;
+}
+
+.premium-overhaul .project-name {
+  color: var(--industrial-muted);
+  font-size: .78rem;
+  font-weight: 650;
+}
+
+.premium-overhaul .mode-switcher {
+  padding: 3px;
+  border: 1px solid var(--industrial-line);
+  border-radius: 9px;
+  background: #0b1117;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, .45);
+}
+
+.premium-overhaul .mode-switcher button {
+  min-height: 32px;
+  border-radius: 7px;
+  color: #8fa1a9;
+  font-size: .77rem;
+  font-weight: 750;
+}
+
+.premium-overhaul .mode-switcher button.active {
+  color: #15140f;
+  background: linear-gradient(180deg, #f2c44e, #d99d29);
+  box-shadow: 0 5px 14px rgba(222, 161, 42, .2);
+}
+
+.premium-overhaul .icon-button,
+.premium-overhaul .ghost-button {
+  border-color: var(--industrial-line);
+  border-radius: 8px;
+  color: #c8d4d9;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .025));
+}
+
+.premium-overhaul .icon-button:hover,
+.premium-overhaul .ghost-button:hover {
+  transform: none;
+  border-color: rgba(105, 183, 202, .42);
+  color: #e9f6f8;
+  background: rgba(105, 183, 202, .1);
+}
+
+.premium-overhaul .premium-studio {
+  grid-template-columns: 76px minmax(0, 1fr);
+  gap: 10px;
+  padding: 10px;
+  background:
+    radial-gradient(circle at 65% 0%, rgba(76, 119, 132, .08), transparent 40%),
+    #0b1117;
+}
+
+.premium-overhaul .dock-hold {
+  width: 76px;
+}
+
+.premium-overhaul .workflow-dock {
+  width: 70px;
+  padding: 8px 6px;
+  border: 1px solid var(--industrial-line);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #111a22, #0b1117);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, .26);
+}
+
+.premium-overhaul .workflow-dock .dock-button {
+  min-height: 52px;
+  border-radius: 9px;
+  border-color: transparent;
+  color: #8da0a8;
+  background: transparent;
+}
+
+.premium-overhaul .workflow-dock .dock-button:hover {
+  color: #d8e5e9;
+  border-color: var(--industrial-line);
+  background: rgba(255, 255, 255, .04);
+}
+
+.premium-overhaul .workflow-dock .dock-button.active {
+  color: #19160f;
+  border-color: rgba(242, 195, 70, .5);
+  background: linear-gradient(145deg, #efc04a, #cf8e24);
+  box-shadow: 0 8px 20px rgba(213, 146, 31, .18);
+}
+
+.premium-overhaul .view-split {
+  border-radius: 13px;
+  background: #070c10;
+}
+
+.premium-overhaul .premium-view-card {
+  border: 1px solid var(--industrial-line);
+  border-radius: 12px;
+  background: #0b1117;
+  box-shadow: inset 0 1px rgba(255, 255, 255, .025), 0 14px 34px rgba(0, 0, 0, .2);
+}
+
+.premium-overhaul .view-badge {
+  top: 10px;
+  left: 10px;
+  padding: 5px 9px 5px 22px;
+  border-radius: 6px;
+  border-color: var(--industrial-line-strong);
+  color: #cbd8dc;
+  background: rgba(9, 15, 20, .88);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .24);
+  letter-spacing: .12em;
+}
+
+.premium-overhaul .view-badge::before {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 2px;
+  background: var(--industrial-yellow);
+  transform: translateY(-50%);
+  box-shadow: 0 0 12px rgba(229, 173, 45, .48);
+}
+
+.premium-overhaul .plan-wrapper {
+  padding: 8px;
+  background: #080d12;
+}
+
+.premium-overhaul .plan-svg {
+  border: 1px solid rgba(158, 186, 197, .11);
+  border-radius: 9px;
+  background: #091118;
+  box-shadow: inset 0 0 45px rgba(0, 0, 0, .52);
+}
+
+.plan-backdrop {
+  fill: #081017;
+  pointer-events: none;
+}
+
+.plan-floor-surface {
+  fill: url(#planFloorGradient);
+  stroke: rgba(220, 231, 234, .7);
+  stroke-width: .045;
+  filter: drop-shadow(0 .16px .2px rgba(0, 0, 0, .65));
+  pointer-events: none;
+}
+
+.plan-dot-field {
+  opacity: .52;
+  pointer-events: none;
+}
+
+.premium-overhaul .grid-line {
+  stroke: rgba(123, 154, 165, .095);
+  stroke-width: .009;
+}
+
+.premium-overhaul .grid-line.major {
+  stroke: rgba(114, 173, 190, .19);
+  stroke-width: .014;
+}
+
+.premium-overhaul .dimension-label {
+  fill: #e6b23c;
+  stroke: #081017;
+  stroke-width: .055;
+}
+
+.premium-overhaul .plan-object polygon {
+  stroke: rgba(226, 236, 239, .66);
+  stroke-width: .03;
+  opacity: .94;
+  filter: none;
+}
+
+.premium-overhaul .plan-object.type-pallet-rack polygon {
+  fill: #b77d25;
+  stroke: #efc258;
+}
+
+.premium-overhaul .plan-object.type-storage-shelf polygon {
+  fill: #3d6877;
+  stroke: #77b2c4;
+}
+
+.premium-overhaul .plan-object.type-column polygon {
+  fill: #65727a;
+  stroke: #a9b6bc;
+}
+
+.premium-overhaul .plan-object.type-no-go-zone polygon {
+  fill: rgba(211, 126, 35, .24);
+  stroke: #df8d32;
+  stroke-dasharray: .1 .06;
+}
+
+.premium-overhaul .plan-object.selected polygon {
+  stroke: #f7ca52;
+  stroke-width: .07;
+  filter: drop-shadow(0 0 .08px rgba(247, 202, 82, .9));
+}
+
+.premium-overhaul .object-text {
+  fill: #f1f5f5;
+  font-size: .17px;
+  stroke: #071016;
+  stroke-width: .04;
+}
+
+.premium-overhaul .object-measure {
+  fill: #9fb1b8;
+  stroke: #071016;
+  stroke-width: .035;
+}
+
+.premium-overhaul .split-resizer {
+  background: linear-gradient(180deg, transparent, rgba(127, 157, 168, .28), transparent);
+}
+
+.premium-overhaul .split-resizer:hover {
+  background: linear-gradient(180deg, transparent, rgba(229, 173, 45, .58), transparent);
+}
+
+.premium-overhaul .scene3d-wrapper,
+.premium-overhaul .scene-card .scene3d-wrapper,
+.premium-overhaul .scene-canvas {
+  border-radius: 9px;
+  background:
+    radial-gradient(circle at 46% 18%, rgba(93, 123, 132, .18), transparent 34%),
+    linear-gradient(180deg, #111a20, #090f13 72%);
+}
+
+.premium-overhaul .camera-presets {
+  top: 10px;
+  left: 10px;
+  gap: 3px;
+  padding: 4px;
+  border: 1px solid var(--industrial-line) !important;
+  border-radius: 8px;
+  background: rgba(8, 13, 17, .88) !important;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .32);
+}
+
+.premium-overhaul .camera-presets button {
+  padding: 6px 8px;
+  border-color: transparent;
+  border-radius: 6px;
+  color: #aebdc2;
+  background: transparent;
+  font-size: .69rem;
+  font-weight: 750;
+}
+
+.premium-overhaul .camera-presets button:hover {
+  color: #17150e;
+  border-color: rgba(229, 173, 45, .5);
+  background: #e5ad2d;
+}
+
+.premium-overhaul .workflow-drawer,
+.premium-overhaul .floating-inspector {
+  border-color: var(--industrial-line);
+  border-radius: 12px;
+  background: rgba(14, 22, 29, .98);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .46);
+}
+
+@media (max-width: 1100px) {
+  .premium-overhaul .premium-studio {
+    grid-template-columns: 68px minmax(0, 1fr);
+  }
+  .premium-overhaul .workflow-dock,
+  .premium-overhaul .dock-hold {
+    width: 62px;
+  }
+}

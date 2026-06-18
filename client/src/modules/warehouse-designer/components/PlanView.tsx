@@ -224,7 +224,20 @@ export function PlanView({ onEditObject }: { onEditObject?: () => void }) {
 
   return <div className="plan-wrapper" onClick={(event) => event.stopPropagation()}>
     <svg ref={svgRef} className="plan-svg" viewBox={viewBox} onContextMenu={handlePlanContextMenu} onPointerMove={handlePointerMove} onPointerUp={() => { if (rectDraft) { const rect = rectFromDraft(rectDraft); if (rect.width > 0.15 && rect.depth > 0.15) createRectangleWalls({ x: rect.x, y: rect.y }, rect.width, rect.depth); setRectDraft(null); } if (drag?.kind === "marquee") { const minX = Math.min(drag.startPlan.x, drag.currentPlan.x); const minY = Math.min(drag.startPlan.y, drag.currentPlan.y); const maxX = Math.max(drag.startPlan.x, drag.currentPlan.x); const maxY = Math.max(drag.startPlan.y, drag.currentPlan.y); if (maxX - minX > 0.05 || maxY - minY > 0.05) { const ids = displayObjects.filter((o) => o.position.x >= minX && o.position.x <= maxX && o.position.y >= minY && o.position.y <= maxY).map((o) => o.id); if (ids.length > 0) selectObjects(ids); } } if (drag?.kind === "object" && dragLivePositions) { for (const [id, pos] of Object.entries(dragLivePositions)) { updateObject(id, { position: pos }); } setDragLivePositions(null); } setDrag(null); }} onPointerLeave={() => { setDragLivePositions(null); setDrag(null); setRectDraft(null); }} onPointerDown={handlePlanPointerDown} onWheel={handleWheel}>
-      <defs><filter id="planGlow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="0.05" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter></defs>
+      <defs>
+        <filter id="planGlow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="0.05" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+        <linearGradient id="planFloorGradient" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#17232d" />
+          <stop offset="55%" stopColor="#111b24" />
+          <stop offset="100%" stopColor="#0c151d" />
+        </linearGradient>
+        <pattern id="planDots" width={settings.gridSize} height={settings.gridSize} patternUnits="userSpaceOnUse">
+          <circle cx={settings.gridSize / 2} cy={settings.gridSize / 2} r={Math.max(0.008, settings.gridSize * 0.025)} fill="rgba(148, 180, 194, 0.28)" />
+        </pattern>
+      </defs>
+      <rect x={viewOrigin.x} y={viewOrigin.y} width={viewW} height={viewH} className="plan-backdrop" />
+      {boundary.length >= 3 ? <polygon points={polygonPoints(boundary)} className="plan-floor-surface" /> : null}
+      <rect x={viewOrigin.x} y={viewOrigin.y} width={viewW} height={viewH} fill="url(#planDots)" className="plan-dot-field" />
       {gridLines.map((line, index) => <line key={index} x1={line.x1} y1={line.y1} x2={line.x2} y2={line.y2} className={line.major ? "grid-line major" : "grid-line"} />)}
       {boundary.length >= 3 ? <text x={(boundaryBounds.minX + boundaryBounds.maxX) / 2} y={boundaryBounds.minY - padding * 0.18} className="dimension-label top-dimension">{formatLength(boundaryBounds.maxX - boundaryBounds.minX, settings.unit)}</text> : null}
       {boundary.length >= 3 ? <text x={boundaryBounds.maxX + padding * 0.15} y={(boundaryBounds.minY + boundaryBounds.maxY) / 2} className="dimension-label side-dimension">{formatLength(boundaryBounds.maxY - boundaryBounds.minY, settings.unit)}</text> : null}

@@ -2,17 +2,15 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AbstractMesh,
   ArcRotateCamera,
-  Color3,
   Color4,
-  DirectionalLight,
   Engine,
-  HemisphericLight,
   Mesh,
   PointerEventTypes,
   Scene,
   TransformNode,
   Vector3,
-  Matrix
+  Matrix,
+  ShadowGenerator
 } from "@babylonjs/core";
 import { useStudioStore } from "../store/useStudioStore";
 import {
@@ -33,6 +31,7 @@ import type { ContextMenu } from "./planViewHelpers";
 import { useSceneTransformGizmo } from "./useSceneTransformGizmo";
 import { visibleObjects } from "../utils/levels";
 import { resolveStairs } from "../utils/stairs";
+import { configureSceneEnvironment, syncSceneShadows } from "../engine/sceneEnvironment";
 
 function markSelected(mesh: Mesh) {
   mesh.enableEdgesRendering();
@@ -63,8 +62,11 @@ export function Scene3D({ onEditObject }: Scene3DProps) {
   const sceneRef = useRef<Scene | null>(null);
   const engineRef = useRef<Engine | null>(null);
   const cameraRef = useRef<ArcRotateCamera | null>(null);
+  const shadowRef = useRef<ShadowGenerator | null>(null);
   const [menu, setMenu] = useState<ContextMenu | null>(null);
   const [sceneVersion, setSceneVersion] = useState(0);
+  const hasFramedSceneRef = useRef(false);
+  const lastFrameKeyRef = useRef("");
 
   const room = useStudioStore((state) => state.room);
   const objects = useStudioStore((state) => state.objects);
@@ -120,7 +122,7 @@ export function Scene3D({ onEditObject }: Scene3DProps) {
     if (!camera) return;
     const target = new Vector3(room.width > 0 ? sceneCenter.x - room.width / 2 : sceneCenter.x, room.height * 0.45, room.depth > 0 ? sceneCenter.y - room.depth / 2 : sceneCenter.y);
     camera.setTarget(target);
-    const radius = sceneSize * (preset === "walk" ? 0.8 : 1.18);
+    const radius = sceneSize * (preset === "walk" ? 0.8 : 1.48);
 
     if (preset === "top") {
       camera.alpha = Math.PI / 2;
@@ -150,13 +152,24 @@ export function Scene3D({ onEditObject }: Scene3DProps) {
     }
   };
 
+  const frameScene = (camera: ArcRotateCamera) => {
+    const target = new Vector3(
+      room.width > 0 ? sceneCenter.x - room.width / 2 : sceneCenter.x,
+      Math.max(1, room.height * 0.28),
+      room.depth > 0 ? sceneCenter.y - room.depth / 2 : sceneCenter.y,
+    );
+    camera.setTarget(target);
+    camera.alpha = Math.PI / 4;
+    camera.beta = Math.PI / 3.15;
+    camera.radius = Math.max(8, sceneSize * 1.75);
+  };
+
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
     const engine = new Engine(canvas, true, { preserveDrawingBuffer: false, stencil: false, antialias: true });
     const scene = new Scene(engine);
-    scene.clearColor = new Color4(0.86, 0.88, 0.84, 1);
 
     const camera = new ArcRotateCamera(
       "camera",
@@ -168,18 +181,13 @@ export function Scene3D({ onEditObject }: Scene3DProps) {
     );
     camera.attachControl(canvas, true);
     camera.lowerRadiusLimit = 3;
-    camera.upperRadiusLimit = 75;
+    camera.upperRadiusLimit = 120;
     camera.wheelPrecision = 45;
     camera.panningSensibility = 120;
     cameraRef.current = camera;
-
-    const hemi = new HemisphericLight("hemi", new Vector3(0, 1, 0), scene);
-    hemi.intensity = 0.82;
-    hemi.diffuse = new Color3(0.92, 0.91, 0.84);
-
-    const sun = new DirectionalLight("sun", new Vector3(-0.55, -1, -0.35), scene);
-    sun.intensity = 1.05;
-    sun.diffuse = new Color3(1, 0.91, 0.72);
+    shadowRef.current = configureSceneEnvironment(scene, camera);
+    hasFramedSceneRef.current = false;
+    lastFrameKeyRef.current = "";
 
     scene.onPointerObservable.add((event) => {
       if (event.type !== PointerEventTypes.POINTERPICK) return;
@@ -209,6 +217,8 @@ export function Scene3D({ onEditObject }: Scene3DProps) {
     return () => {
       resizeObserver.disconnect();
       window.removeEventListener("resize", handleResize);
+      shadowRef.current?.dispose();
+      shadowRef.current = null;
       scene.dispose();
       engine.dispose();
     };
@@ -271,6 +281,13 @@ export function Scene3D({ onEditObject }: Scene3DProps) {
         const node = createObjectNode(scene, room, obj);
         objectCacheRef.current.set(obj.id, { node, hash });
       }
+    }
+    syncSceneShadows(scene, shadowRef.current);
+    const frameKey = `${room.width}|${room.depth}|${room.height}|${sceneBounds.minX}|${sceneBounds.maxX}|${sceneBounds.minY}|${sceneBounds.maxY}`;
+    if (!hasFramedSceneRef.current || lastFrameKeyRef.current !== frameKey) {
+      frameScene(cameraRef.current!);
+      hasFramedSceneRef.current = true;
+      lastFrameKeyRef.current = frameKey;
     }
   }, [room, displayObjects, settings, spaceNames, sceneVersion]);
 

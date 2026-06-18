@@ -151,12 +151,9 @@ function createPlaceLabel(scene: Scene, room: Room, loop: ReturnType<typeof dete
   context.clearRect(0, 0, 2048, 256);
   context.fillStyle = "rgba(255,255,255,0)";
   context.fillRect(0, 0, 2048, 256);
-  context.shadowColor = "rgba(58, 48, 35, 0.52)";
-  context.shadowBlur = 18;
-  context.shadowOffsetY = 8;
-  context.fillStyle = loop.type === "warehouse" ? "rgba(255, 248, 224, 0.82)" : "rgba(255, 255, 255, 0.72)";
-  context.strokeStyle = "rgba(61, 53, 39, 0.32)";
-  context.lineWidth = 4;
+  context.fillStyle = loop.type === "warehouse" ? "rgba(240, 185, 52, 0.42)" : "rgba(210, 224, 230, 0.34)";
+  context.strokeStyle = "rgba(10, 16, 20, 0.24)";
+  context.lineWidth = 3;
   context.font = loop.type === "warehouse" ? "700 92px Arial" : "700 76px Arial";
   context.textAlign = "center";
   context.textBaseline = "middle";
@@ -165,20 +162,20 @@ function createPlaceLabel(scene: Scene, room: Room, loop: ReturnType<typeof dete
   context.strokeText(label, 1024, 112);
   context.fillText(label, 1024, 112);
   context.font = "700 30px Arial";
-  context.fillStyle = "rgba(255, 247, 220, 0.62)";
+  context.fillStyle = "rgba(225, 235, 238, 0.3)";
   context.fillText(levelCaption, 1024, 196);
   texture.update();
 
   const mat = new StandardMaterial(`${loop.id}-label-material`, scene);
   mat.diffuseTexture = texture;
   mat.opacityTexture = texture;
-  mat.emissiveColor = loop.type === "warehouse" ? new Color3(0.88, 0.78, 0.52) : new Color3(0.72, 0.76, 0.78);
-  mat.alpha = 0.92;
+  mat.emissiveColor = loop.type === "warehouse" ? new Color3(0.35, 0.26, 0.08) : new Color3(0.18, 0.22, 0.23);
+  mat.alpha = 0.52;
   mat.backFaceCulling = false;
 
-  const plane = MeshBuilder.CreatePlane(`${loop.id}-floating-place-label`, { width, height: width / 8 }, scene);
-  plane.position.set(worldXFromPlan(center.x, room), loop.elevation + (loop.type === "warehouse" ? 2.45 : 2.15), worldZFromPlan(center.y, room));
-  plane.billboardMode = Mesh.BILLBOARDMODE_ALL;
+  const plane = MeshBuilder.CreatePlane(`${loop.id}-floor-place-label`, { width, height: width / 8 }, scene);
+  plane.position.set(worldXFromPlan(center.x, room), loop.elevation + 0.024, worldZFromPlan(center.y, room));
+  plane.rotation.x = Math.PI / 2;
   plane.material = mat;
   plane.isPickable = false;
 }
@@ -188,8 +185,9 @@ function createReferenceGrid(scene: Scene, room: Room, loops: Vec2[][]) {
   if (!points.length) return;
   const bounds = polygonBounds(points);
   const gridMaterial = new StandardMaterial("grid-material", scene);
-  gridMaterial.diffuseColor = new Color3(0.78, 0.63, 0.34);
-  gridMaterial.alpha = 0.18;
+  gridMaterial.diffuseColor = new Color3(0.49, 0.57, 0.59);
+  gridMaterial.emissiveColor = new Color3(0.03, 0.04, 0.045);
+  gridMaterial.alpha = 0.16;
   for (let x = Math.floor(bounds.minX); x <= bounds.maxX + 0.001; x += 1) {
     const line = MeshBuilder.CreateBox("grid-x", { width: 0.012, depth: Math.max(0.2, bounds.maxY - bounds.minY), height: 0.012 }, scene);
     line.position.set(worldXFromPlan(x, room), 0.018, worldZFromPlan((bounds.minY + bounds.maxY) / 2, room));
@@ -202,12 +200,55 @@ function createReferenceGrid(scene: Scene, room: Room, loops: Vec2[][]) {
   }
 }
 
+function createEnvironmentDeck(scene: Scene, room: Room, loops: Vec2[][]) {
+  const points = loops.flat();
+  if (!points.length) return;
+  const bounds = polygonBounds(points);
+  const margin = Math.max(7, Math.max(bounds.maxX - bounds.minX, bounds.maxY - bounds.minY) * 0.45);
+  const width = bounds.maxX - bounds.minX + margin * 2;
+  const depth = bounds.maxY - bounds.minY + margin * 2;
+  const centerX = (bounds.minX + bounds.maxX) / 2;
+  const centerY = (bounds.minY + bounds.maxY) / 2;
+  const material = makeMaterial(scene, "environment-deck-material", "#20272b", 0.02, 0.96);
+  const deck = MeshBuilder.CreateBox("environment-deck", { width, depth, height: 0.18 }, scene);
+  deck.position.set(worldXFromPlan(centerX, room), -0.17, worldZFromPlan(centerY, room));
+  deck.material = material;
+  deck.isPickable = false;
+}
+
+function createPerimeterMarkings(scene: Scene, room: Room, loops: ReturnType<typeof detectRoomLoops>) {
+  const marking = makeMaterial(scene, "perimeter-marking-material", "#eab52f", 0.03, 0.72);
+  loops.filter((loop) => loop.type === "warehouse" && !loop.synthetic).forEach((loop) => {
+    loop.points.forEach((point, index) => {
+      const next = loop.points[(index + 1) % loop.points.length];
+      const dx = next.x - point.x;
+      const dy = next.y - point.y;
+      const length = Math.hypot(dx, dy);
+      if (length < 0.05) return;
+      const line = MeshBuilder.CreateBox(`${loop.id}-perimeter-marking-${index}`, {
+        width: length,
+        depth: 0.055,
+        height: 0.012,
+      }, scene);
+      line.position.set(
+        worldXFromPlan((point.x + next.x) / 2, room),
+        loop.elevation + 0.033,
+        worldZFromPlan((point.y + next.y) / 2, room),
+      );
+      line.rotation.y = -Math.atan2(dy, dx);
+      line.material = marking;
+      line.isPickable = false;
+    });
+  });
+}
+
 export function createRoomMeshes(scene: Scene, room: Room, objects: SceneObject[] = [], spaceNames: Record<string, string> = {}, selectedId?: string | null) {
   const loops = detectRoomLoops(objects, spaceNames);
-  const floorMaterial = makeMaterial(scene, "warehouse-floor-material", "#d9d7ce", 0, 0.82);
-  const roomFloorMaterial = makeMaterial(scene, "internal-room-floor-material", "#e9dfcb", 0, 0.86);
-  const wallMaterial = makeMaterial(scene, "wall-material", "#ede7dc", 0, 0.75);
+  const floorMaterial = makeMaterial(scene, "warehouse-floor-material", "#778187", 0.02, 0.92);
+  const roomFloorMaterial = makeMaterial(scene, "internal-room-floor-material", "#939da2", 0.02, 0.9);
+  const wallMaterial = makeMaterial(scene, "wall-material", "#d4dade", 0.01, 0.78);
   const stairs = objects.filter((object) => object.type === "stair");
+  createEnvironmentDeck(scene, room, loops.map((loop) => loop.points));
   loops.forEach((loop) => {
     try {
       // Synthetic loops come from the bounding-box fallback (T-junction walls that
@@ -222,5 +263,8 @@ export function createRoomMeshes(scene: Scene, room: Room, objects: SceneObject[
   });
   const openings = objects.filter((object) => object.type === "door" || object.type === "window");
   objects.filter((object) => object.type === "wall-segment").forEach((wall, index) => createWallWithOpenings(scene, room, wall, index, wallMaterial, openings, selectedId));
-  if (loops.length) createReferenceGrid(scene, room, loops.map((loop) => loop.points));
+  if (loops.length) {
+    createReferenceGrid(scene, room, loops.map((loop) => loop.points));
+    createPerimeterMarkings(scene, room, loops);
+  }
 }
