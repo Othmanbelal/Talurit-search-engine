@@ -1,0 +1,30 @@
+/* Module-scoped light theme. Mirrors theme/designTokens.ts by name. */
+
+.wd-root {
+  --wd-canvas: #eef1f4;
+  --wd-canvas-deck: #e4e8ec;
+  --wd-grid: #d4dade;
+  --wd-grid-strong: #c3cbd1;
+
+  --wd-panel: rgba(255, 255, 255, 0.78);
+  --wd-panel-solid: #f4f6f8;
+  --wd-panel-border: #d3dadf;
+  --wd-panel-shadow: 0 6px 24px rgba(40, 56, 70, 0.12);
+
+  --wd-text: #2b3338;
+  --wd-text-muted: #6b767d;
+  --wd-text-faint: #93a0a7;
+
+  --wd-structure: #9aa6ad;
+  --wd-outline: #7c878e;
+  --wd-selection: #2f7df6;
+
+  --wd-status-free: #8fae93;
+  --wd-status-occupied: #7d97b8;
+  --wd-status-problem: #c19a86;
+
+  --wd-radius: 12px;
+  --wd-radius-sm: 8px;
+  --wd-space: 12px;
+  --wd-space-lg: 18px;
+}
