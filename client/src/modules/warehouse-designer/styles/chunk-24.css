@@ -1,0 +1,198 @@
+/* Light glass chrome overrides (continued) — scoped to .wd-root */
+
+/* Layer navigator */
+.wd-root .layer-navigator {
+  background: var(--wd-panel);
+  border: 1px solid var(--wd-panel-border);
+  border-radius: var(--wd-radius);
+  box-shadow: var(--wd-panel-shadow);
+  backdrop-filter: blur(18px);
+  color: var(--wd-text);
+}
+.wd-root .layer-search input {
+  background: rgba(40, 56, 70, 0.06);
+  border-color: var(--wd-panel-border);
+  color: var(--wd-text);
+}
+.wd-root .layer-section h4 { color: var(--wd-text-muted); }
+.wd-root .layer-group-card,
+.wd-root .layer-object {
+  background: rgba(40, 56, 70, 0.05);
+  border-color: var(--wd-panel-border);
+}
+.wd-root .layer-object.active {
+  border-color: var(--wd-selection);
+  box-shadow: 0 0 0 1px rgba(47, 125, 246, 0.15) inset;
+}
+.wd-root .layer-object > button:not(:first-child) {
+  background: rgba(40, 56, 70, 0.06);
+  border-color: var(--wd-panel-border);
+  color: var(--wd-text);
+}
+.wd-root .layer-group-title,
+.wd-root .layer-object > button:first-child { color: var(--wd-text); }
+.wd-root .layer-group-title span,
+.wd-root .layer-object span,
+.wd-root .empty-layer-note { color: var(--wd-text-muted); }
+.wd-root .layer-navigator header > button,
+.wd-root .presentation-title-row > button {
+  background: rgba(40, 56, 70, 0.06);
+  border-color: var(--wd-panel-border);
+  color: var(--wd-text);
+}
+.wd-root .layer-group-actions button,
+.wd-root .guide-actions button,
+.wd-root .guide-selected button,
+.wd-root .presentation-actions button {
+  color: var(--wd-text);
+  background: rgba(40, 56, 70, 0.06);
+  border-color: var(--wd-panel-border);
+}
+.wd-root .layer-group-actions button:hover,
+.wd-root .guide-actions button:hover,
+.wd-root .guide-selected button:hover,
+.wd-root .presentation-actions button:hover {
+  background: rgba(47, 125, 246, 0.09);
+  border-color: rgba(47, 125, 246, 0.3);
+  color: var(--wd-text);
+}
+
+/* Object context menus */
+.wd-root .object-context-menu,
+.wd-root .obj-ctx-menu {
+  background: var(--wd-panel);
+  border: 1px solid var(--wd-panel-border);
+  box-shadow: var(--wd-panel-shadow);
+  backdrop-filter: blur(18px);
+}
+.wd-root .object-context-menu > button,
+.wd-root .obj-ctx-section button {
+  color: var(--wd-text);
+}
+.wd-root .object-context-menu > button:hover,
+.wd-root .obj-ctx-section button:hover {
+  background: rgba(47, 125, 246, 0.08);
+  color: var(--wd-text);
+}
+.wd-root .context-menu-title { color: var(--wd-text); border-bottom-color: var(--wd-panel-border); }
+.wd-root .obj-ctx-header strong { color: var(--wd-text); }
+.wd-root .obj-ctx-dims span { color: var(--wd-text-muted); }
+.wd-root .obj-ctx-close {
+  color: var(--wd-text-muted);
+  background: rgba(40, 56, 70, 0.06);
+  border-color: var(--wd-panel-border);
+}
+.wd-root .obj-ctx-close:hover { color: var(--wd-text); background: rgba(40, 56, 70, 0.1); }
+
+/* Drawing focus bar */
+.wd-root .drawing-focus-bar {
+  background: var(--wd-panel);
+  border: 1px solid var(--wd-panel-border);
+  box-shadow: var(--wd-panel-shadow);
+  backdrop-filter: blur(18px);
+}
+.wd-root .drawing-focus-main strong { color: var(--wd-text); }
+.wd-root .drawing-focus-main span { color: var(--wd-text-muted); }
+.wd-root .drawing-focus-state span,
+.wd-root .drawing-focus-state em {
+  color: var(--wd-text-muted);
+  background: rgba(40, 56, 70, 0.06);
+  border-color: var(--wd-panel-border);
+}
+.wd-root .drawing-snap-pills button,
+.wd-root .drawing-cancel {
+  color: var(--wd-text-muted);
+  background: rgba(40, 56, 70, 0.06);
+  border-color: var(--wd-panel-border);
+}
+.wd-root .drawing-snap-pills button.active {
+  color: var(--wd-text);
+  background: var(--wd-selection);
+  border-color: var(--wd-selection);
+}
+
+/* Context selection chip */
+.wd-root .context-selection-chip {
+  background: var(--wd-panel);
+  border: 1px solid var(--wd-panel-border);
+  box-shadow: var(--wd-panel-shadow);
+  backdrop-filter: blur(18px);
+}
+.wd-root .selection-chip-main strong { color: var(--wd-text); }
+.wd-root .selection-chip-main span { color: var(--wd-text-muted); }
+.wd-root .context-selection-chip button {
+  color: var(--wd-text);
+  background: rgba(40, 56, 70, 0.06);
+  border-color: var(--wd-panel-border);
+}
+.wd-root .context-selection-chip button:hover {
+  background: rgba(47, 125, 246, 0.1);
+  border-color: rgba(47, 125, 246, 0.35);
+}
+
+/* Object hover card */
+.wd-root .object-hover-card {
+  background: var(--wd-panel);
+  border: 1px solid var(--wd-panel-border);
+  box-shadow: var(--wd-panel-shadow);
+  color: var(--wd-text);
+  backdrop-filter: blur(18px);
+}
+.wd-root .hover-title { color: var(--wd-text); }
+.wd-root .hover-metrics span,
+.wd-root .hover-issues span,
+.wd-root .hover-row,
+.wd-root .hover-ok {
+  background: rgba(40, 56, 70, 0.05);
+  border-color: var(--wd-panel-border);
+}
+.wd-root .object-hover-card p { color: var(--wd-text-muted); }
+
+/* Premium guide / experience panel */
+.wd-root .premium-guide,
+.wd-root .premium-experience-panel {
+  background: var(--wd-panel);
+  border: 1px solid var(--wd-panel-border);
+  border-radius: var(--wd-radius);
+  box-shadow: var(--wd-panel-shadow);
+  backdrop-filter: blur(24px);
+  color: var(--wd-text);
+}
+.wd-root .guide-stat-grid span,
+.wd-root .presentation-metrics span,
+.wd-root .guide-progress div {
+  background: rgba(40, 56, 70, 0.05);
+  border-color: var(--wd-panel-border);
+}
+.wd-root .guide-stat-grid strong,
+.wd-root .presentation-metrics strong { color: var(--wd-text); }
+.wd-root .guide-stat-grid small,
+.wd-root .presentation-metrics small { color: var(--wd-text-muted); }
+.wd-root .glass-subpanel {
+  background: rgba(40, 56, 70, 0.04);
+  border-color: var(--wd-panel-border);
+}
+
+/* Drawer section cards */
+.wd-root .drawer-section-card {
+  background: rgba(40, 56, 70, 0.04);
+  border-color: var(--wd-panel-border);
+  box-shadow: none;
+}
+.wd-root .drawer-section-title h3 { color: var(--wd-text); }
+.wd-root .drawer-section-title span { color: var(--wd-text-muted); }
+.wd-root .drawer-help-strip span {
+  color: var(--wd-text-muted);
+  background: rgba(40, 56, 70, 0.05);
+  border-color: var(--wd-panel-border);
+}
+
+/* Scene selection tag */
+.wd-root .scene-selection-tag {
+  background: var(--wd-panel) !important;
+  border: 1px solid var(--wd-panel-border) !important;
+  box-shadow: var(--wd-panel-shadow);
+  color: var(--wd-text) !important;
+}
+.wd-root .scene-selection-tag strong { color: var(--wd-text); }
+.wd-root .scene-selection-tag span { color: var(--wd-text-muted); }

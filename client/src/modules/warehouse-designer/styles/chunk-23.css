@@ -16,6 +16,7 @@
   --wd-text-faint: #93a0a7;
 
   --wd-structure: #9aa6ad;
+  --wd-shelf: #c7cfd4;
   --wd-outline: #7c878e;
   --wd-selection: #2f7df6;
 
@@ -27,4 +28,288 @@
   --wd-radius-sm: 8px;
   --wd-space: 12px;
   --wd-space-lg: 18px;
+}
+
+/* ── Light glass chrome overrides scoped to .wd-root ───────────────────── */
+
+/* Shell background — light viewport */
+.wd-root.warehouse-designer-shell {
+  color: var(--wd-text);
+  background: var(--wd-canvas);
+}
+
+.wd-root.warehouse-designer-shell.app-shell {
+  border-color: var(--wd-panel-border);
+}
+
+/* Topbar */
+.wd-root .topbar,
+.wd-root .premium-overhaul .topbar,
+.wd-root.premium-overhaul .topbar {
+  background: var(--wd-panel);
+  border-bottom: 1px solid var(--wd-panel-border);
+  box-shadow: var(--wd-panel-shadow);
+  backdrop-filter: blur(18px);
+  color: var(--wd-text);
+}
+
+.wd-root .project-name { color: var(--wd-text); }
+.wd-root .eyebrow { color: var(--wd-text-muted); }
+.wd-root .compact-brand strong { color: var(--wd-text); }
+.wd-root .premium-overhaul .compact-brand strong { color: var(--wd-text); }
+.wd-root .premium-overhaul .project-name { color: var(--wd-text-muted); }
+
+/* Status pill */
+.wd-root .status-pill {
+  color: var(--wd-text);
+  background: rgba(40, 56, 70, 0.06);
+  border-color: var(--wd-panel-border);
+}
+
+/* Ghost buttons / icon buttons in topbar */
+.wd-root .ghost-button,
+.wd-root .icon-button,
+.wd-root .edit-selected-button {
+  color: var(--wd-text);
+  background: rgba(40, 56, 70, 0.06);
+  border-color: var(--wd-panel-border);
+}
+.wd-root .ghost-button:hover,
+.wd-root .icon-button:hover,
+.wd-root .edit-selected-button:hover:not(:disabled) {
+  background: rgba(47, 125, 246, 0.1);
+  border-color: rgba(47, 125, 246, 0.35);
+  color: var(--wd-text);
+  transform: none;
+}
+
+/* Mode switcher */
+.wd-root .mode-switcher {
+  background: var(--wd-panel-solid);
+  border-color: var(--wd-panel-border);
+}
+.wd-root .mode-switcher button { color: var(--wd-text-muted); }
+.wd-root .mode-switcher button:hover,
+.wd-root .mode-switcher button.active {
+  color: var(--wd-text);
+  background: var(--wd-selection);
+  box-shadow: none;
+}
+
+/* Overflow dropdown */
+.wd-root .overflow-dropdown {
+  background: var(--wd-panel);
+  border: 1px solid var(--wd-panel-border);
+  box-shadow: var(--wd-panel-shadow);
+}
+.wd-root .overflow-item { color: var(--wd-text); }
+.wd-root .overflow-item:hover {
+  background: rgba(47, 125, 246, 0.08);
+  border-color: rgba(47, 125, 246, 0.25);
+  color: var(--wd-text);
+}
+
+/* View badge */
+.wd-root .view-badge {
+  background: var(--wd-panel);
+  border-color: var(--wd-panel-border);
+  color: var(--wd-text);
+  backdrop-filter: blur(10px);
+}
+
+/* Glass panel (view cards) */
+.wd-root .glass-panel,
+.wd-root .premium-view-card {
+  background: var(--wd-panel);
+  border: 1px solid var(--wd-panel-border);
+  box-shadow: var(--wd-panel-shadow);
+  backdrop-filter: blur(18px);
+}
+.wd-root.premium-overhaul .premium-view-card {
+  background: var(--wd-panel);
+  border-color: var(--wd-panel-border);
+  box-shadow: var(--wd-panel-shadow);
+}
+
+/* Workflow dock */
+.wd-root .premium-dock,
+.wd-root .workflow-dock {
+  background: var(--wd-panel);
+  border: 1px solid var(--wd-panel-border);
+  box-shadow: var(--wd-panel-shadow);
+  backdrop-filter: blur(20px);
+}
+.wd-root .dock-button {
+  color: var(--wd-text-muted);
+  background: transparent;
+  border-color: transparent;
+}
+.wd-root .dock-button:hover,
+.wd-root .dock-button.active {
+  color: var(--wd-text);
+  background: rgba(47, 125, 246, 0.1);
+  border-color: rgba(47, 125, 246, 0.3);
+}
+.wd-root .dock-button span {
+  background: var(--wd-panel);
+  border-color: var(--wd-panel-border);
+  color: var(--wd-text);
+}
+.wd-root .dock-hint { color: var(--wd-text-faint); }
+
+/* Tool drawer / inspector drawer */
+.wd-root .tool-drawer,
+.wd-root .inspector-drawer,
+.wd-root .workflow-drawer,
+.wd-root.premium-overhaul .workflow-drawer,
+.wd-root.premium-overhaul .floating-inspector {
+  background: var(--wd-panel);
+  border: 1px solid var(--wd-panel-border);
+  border-radius: var(--wd-radius);
+  box-shadow: var(--wd-panel-shadow);
+  backdrop-filter: blur(18px);
+}
+.wd-root .drawer-header {
+  background: rgba(40, 56, 70, 0.04);
+  border-bottom-color: var(--wd-panel-border);
+  color: var(--wd-text);
+}
+.wd-root .drawer-header h2 { color: var(--wd-text); }
+.wd-root .mini-close {
+  color: var(--wd-text-muted);
+  background: rgba(40, 56, 70, 0.06);
+  border-color: var(--wd-panel-border);
+}
+.wd-root .mini-close:hover {
+  background: rgba(47, 125, 246, 0.1);
+  border-color: rgba(47, 125, 246, 0.3);
+  color: var(--wd-text);
+}
+
+/* Floating inspector */
+.wd-root .floating-inspector {
+  background: var(--wd-panel);
+  border: 1px solid var(--wd-panel-border);
+  box-shadow: var(--wd-panel-shadow);
+  backdrop-filter: blur(18px);
+}
+.wd-root .floating-inspector-handle {
+  background: rgba(40, 56, 70, 0.04);
+  border-bottom-color: var(--wd-panel-border);
+  color: var(--wd-text);
+}
+.wd-root .floating-inspector-handle h2 { color: var(--wd-text); }
+.wd-root .floating-inspector-handle button,
+.wd-root .camera-presets button,
+.wd-root .suggestion-actions button {
+  color: var(--wd-text);
+  background: rgba(40, 56, 70, 0.06);
+  border-color: var(--wd-panel-border);
+}
+.wd-root .floating-inspector-handle button:hover,
+.wd-root .camera-presets button:hover,
+.wd-root .suggestion-actions button:hover {
+  background: rgba(47, 125, 246, 0.1);
+  border-color: rgba(47, 125, 246, 0.35);
+  color: var(--wd-text);
+}
+
+/* Smart status bar */
+.wd-root .smart-status-bar {
+  background: var(--wd-panel);
+  border-top: 1px solid var(--wd-panel-border);
+  box-shadow: 0 -6px 18px rgba(40, 56, 70, 0.08);
+}
+.wd-root .status-selection { color: var(--wd-text); }
+.wd-root .status-selection em { color: var(--wd-text-muted); }
+.wd-root .status-selection.muted { color: var(--wd-text-muted); }
+.wd-root .status-chip {
+  color: var(--wd-text-muted);
+  border-color: var(--wd-panel-border);
+  background: rgba(40, 56, 70, 0.06);
+}
+.wd-root .status-chip.ok {
+  color: #2d6a3f;
+  border-color: rgba(143, 174, 147, 0.45);
+  background: rgba(143, 174, 147, 0.12);
+}
+.wd-root .status-chip.warning {
+  color: #7a5c1a;
+  border-color: rgba(180, 148, 80, 0.38);
+  background: rgba(180, 148, 80, 0.1);
+}
+.wd-root .status-chip.error {
+  color: #8b2c2c;
+  border-color: rgba(193, 154, 134, 0.42);
+  background: rgba(193, 154, 134, 0.12);
+}
+
+/* Command palette */
+.wd-root .command-backdrop {
+  background: rgba(43, 51, 56, 0.28);
+  backdrop-filter: blur(8px);
+}
+.wd-root .command-palette {
+  background: var(--wd-panel);
+  border: 1px solid var(--wd-panel-border);
+  box-shadow: var(--wd-panel-shadow);
+}
+.wd-root .command-search {
+  border-bottom-color: var(--wd-panel-border);
+}
+.wd-root .command-search input { color: var(--wd-text); }
+.wd-root .command-search button {
+  color: var(--wd-text-muted);
+  background: rgba(40, 56, 70, 0.06);
+  border-color: var(--wd-panel-border);
+}
+.wd-root .command-list button {
+  color: var(--wd-text);
+  background: rgba(40, 56, 70, 0.04);
+  border-color: transparent;
+}
+.wd-root .command-list button:hover {
+  background: rgba(47, 125, 246, 0.08);
+  border-color: rgba(47, 125, 246, 0.2);
+}
+.wd-root .command-icon {
+  color: var(--wd-selection);
+  background: rgba(47, 125, 246, 0.1);
+}
+.wd-root .command-list small { color: var(--wd-text-muted); }
+
+/* Mini-map frame */
+.wd-root .mini-map {
+  background: var(--wd-panel);
+  border: 1px solid var(--wd-panel-border);
+  border-radius: var(--wd-radius);
+  box-shadow: var(--wd-panel-shadow);
+}
+.wd-root .mini-map-header { color: var(--wd-text); }
+.wd-root .mini-map-header small,
+.wd-root .mini-map p { color: var(--wd-text-muted); }
+.wd-root .mini-map svg {
+  background: var(--wd-canvas-deck);
+  border-color: var(--wd-panel-border);
+}
+
+/* Camera presets panel */
+.wd-root .camera-presets,
+.wd-root.premium-overhaul .camera-presets {
+  background: var(--wd-panel) !important;
+  border: 1px solid var(--wd-panel-border) !important;
+  border-radius: var(--wd-radius);
+  box-shadow: var(--wd-panel-shadow);
+}
+.wd-root .camera-presets button,
+.wd-root.premium-overhaul .camera-presets button {
+  color: var(--wd-text);
+  background: rgba(40, 56, 70, 0.06);
+  border-color: var(--wd-panel-border);
+}
+.wd-root .camera-presets button:hover,
+.wd-root.premium-overhaul .camera-presets button:hover {
+  color: var(--wd-text);
+  background: rgba(47, 125, 246, 0.1);
+  border-color: rgba(47, 125, 246, 0.3);
 }

@@ -143,7 +143,7 @@ export default function WarehouseDesignerStudio({ fallbackProjectName, initialLa
     return () => window.removeEventListener("keydown", onKey);
   }, [isFullscreen]);
 
-  return <div className={`warehouse-designer-shell app-shell premium-overhaul workspace-mode-${mode.toLowerCase()} theme-${settings.visualTheme} ambience-${settings.ambienceLevel} ${drawingFocus ? "drawing-focus-active" : ""} ${isFullscreen ? "studio-fullscreen" : ""}`}>
+  return <div className={`wd-root warehouse-designer-shell app-shell premium-overhaul workspace-mode-${mode.toLowerCase()} theme-${settings.visualTheme} ambience-${settings.ambienceLevel} ${drawingFocus ? "drawing-focus-active" : ""} ${isFullscreen ? "studio-fullscreen" : ""}`}>
     <TopBar mode={mode} setMode={setMode} undo={undo} redo={redo} toggleLayers={() => openDrawer("layers")} openLevels={() => openDrawer("levels")} openCommands={() => setCommandOpen(true)} openInspector={() => setInspectorOpen(true)} selectedName={selected?.name ?? null} onSaveProject={saveProject} isSaving={isSaving} lastSavedLabel={lastSavedAt ? `Saved ${lastSavedAt}` : ""} readOnly={readOnly} isFullscreen={isFullscreen} onToggleFullscreen={() => setIsFullscreen((prev) => !prev)} />
     <main className="premium-studio no-workspace-header">
       {/* Keep dock in grid at all times to prevent canvas from resizing during wall-drawing */}
