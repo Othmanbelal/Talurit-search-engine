@@ -1,8 +1,11 @@
-import { Color3, Color4, DynamicTexture, Mesh, MeshBuilder, Scene, StandardMaterial, VertexData } from "@babylonjs/core";
+import { Color3, DynamicTexture, Mesh, MeshBuilder, Scene, StandardMaterial, VertexData } from "@babylonjs/core";
 import type { Room, SceneObject, Vec2 } from "../types";
+import { WD_TOKENS } from "../theme/designTokens";
 import { objectCorners, polygonBounds, polygonCenter, wallCenterlineEndpoints } from "../utils/geometry";
 import { detectRoomLoops } from "../utils/roomDetection";
-import { makeMaterial, objectElevation, setObjectMetadata, worldXFromPlan, worldZFromPlan } from "./babylonCore";
+import { objectElevation, setObjectMetadata, worldXFromPlan, worldZFromPlan } from "./babylonCore";
+import { flatMaterial, getPalette } from "./materialPalette";
+import { createBlueprintGrid } from "./sceneGrid";
 
 function createPolygonSlab(scene: Scene, room: Room, name: string, boundary: Vec2[], material: StandardMaterial, y = 0, thickness = 0.16) {
   const mesh = new Mesh(name, scene);
@@ -94,11 +97,6 @@ function wallBox(scene: Scene, room: Room, wall: SceneObject, a: Vec2, b: Vec2, 
   mesh.rotation.y = -Math.atan2(dy, dx);
   mesh.material = material;
   setObjectMetadata(mesh, wall);
-  if (wall.id === selectedId) {
-    mesh.enableEdgesRendering();
-    mesh.edgesWidth = 8;
-    mesh.edgesColor = new Color4(0.26, 0.85, 1, 1);
-  }
 }
 
 function openingsOnWall(a: Vec2, b: Vec2, openings: SceneObject[], thickness: number) {
@@ -180,25 +178,6 @@ function createPlaceLabel(scene: Scene, room: Room, loop: ReturnType<typeof dete
   plane.isPickable = false;
 }
 
-function createReferenceGrid(scene: Scene, room: Room, loops: Vec2[][]) {
-  const points = loops.flat();
-  if (!points.length) return;
-  const bounds = polygonBounds(points);
-  const gridMaterial = new StandardMaterial("grid-material", scene);
-  gridMaterial.diffuseColor = new Color3(0.49, 0.57, 0.59);
-  gridMaterial.emissiveColor = new Color3(0.03, 0.04, 0.045);
-  gridMaterial.alpha = 0.16;
-  for (let x = Math.floor(bounds.minX); x <= bounds.maxX + 0.001; x += 1) {
-    const line = MeshBuilder.CreateBox("grid-x", { width: 0.012, depth: Math.max(0.2, bounds.maxY - bounds.minY), height: 0.012 }, scene);
-    line.position.set(worldXFromPlan(x, room), 0.018, worldZFromPlan((bounds.minY + bounds.maxY) / 2, room));
-    line.material = gridMaterial;
-  }
-  for (let y = Math.floor(bounds.minY); y <= bounds.maxY + 0.001; y += 1) {
-    const line = MeshBuilder.CreateBox("grid-z", { width: Math.max(0.2, bounds.maxX - bounds.minX), depth: 0.012, height: 0.012 }, scene);
-    line.position.set(worldXFromPlan((bounds.minX + bounds.maxX) / 2, room), 0.02, worldZFromPlan(y, room));
-    line.material = gridMaterial;
-  }
-}
 
 function createEnvironmentDeck(scene: Scene, room: Room, loops: Vec2[][]) {
   const points = loops.flat();
@@ -209,15 +188,15 @@ function createEnvironmentDeck(scene: Scene, room: Room, loops: Vec2[][]) {
   const depth = bounds.maxY - bounds.minY + margin * 2;
   const centerX = (bounds.minX + bounds.maxX) / 2;
   const centerY = (bounds.minY + bounds.maxY) / 2;
-  const material = makeMaterial(scene, "environment-deck-material", "#20272b", 0.02, 0.96);
+  const palette = getPalette(scene);
   const deck = MeshBuilder.CreateBox("environment-deck", { width, depth, height: 0.18 }, scene);
   deck.position.set(worldXFromPlan(centerX, room), -0.17, worldZFromPlan(centerY, room));
-  deck.material = material;
+  deck.material = palette.deck;
   deck.isPickable = false;
 }
 
 function createPerimeterMarkings(scene: Scene, room: Room, loops: ReturnType<typeof detectRoomLoops>) {
-  const marking = makeMaterial(scene, "perimeter-marking-material", "#eab52f", 0.03, 0.72);
+  const marking = flatMaterial(scene, "perimeter", WD_TOKENS.labelWarehouse);
   loops.filter((loop) => loop.type === "warehouse" && !loop.synthetic).forEach((loop) => {
     loop.points.forEach((point, index) => {
       const next = loop.points[(index + 1) % loop.points.length];
@@ -244,9 +223,10 @@ function createPerimeterMarkings(scene: Scene, room: Room, loops: ReturnType<typ
 
 export function createRoomMeshes(scene: Scene, room: Room, objects: SceneObject[] = [], spaceNames: Record<string, string> = {}, selectedId?: string | null) {
   const loops = detectRoomLoops(objects, spaceNames);
-  const floorMaterial = makeMaterial(scene, "warehouse-floor-material", "#778187", 0.02, 0.92);
-  const roomFloorMaterial = makeMaterial(scene, "internal-room-floor-material", "#939da2", 0.02, 0.9);
-  const wallMaterial = makeMaterial(scene, "wall-material", "#d4dade", 0.01, 0.78);
+  const palette = getPalette(scene);
+  const floorMaterial = palette.floor;
+  const roomFloorMaterial = palette.floorRoom;
+  const wallMaterial = palette.wall;
   const stairs = objects.filter((object) => object.type === "stair");
   createEnvironmentDeck(scene, room, loops.map((loop) => loop.points));
   loops.forEach((loop) => {
@@ -264,7 +244,7 @@ export function createRoomMeshes(scene: Scene, room: Room, objects: SceneObject[
   const openings = objects.filter((object) => object.type === "door" || object.type === "window");
   objects.filter((object) => object.type === "wall-segment").forEach((wall, index) => createWallWithOpenings(scene, room, wall, index, wallMaterial, openings, selectedId));
   if (loops.length) {
-    createReferenceGrid(scene, room, loops.map((loop) => loop.points));
+    createBlueprintGrid(scene, room, polygonBounds(loops.flatMap((l) => l.points)));
     createPerimeterMarkings(scene, room, loops);
   }
 }

@@ -34,10 +34,9 @@ export function createObjectNode(scene: Scene, room: Room, obj: SceneObject): Tr
 }
 
 export function disposeObjectNode(node: TransformNode): void {
-  node.getChildMeshes(false).forEach((m: AbstractMesh) => m.dispose(false, true));
-  // Mesh (subtype) supports dispose(doNotRecurse, disposeMaterialAndTextures).
-  // TransformNode.dispose ignores the extra arguments harmlessly.
-  (node as unknown as { dispose(a: boolean, b: boolean): void }).dispose(false, true);
+  node.getChildMeshes(false).forEach((m: AbstractMesh) => m.dispose(false, false));
+  // Materials are shared scene-lifetime; pass false to avoid destroying the palette.
+  (node as unknown as { dispose(a: boolean, b: boolean): void }).dispose(false, false);
 }
 
 export function clearObjectCache(cache: Map<string, CachedNode>): void {
