@@ -1,6 +1,7 @@
 import { MouseEvent, PointerEvent, WheelEvent, useMemo, useRef, useState } from "react";
 
 import type { SceneObject } from "../types";
+import { WD_TOKENS } from "../theme/designTokens";
 import { useStudioStore } from "../store/useStudioStore";
 import { snapPoint } from "../store/objectFactory";
 import { formatLength } from "../utils/units";
@@ -227,12 +228,12 @@ export function PlanView({ onEditObject }: { onEditObject?: () => void }) {
       <defs>
         <filter id="planGlow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="0.05" result="blur" /><feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
         <linearGradient id="planFloorGradient" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#17232d" />
-          <stop offset="55%" stopColor="#111b24" />
-          <stop offset="100%" stopColor="#0c151d" />
+          <stop offset="0%" stopColor={WD_TOKENS.floor} />
+          <stop offset="55%" stopColor={WD_TOKENS.canvasDeck} />
+          <stop offset="100%" stopColor={WD_TOKENS.canvas} />
         </linearGradient>
         <pattern id="planDots" width={settings.gridSize} height={settings.gridSize} patternUnits="userSpaceOnUse">
-          <circle cx={settings.gridSize / 2} cy={settings.gridSize / 2} r={Math.max(0.008, settings.gridSize * 0.025)} fill="rgba(148, 180, 194, 0.28)" />
+          <circle cx={settings.gridSize / 2} cy={settings.gridSize / 2} r={Math.max(0.008, settings.gridSize * 0.025)} fill={WD_TOKENS.grid} />
         </pattern>
       </defs>
       <rect x={viewOrigin.x} y={viewOrigin.y} width={viewW} height={viewH} className="plan-backdrop" />

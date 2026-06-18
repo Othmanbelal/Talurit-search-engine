@@ -88,24 +88,24 @@
 }
 
 .aisle-guide polygon {
-  fill: rgba(99, 210, 151, 0.08);
-  stroke: rgba(99, 210, 151, 0.5);
+  fill: rgba(143, 174, 147, 0.12);
+  stroke: var(--wd-status-free, #8fae93);
   stroke-width: 0.035;
   stroke-dasharray: 0.12 0.08;
   pointer-events: none;
 }
 
 .aisle-guide.warning polygon {
-  fill: rgba(255, 107, 107, 0.08);
-  stroke: rgba(255, 107, 107, 0.58);
+  fill: rgba(193, 154, 134, 0.12);
+  stroke: var(--wd-status-problem, #c19a86);
 }
 
 .aisle-guide-label {
-  fill: #dcffee;
+  fill: var(--wd-text, #2b3338);
   text-anchor: middle;
   dominant-baseline: middle;
   paint-order: stroke;
-  stroke: rgba(4, 10, 20, 0.92);
+  stroke: var(--wd-canvas, #eef1f4);
   stroke-width: 0.035;
   font-size: 0.16px;
   font-weight: 800;
@@ -113,7 +113,7 @@
 }
 
 .aisle-guide.warning .aisle-guide-label {
-  fill: #ffd8d8;
+  fill: var(--wd-status-problem, #c19a86);
 }
 
 .plan-object.generated-row-object polygon {

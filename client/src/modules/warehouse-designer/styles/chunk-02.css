@@ -84,40 +84,38 @@
   width: 100%;
   height: 100%;
   border-radius: 18px;
-  background:
-    radial-gradient(circle at center, rgba(255, 255, 255, 0.07), transparent 45%),
-    #071225;
+  background: var(--wd-canvas, #eef1f4);
   touch-action: none;
 }
 
 .room-fill {
-  fill: rgba(22, 44, 73, 0.86);
+  fill: rgba(228, 232, 236, 0.86);
 }
 
 .room-outline {
   fill: none;
-  stroke: var(--gold);
+  stroke: var(--wd-outline, #7c878e);
   stroke-width: 0.055;
 }
 
 .grid-line {
-  stroke: rgba(255, 255, 255, 0.09);
+  stroke: var(--wd-grid, #d4dade);
   stroke-width: 0.012;
 }
 
 .grid-line.major {
-  stroke: rgba(229, 184, 90, 0.23);
+  stroke: var(--wd-grid-strong, #c3cbd1);
   stroke-width: 0.018;
 }
 
 .dimension-label,
 .object-text,
 .object-measure {
-  fill: #f5f8ff;
+  fill: var(--wd-text, #2b3338);
   text-anchor: middle;
   dominant-baseline: middle;
   paint-order: stroke;
-  stroke: rgba(4, 10, 20, 0.88);
+  stroke: var(--wd-canvas, #eef1f4);
   stroke-width: 0.035;
   font-weight: 800;
   pointer-events: none;
@@ -125,7 +123,7 @@
 
 .dimension-label {
   font-size: 0.34px;
-  fill: var(--gold);
+  fill: var(--wd-text, #2b3338);
 }
 
 .object-text {
@@ -134,33 +132,33 @@
 
 .object-measure {
   font-size: 0.13px;
-  fill: #dbeafe;
+  fill: var(--wd-text-muted, #6b767d);
 }
 
 .plan-object polygon {
-  stroke: rgba(255, 255, 255, 0.58);
+  stroke: var(--wd-outline, #7c878e);
   stroke-width: 0.035;
   opacity: 0.8;
 }
 
 .plan-object circle {
-  fill: #fff;
-  stroke: #08101e;
+  fill: var(--wd-outline, #7c878e);
+  stroke: var(--wd-canvas, #eef1f4);
   stroke-width: 0.02;
 }
 
 .plan-object.selected polygon {
-  stroke: var(--gold);
+  stroke: var(--wd-selection, #2f7df6);
   stroke-width: 0.06;
   opacity: 1;
 }
 
 .plan-object.has-error polygon {
-  stroke: var(--red);
+  stroke: var(--wd-status-problem, #c19a86);
 }
 
 .plan-object.has-warning polygon {
-  stroke: var(--gold);
+  stroke: var(--wd-status-occupied, #7d97b8);
 }
 
 .plan-object.locked polygon {
@@ -168,14 +166,14 @@
 }
 
 .object-direction {
-  stroke: #fff;
+  stroke: var(--wd-outline, #7c878e);
   stroke-width: 0.03;
   pointer-events: none;
 }
 
 .clearance-preview {
-  fill: rgba(229, 184, 90, 0.05);
-  stroke: rgba(229, 184, 90, 0.48);
+  fill: rgba(47, 125, 246, 0.05);
+  stroke: rgba(47, 125, 246, 0.4);
   stroke-dasharray: 0.08 0.07;
   stroke-width: 0.025;
 }

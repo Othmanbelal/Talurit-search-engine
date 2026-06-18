@@ -176,14 +176,14 @@
 }
 
 .plan-object.hovered polygon {
-  stroke: var(--premium-cyan);
+  stroke: var(--wd-selection, #2f7df6);
   stroke-width: 0.055;
   opacity: 1;
-  filter: drop-shadow(0 0 0.13rem rgba(115, 213, 255, 0.48));
+  filter: drop-shadow(0 0 0.13rem rgba(47, 125, 246, 0.3));
 }
 
 .plan-object.selected polygon {
-  filter: drop-shadow(0 0 0.16rem rgba(242, 200, 107, 0.48));
+  filter: drop-shadow(0 0 0.16rem rgba(47, 125, 246, 0.32));
 }
 
 .object-context-menu {

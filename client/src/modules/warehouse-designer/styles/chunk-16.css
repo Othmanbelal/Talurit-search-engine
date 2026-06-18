@@ -52,15 +52,15 @@
 }
 
 .stair-plan-symbol polygon {
-  stroke: rgba(255, 236, 174, 0.9);
+  stroke: var(--wd-outline, #7c878e);
   stroke-width: 0.035;
 }
 .stair-step-line {
-  stroke: rgba(7, 17, 31, 0.5);
+  stroke: var(--wd-outline, #7c878e);
   stroke-width: 0.025;
 }
 .stair-arrow-line {
-  stroke: rgba(255, 255, 255, 0.95);
+  stroke: var(--wd-structure, #9aa6ad);
   stroke-width: 0.055;
   marker-end: none;
 }

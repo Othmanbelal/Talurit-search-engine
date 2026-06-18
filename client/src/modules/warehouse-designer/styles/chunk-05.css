@@ -246,8 +246,8 @@
 
 /* Marquee selection rectangle in SVG */
 .selection-marquee {
-  fill: rgba(115, 213, 255, 0.07);
-  stroke: rgba(115, 213, 255, 0.72);
+  fill: rgba(47, 125, 246, 0.07);
+  stroke: rgba(47, 125, 246, 0.72);
   stroke-width: 0.035;
   stroke-dasharray: 0.14 0.08;
   pointer-events: none;

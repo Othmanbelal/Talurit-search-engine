@@ -173,26 +173,26 @@
 
 .premium-overhaul .plan-wrapper {
   padding: 8px;
-  background: #080d12;
+  background: var(--wd-canvas, #eef1f4);
 }
 
 .premium-overhaul .plan-svg {
-  border: 1px solid rgba(158, 186, 197, .11);
+  border: 1px solid var(--wd-grid, #d4dade);
   border-radius: 9px;
-  background: #091118;
-  box-shadow: inset 0 0 45px rgba(0, 0, 0, .52);
+  background: var(--wd-canvas, #eef1f4);
+  box-shadow: inset 0 0 45px rgba(0, 0, 0, .04);
 }
 
 .plan-backdrop {
-  fill: #081017;
+  fill: var(--wd-canvas, #eef1f4);
   pointer-events: none;
 }
 
 .plan-floor-surface {
   fill: url(#planFloorGradient);
-  stroke: rgba(220, 231, 234, .7);
+  stroke: var(--wd-outline, #7c878e);
   stroke-width: .045;
-  filter: drop-shadow(0 .16px .2px rgba(0, 0, 0, .65));
+  filter: drop-shadow(0 .16px .2px rgba(40, 56, 70, .12));
   pointer-events: none;
 }
 
@@ -202,65 +202,65 @@
 }
 
 .premium-overhaul .grid-line {
-  stroke: rgba(123, 154, 165, .095);
+  stroke: var(--wd-grid, #d4dade);
   stroke-width: .009;
 }
 
 .premium-overhaul .grid-line.major {
-  stroke: rgba(114, 173, 190, .19);
+  stroke: var(--wd-grid-strong, #c3cbd1);
   stroke-width: .014;
 }
 
 .premium-overhaul .dimension-label {
-  fill: #e6b23c;
-  stroke: #081017;
+  fill: var(--wd-text, #2b3338);
+  stroke: var(--wd-canvas, #eef1f4);
   stroke-width: .055;
 }
 
 .premium-overhaul .plan-object polygon {
-  stroke: rgba(226, 236, 239, .66);
+  stroke: var(--wd-outline, #7c878e);
   stroke-width: .03;
   opacity: .94;
   filter: none;
 }
 
 .premium-overhaul .plan-object.type-pallet-rack polygon {
-  fill: #b77d25;
-  stroke: #efc258;
+  fill: var(--wd-structure, #9aa6ad);
+  stroke: var(--wd-outline, #7c878e);
 }
 
 .premium-overhaul .plan-object.type-storage-shelf polygon {
-  fill: #3d6877;
-  stroke: #77b2c4;
+  fill: var(--wd-shelf, #c7cfd4);
+  stroke: var(--wd-outline, #7c878e);
 }
 
 .premium-overhaul .plan-object.type-column polygon {
-  fill: #65727a;
-  stroke: #a9b6bc;
+  fill: var(--wd-structure, #9aa6ad);
+  stroke: var(--wd-outline, #7c878e);
 }
 
 .premium-overhaul .plan-object.type-no-go-zone polygon {
-  fill: rgba(211, 126, 35, .24);
-  stroke: #df8d32;
+  fill: rgba(193, 154, 134, .24);
+  stroke: var(--wd-status-problem, #c19a86);
   stroke-dasharray: .1 .06;
 }
 
 .premium-overhaul .plan-object.selected polygon {
-  stroke: #f7ca52;
+  stroke: var(--wd-selection, #2f7df6);
   stroke-width: .07;
-  filter: drop-shadow(0 0 .08px rgba(247, 202, 82, .9));
+  filter: drop-shadow(0 0 .08px rgba(47, 125, 246, .6));
 }
 
 .premium-overhaul .object-text {
-  fill: #f1f5f5;
+  fill: var(--wd-text, #2b3338);
   font-size: .17px;
-  stroke: #071016;
+  stroke: var(--wd-canvas, #eef1f4);
   stroke-width: .04;
 }
 
 .premium-overhaul .object-measure {
-  fill: #9fb1b8;
-  stroke: #071016;
+  fill: var(--wd-text-muted, #6b767d);
+  stroke: var(--wd-canvas, #eef1f4);
   stroke-width: .035;
 }
 

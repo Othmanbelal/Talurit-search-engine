@@ -198,35 +198,33 @@
 }
 
 .plan-svg {
-  background:
-    radial-gradient(circle at 50% 40%, rgba(115, 213, 255, 0.05), transparent 22vw),
-    linear-gradient(135deg, rgba(2, 6, 14, 0.94), rgba(5, 15, 29, 0.95));
+  background: var(--wd-canvas, #eef1f4);
 }
 
 .room-fill {
-  fill: rgba(13, 27, 48, 0.84);
+  fill: rgba(228, 232, 236, 0.84);
 }
 
 .grid-line {
-  stroke: rgba(148, 163, 184, 0.1);
+  stroke: var(--wd-grid, #d4dade);
 }
 
 .grid-line.major {
-  stroke: rgba(242, 200, 107, 0.16);
+  stroke: var(--wd-grid-strong, #c3cbd1);
 }
 
 .room-outline {
-  stroke: rgba(242, 200, 107, 0.72);
+  stroke: var(--wd-outline, #7c878e);
   stroke-width: 0.035;
-  filter: drop-shadow(0 0 0.08rem rgba(242, 200, 107, 0.35));
+  filter: none;
 }
 
 .plan-object polygon {
-  stroke: rgba(255, 255, 255, 0.26);
+  stroke: var(--wd-outline, #7c878e);
   stroke-width: 0.035;
 }
 
 .plan-object.selected polygon {
-  stroke: var(--premium-gold);
+  stroke: var(--wd-selection, #2f7df6);
   stroke-width: 0.06;
 }
