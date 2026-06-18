@@ -2,15 +2,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AbstractMesh,
   ArcRotateCamera,
-  Color4,
-  Engine,
+  Color3,
   Mesh,
   PointerEventTypes,
   Scene,
   TransformNode,
   Vector3,
   Matrix,
-  ShadowGenerator
 } from "@babylonjs/core";
 import { useStudioStore } from "../store/useStudioStore";
 import {
@@ -19,7 +17,6 @@ import {
 } from "../engine/babylonMeshes";
 import {
   type CachedNode,
-  clearObjectCache,
   createObjectNode,
   disposeObjectNode,
   objectHash,
@@ -31,17 +28,25 @@ import type { ContextMenu } from "./planViewHelpers";
 import { useSceneTransformGizmo } from "./useSceneTransformGizmo";
 import { visibleObjects } from "../utils/levels";
 import { resolveStairs } from "../utils/stairs";
-import { configureSceneEnvironment, syncSceneShadows } from "../engine/sceneEnvironment";
+import { createWarehouseEngine, applyObjectOutlines } from "../engine/engineSetup";
+import { WD_TOKENS } from "../theme/designTokens";
 
 function markSelected(mesh: Mesh) {
-  mesh.enableEdgesRendering();
-  mesh.edgesWidth = 8;
-  mesh.edgesColor = new Color4(0.26, 0.85, 1, 1);
+  const c = Color3.FromHexString(WD_TOKENS.selection);
+  mesh.outlineColor = c;
+  mesh.outlineWidth = 0.03;          // emphasised vs the 0.012 default outline
+  mesh.renderOutline = true;
+}
+
+function clearSelectionStyling(mesh: Mesh) {
+  const c = Color3.FromHexString(WD_TOKENS.outline);
+  mesh.outlineColor = c;
+  mesh.outlineWidth = 0.012;         // back to the default thin outline
 }
 
 function clearAllHighlights(scene: Scene) {
   scene.meshes.forEach((mesh) => {
-    if (mesh.edgesRenderer) mesh.disableEdgesRendering();
+    if (mesh.metadata?.objectId) clearSelectionStyling(mesh as Mesh);
   });
 }
 
@@ -60,9 +65,8 @@ type Scene3DProps = {
 export function Scene3D({ onEditObject }: Scene3DProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const sceneRef = useRef<Scene | null>(null);
-  const engineRef = useRef<Engine | null>(null);
+  const engineRef = useRef<ReturnType<typeof createWarehouseEngine>["engine"] | null>(null);
   const cameraRef = useRef<ArcRotateCamera | null>(null);
-  const shadowRef = useRef<ShadowGenerator | null>(null);
   const [menu, setMenu] = useState<ContextMenu | null>(null);
   const [sceneVersion, setSceneVersion] = useState(0);
   const hasFramedSceneRef = useRef(false);
@@ -168,24 +172,8 @@ export function Scene3D({ onEditObject }: Scene3DProps) {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const engine = new Engine(canvas, true, { preserveDrawingBuffer: false, stencil: false, antialias: true });
-    const scene = new Scene(engine);
-
-    const camera = new ArcRotateCamera(
-      "camera",
-      Math.PI / 4,
-      Math.PI / 3.2,
-      15,
-      new Vector3(0, 1.5, 0),
-      scene
-    );
-    camera.attachControl(canvas, true);
-    camera.lowerRadiusLimit = 3;
-    camera.upperRadiusLimit = 120;
-    camera.wheelPrecision = 45;
-    camera.panningSensibility = 120;
+    const { engine, scene, camera } = createWarehouseEngine(canvas);
     cameraRef.current = camera;
-    shadowRef.current = configureSceneEnvironment(scene, camera);
     hasFramedSceneRef.current = false;
     lastFrameKeyRef.current = "";
 
@@ -203,8 +191,6 @@ export function Scene3D({ onEditObject }: Scene3DProps) {
       setMenu(null);
     });
 
-    engine.runRenderLoop(() => scene.render());
-
     const handleResize = () => engine.resize();
     const resizeObserver = new ResizeObserver(handleResize);
     resizeObserver.observe(canvas);
@@ -217,8 +203,6 @@ export function Scene3D({ onEditObject }: Scene3DProps) {
     return () => {
       resizeObserver.disconnect();
       window.removeEventListener("resize", handleResize);
-      shadowRef.current?.dispose();
-      shadowRef.current = null;
       scene.dispose();
       engine.dispose();
     };
@@ -282,7 +266,7 @@ export function Scene3D({ onEditObject }: Scene3DProps) {
         objectCacheRef.current.set(obj.id, { node, hash });
       }
     }
-    syncSceneShadows(scene, shadowRef.current);
+    applyObjectOutlines(scene);
     const frameKey = `${room.width}|${room.depth}|${room.height}|${sceneBounds.minX}|${sceneBounds.maxX}|${sceneBounds.minY}|${sceneBounds.maxY}`;
     if (!hasFramedSceneRef.current || lastFrameKeyRef.current !== frameKey) {
       frameScene(cameraRef.current!);
@@ -291,7 +275,7 @@ export function Scene3D({ onEditObject }: Scene3DProps) {
     }
   }, [room, displayObjects, settings, spaceNames, sceneVersion]);
 
-  // Highlight effect: only toggles edge rendering on the selected mesh without rebuilding the scene.
+  // Highlight effect: toggles outline accent on the selected mesh without rebuilding the scene.
   useEffect(() => {
     const scene = sceneRef.current;
     if (!scene) return;
