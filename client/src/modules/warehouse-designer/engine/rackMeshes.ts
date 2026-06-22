@@ -1,7 +1,7 @@
 import { MeshBuilder, Scene, StandardMaterial, TransformNode } from "@babylonjs/core";
 import type { Room, SceneObject } from "../types";
 import { createBoxPart, objectElevation, setObjectMetadata, worldX, worldZ } from "./babylonCore";
-import { flatMaterial, getPalette } from "./materialPalette";
+import { getPalette } from "./materialPalette";
 import { finalizeMergedObject } from "./meshMerge";
 
 export function createRackMesh(scene: Scene, room: Room, object: SceneObject) {
@@ -11,8 +11,9 @@ export function createRackMesh(scene: Scene, room: Room, object: SceneObject) {
 
   const isLightShelf = object.type === "storage-shelf";
   const upright = palette.structure;
-  // Beam keeps the object's accent color (status/inventory color-coding) but via shared cache.
-  const beamMaterial = object.color ? flatMaterial(scene, "beam", object.color) : palette.structureAlt;
+  // Structure stays in muted greys (spec: structure greys, status tints only). Beams use
+  // the lighter structureAlt for subtle differentiation from the darker uprights.
+  const beamMaterial = palette.structureAlt;
   const shelfMaterial = palette.shelf;
   const braceMaterial = palette.structureAlt;
   const footMaterial = palette.structure;

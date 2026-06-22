@@ -6,7 +6,9 @@ import { WD_TOKENS } from "../theme/designTokens";
 export function configureSceneEnvironment(scene: Scene, camera: ArcRotateCamera): void {
   const canvas = Color3.FromHexString(WD_TOKENS.canvas);
   scene.clearColor = new Color4(canvas.r, canvas.g, canvas.b, 1);
-  scene.ambientColor = new Color3(0.92, 0.94, 0.96);
+  // Low scene ambient: materials carry their own small emissive floor, so a strong
+  // ambient here would wash everything to white.
+  scene.ambientColor = new Color3(0.12, 0.12, 0.13);
   scene.fogMode = Scene.FOGMODE_NONE;
 
   // Neutral image processing so flat colors stay true (no heavy ACES/contrast).
@@ -22,8 +24,8 @@ export function configureSceneEnvironment(scene: Scene, camera: ArcRotateCamera)
   camera.angularSensibilityY = 950;
 
   const ambient = new HemisphericLight("wd-ambient", new Vector3(0.2, 1, 0.15), scene);
-  ambient.intensity = 0.9;
+  ambient.intensity = 0.82;
   ambient.diffuse = new Color3(1, 1, 1);
-  ambient.groundColor = new Color3(0.78, 0.82, 0.85);
+  ambient.groundColor = new Color3(0.7, 0.74, 0.78);
   ambient.specular = new Color3(0, 0, 0);
 }

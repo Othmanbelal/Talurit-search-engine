@@ -23,9 +23,12 @@ function flat(scene: Scene, name: string, color: string, alpha = 1): StandardMat
   const m = new StandardMaterial(name, scene);
   const c = hex(color);
   m.diffuseColor = c;
-  m.emissiveColor = c.scale(0.55); // flat look: faces read their own color regardless of light angle
+  // Flat look without blowing out: a low emissive floor keeps unlit faces from going
+  // black, while the hemispheric light supplies the rest. Ambient is zeroed so the
+  // scene ambient term doesn't double-add the diffuse color and clamp to white.
+  m.emissiveColor = c.scale(0.2);
   m.specularColor = new Color3(0, 0, 0);
-  m.ambientColor = c;
+  m.ambientColor = new Color3(0, 0, 0);
   if (alpha < 1) {
     m.alpha = alpha;
     m.backFaceCulling = false;

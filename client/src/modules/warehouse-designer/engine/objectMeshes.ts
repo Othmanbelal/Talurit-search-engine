@@ -3,11 +3,11 @@ import type { Room, SceneObject } from "../types";
 import type { AisleGuide } from "../utils/warehouse";
 import { polygonBounds, polygonCenter } from "../utils/geometry";
 import { objectElevation, setObjectMetadata, worldX, worldXFromPlan, worldZ, worldZFromPlan } from "./babylonCore";
-import { flatMaterial } from "./materialPalette";
+import { flatMaterial, getPalette } from "./materialPalette";
 import { finalizeMergedObject } from "./meshMerge";
 
 export function createColumnMesh(scene: Scene, room: Room, object: SceneObject) {
-  const material = flatMaterial(scene, "column", object.color);
+  const material = getPalette(scene).structure;
   const mesh = MeshBuilder.CreateBox(object.id, { width: object.width, depth: object.depth, height: object.height }, scene);
   mesh.position.set(worldX(object, room), objectElevation(object) + object.height / 2, worldZ(object, room));
   mesh.rotation.y = -object.rotation;

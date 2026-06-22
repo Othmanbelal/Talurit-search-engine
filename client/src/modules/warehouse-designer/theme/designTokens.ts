@@ -12,16 +12,16 @@ export const WD_TOKENS = {
   grid: "#d4dade",         // faint blueprint grid
   gridStrong: "#c3cbd1",   // major grid lines
 
-  // Structure (soft greys)
-  structure: "#9aa6ad",    // rack uprights / frame
-  structureAlt: "#b3bcc2", // beams / secondary frame
-  shelf: "#c7cfd4",        // shelf decks
-  wall: "#cfd6db",         // walls
+  // Structure (soft greys) — kept clearly darker than the floor for contrast
+  structure: "#7e8b94",    // rack uprights / frame
+  structureAlt: "#95a0a8", // beams / secondary frame
+  shelf: "#aab5bc",        // shelf decks
+  wall: "#aab4bc",         // walls
   floor: "#dfe4e8",        // warehouse floor slab
   floorRoom: "#e8ecef",    // internal room floor
 
   // Lines / selection
-  outline: "#7c878e",      // thin object outline
+  outline: "#586671",      // thin object outline (crisp line-art on light bg)
   selection: "#2f7df6",    // single accent for selection
 
   // Inventory status — muted desaturated tints

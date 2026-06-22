@@ -45,6 +45,6 @@ export function applyObjectOutlines(scene: Scene): void {
     if (!mesh.metadata?.objectId) return;
     mesh.renderOutline = true;
     mesh.outlineColor = color;
-    mesh.outlineWidth = 0.012;
+    mesh.outlineWidth = 0.02;
   });
 }

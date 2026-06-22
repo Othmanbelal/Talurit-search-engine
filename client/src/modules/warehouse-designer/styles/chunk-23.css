@@ -15,9 +15,9 @@
   --wd-text-muted: #6b767d;
   --wd-text-faint: #93a0a7;
 
-  --wd-structure: #9aa6ad;
-  --wd-shelf: #c7cfd4;
-  --wd-outline: #7c878e;
+  --wd-structure: #7e8b94;
+  --wd-shelf: #aab5bc;
+  --wd-outline: #586671;
   --wd-selection: #2f7df6;
 
   --wd-status-free: #8fae93;
@@ -58,6 +58,32 @@
 .wd-root .compact-brand strong { color: var(--wd-text); }
 .wd-root .premium-overhaul .compact-brand strong { color: var(--wd-text); }
 .wd-root .premium-overhaul .project-name { color: var(--wd-text-muted); }
+
+/* Header layout fix: the header is a fixed-column grid, so the flex "spacer" never
+   pushed the expand button right — it wrapped to a second row. Anchor the expand
+   button to the header's top-right instead, hide the dead spacer, and let any extra
+   controls flow along the same row. */
+.wd-root .navigation-phase-header,
+.wd-root .single-header {
+  position: relative;
+  grid-auto-flow: column;
+  grid-auto-columns: max-content;
+  padding-right: 58px;
+}
+.wd-root .topbar-spacer { display: none; }
+.wd-root .topbar-expand-btn {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  color: var(--wd-text-muted);
+  background: var(--wd-panel-solid);
+  border: 1px solid var(--wd-panel-border);
+}
+.wd-root .topbar-expand-btn:hover {
+  color: var(--wd-selection);
+  border-color: var(--wd-selection);
+}
 
 /* Status pill */
 .wd-root .status-pill {

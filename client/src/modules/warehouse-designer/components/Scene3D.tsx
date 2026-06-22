@@ -34,14 +34,14 @@ import { WD_TOKENS } from "../theme/designTokens";
 function markSelected(mesh: Mesh) {
   const c = Color3.FromHexString(WD_TOKENS.selection);
   mesh.outlineColor = c;
-  mesh.outlineWidth = 0.03;          // emphasised vs the 0.012 default outline
+  mesh.outlineWidth = 0.05;          // emphasised vs the 0.02 default outline
   mesh.renderOutline = true;
 }
 
 function clearSelectionStyling(mesh: Mesh) {
   const c = Color3.FromHexString(WD_TOKENS.outline);
   mesh.outlineColor = c;
-  mesh.outlineWidth = 0.012;         // back to the default thin outline
+  mesh.outlineWidth = 0.02;          // back to the default thin outline
 }
 
 function clearAllHighlights(scene: Scene) {
