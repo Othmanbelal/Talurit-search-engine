@@ -1,6 +1,6 @@
 # Warehouse 3D — Premium Slots, FACK Capacity, Box/Pallet & Linked Card — Design Spec
 **Date:** 2026-06-22
-**Status:** Draft (awaiting user review)
+**Status:** Implemented (2026-06-22) — phases A3, A2, A1, A4 all complete
 **Sub-project:** A of 4 (sequence: D → B → C → A)
 **Builds on existing warehouse phases (W6.7) and AGENTS.md "Warehouse Integration / Assignment Rules".**
 
