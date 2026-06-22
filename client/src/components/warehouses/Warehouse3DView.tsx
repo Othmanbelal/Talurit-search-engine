@@ -6,12 +6,15 @@ import {
   DirectionalLight,
   Engine,
   HemisphericLight,
+  Mesh,
   PBRMaterial,
   PointerEventTypes,
   Scene,
   StandardMaterial,
+  TransformNode,
   Vector3,
 } from "@babylonjs/core";
+import { buildOrientationMarkers, createRackHighlight } from "../../modules/warehouse-designer/engine/interactionOverlays";
 import {
   createBoxMesh,
   createColumnMesh,
@@ -89,14 +92,44 @@ export function Warehouse3DView({ focusObjectId, height = 520, layout, onRackCli
     applyDarkTheme(scene);
     if (focusObjectId) focusObject(scene, camera, focusObjectId);
 
-    // Click: distinguish click from camera drag
+    // Premium hover/select: rim-light glow + left/right orientation markers on racks.
+    const highlight = createRackHighlight(scene);
+    let markers: TransformNode | null = null;
+    let activeId: string | null = null;
+    let selectedId: string | null = null;
+
+    const rackObjectOf = (id?: string) =>
+      id && rackIdsRef.current?.has(id) ? project.objects.find((o) => o.id === id) ?? null : null;
+
+    function applyHighlight(id: string | null) {
+      if (id === activeId) return;
+      highlight.removeAllMeshes();
+      markers?.dispose();
+      markers = null;
+      activeId = id;
+      const obj = rackObjectOf(id ?? undefined);
+      if (!obj) return;
+      const meshes = scene.meshes.filter((m): m is Mesh => m instanceof Mesh && m.metadata?.objectId === obj.id);
+      const glow = id === selectedId ? new Color3(0.94, 0.65, 0.13) : new Color3(0.22, 0.74, 0.93);
+      for (const mesh of meshes) highlight.addMesh(mesh, glow);
+      markers = buildOrientationMarkers(scene, obj, meshes);
+    }
+
+    // Click vs camera-drag, hover tracking.
     let downX = 0, downY = 0;
     scene.onPointerObservable.add((pi) => {
       if (pi.type === PointerEventTypes.POINTERDOWN) { downX = scene.pointerX; downY = scene.pointerY; }
-      else if (pi.type === PointerEventTypes.POINTERUP) {
+      else if (pi.type === PointerEventTypes.POINTERMOVE) {
+        const hovered = pi.pickInfo?.pickedMesh?.metadata?.objectId as string | undefined;
+        applyHighlight(rackObjectOf(hovered) ? hovered! : selectedId);
+      } else if (pi.type === PointerEventTypes.POINTERUP) {
         if (Math.hypot(scene.pointerX - downX, scene.pointerY - downY) > 8) return;
         const oid = pi.pickInfo?.pickedMesh?.metadata?.objectId as string | undefined;
-        if (oid && rackIdsRef.current?.has(oid)) onRackClickRef.current?.(oid);
+        if (oid && rackIdsRef.current?.has(oid)) {
+          selectedId = oid;
+          applyHighlight(oid);
+          onRackClickRef.current?.(oid);
+        }
       }
     });
 

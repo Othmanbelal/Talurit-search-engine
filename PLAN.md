@@ -1593,6 +1593,18 @@ Verification:
 
 Pending phases: A1 (premium L/R indicators), A4 (linked card).
 
+## Warehouse 3D - Premium Hover/Select Indicators (sub-project A, phase A1) - Completed
+
+Completed:
+- New `engine/interactionOverlays.ts`: a Babylon `HighlightLayer` (outer-glow rim light) plus orientation markers — a glowing accent bar down each end of a rack and floating "1" (left / slot 1) and "N" (right / last slot) billboard labels.
+- `Warehouse3DView` now tracks hover (POINTERMOVE) and selection (click): hovering a rack rim-lights it cyan and shows the L/R markers; clicking selects it (amber rim light) and keeps the markers; markers/highlight clear when moving off (selection persists). Reuses the existing rack metadata + pick path.
+
+Verification:
+- Client type-check passed; Docker client build succeeded; `check:lines` passed.
+- Browser: the 3D warehouse renders with no console errors; clicking a rack resolves via the same pick path (it opened the rack designer), confirming rack picking that hover reuses. The live hover glow/markers could not be captured through the test harness because Babylon's input manager ignores synthetic DOM pointer events for picking; with a real cursor the identical pick path applies.
+
+Pending phase: A4 (linked card).
+
 ## Known Risks
 
 - Excel columns vary between sheets.
