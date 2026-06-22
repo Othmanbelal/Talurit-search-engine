@@ -1,20 +1,31 @@
 import { compare, hash } from "bcryptjs";
 import { env } from "../../config/env";
+import { sendEmail } from "../email/email.service";
 import { AppError } from "../../utils/AppError";
-import type { AcceptInviteInput, LoginInput } from "./auth.schemas";
+import type {
+  AcceptInviteInput,
+  ForgotPasswordInput,
+  LoginInput,
+  ResetPasswordInput,
+} from "./auth.schemas";
 import {
   acceptInvitationWithSession,
   createSession,
   deleteSessionByTokenHash,
   findInvitationByTokenHash,
+  findPasswordResetToken,
   findSessionByTokenHash,
   findUserForLogin,
+  replacePasswordResetToken,
+  resetPasswordAndSessions,
   updateLastLogin,
 } from "./auth.repository";
 import {
   createInvitationToken,
+  createPasswordResetToken,
   createSessionToken,
   hashInvitationToken,
+  hashPasswordResetToken,
   hashSessionToken,
 } from "./auth.tokens";
 import type { LoginResult, PublicUser } from "./auth.types";
@@ -34,6 +45,9 @@ function sessionExpiryDate() {
   expiresAt.setDate(expiresAt.getDate() + env.SESSION_DAYS);
   return expiresAt;
 }
+
+const resetRequestMessage =
+  "If an active account exists for that email, a password reset link has been sent.";
 
 export async function login(input: LoginInput): Promise<LoginResult> {
   const user = await findUserForLogin(input.email);
@@ -88,6 +102,54 @@ export async function getCurrentUser(sessionToken?: string): Promise<PublicUser>
   }
 
   return toPublicUser(session.user);
+}
+
+export async function requestPasswordReset(input: ForgotPasswordInput) {
+  const user = await findUserForLogin(input.email);
+  if (!user?.isActive) return { message: resetRequestMessage };
+
+  const rawToken = createPasswordResetToken();
+  const expiresAt = new Date(Date.now() + env.PASSWORD_RESET_MINUTES * 60_000);
+  await replacePasswordResetToken(user.id, hashPasswordResetToken(rawToken), expiresAt);
+
+  const link = `${env.APP_PUBLIC_URL}/reset-password?token=${encodeURIComponent(rawToken)}`;
+  try {
+    await sendEmail({
+      to: user.email,
+      subject: "Reset your Tool Inventory password",
+      text: [
+        "A password reset was requested for your Tool Inventory account.",
+        `Open this link within ${env.PASSWORD_RESET_MINUTES} minutes:`,
+        link,
+        "If you did not request this, you can ignore this email.",
+      ].join("\n\n"),
+      html: [
+        "<p>A password reset was requested for your Tool Inventory account.</p>",
+        `<p><a href="${link}">Reset your password</a></p>`,
+        `<p>This link expires in ${env.PASSWORD_RESET_MINUTES} minutes.</p>`,
+        "<p>If you did not request this, you can ignore this email.</p>",
+      ].join(""),
+    });
+  } catch {
+    // Keep the public response generic so account existence and SMTP state are not exposed.
+    console.error("[password-reset] Reset email could not be sent.");
+  }
+
+  return { message: resetRequestMessage };
+}
+
+export async function resetPassword(input: ResetPasswordInput) {
+  const token = await findPasswordResetToken(hashPasswordResetToken(input.token));
+  if (!token || token.usedAt || token.expiresAt <= new Date() || !token.user.isActive) {
+    throw new AppError("Password reset link is invalid or expired.", 400);
+  }
+
+  await resetPasswordAndSessions({
+    tokenId: token.id,
+    userId: token.userId,
+    passwordHash: await hash(input.password, 12),
+  });
+  return { message: "Password updated. You can now sign in." };
 }
 
 export async function acceptInvitation(input: AcceptInviteInput): Promise<LoginResult> {

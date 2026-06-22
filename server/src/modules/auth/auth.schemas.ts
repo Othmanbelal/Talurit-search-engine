@@ -14,5 +14,16 @@ export const acceptInviteSchema = z.object({
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
+export const forgotPasswordSchema = z.object({
+  email: z.string().email().transform((email) => email.trim().toLowerCase()),
+});
+
+export const resetPasswordSchema = z.object({
+  token: z.string().min(20, "Password reset token is required"),
+  password: z.string().min(12, "Password must be at least 12 characters"),
+});
+
 export type LoginInput = z.infer<typeof loginSchema>;
 export type AcceptInviteInput = z.infer<typeof acceptInviteSchema>;
+export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;

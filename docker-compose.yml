@@ -2,17 +2,16 @@ services:
   postgres:
     image: postgres:16-alpine
     container_name: tool_inventory_postgres
+    restart: unless-stopped
     environment:
-      POSTGRES_DB: tool_inventory
-      POSTGRES_USER: tool_user
-      POSTGRES_PASSWORD: tool_password
+      POSTGRES_DB: ${POSTGRES_DB:-tool_inventory}
+      POSTGRES_USER: ${POSTGRES_USER:-tool_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tool_password}
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U tool_user -d tool_inventory"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-tool_user} -d ${POSTGRES_DB:-tool_inventory}"]
       interval: 10s
       timeout: 5s
       retries: 5
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -21,6 +20,7 @@ services:
       context: .
       dockerfile: server/Dockerfile
     container_name: tool_inventory_server
+    restart: unless-stopped
     depends_on:
       postgres:
         condition: service_healthy
@@ -29,10 +29,11 @@ services:
       PORT: 4000
       CLIENT_URL: ${CLIENT_URL:-http://localhost:5173}
       APP_PUBLIC_URL: ${APP_PUBLIC_URL:-http://localhost:5173}
-      DATABASE_URL: postgresql://tool_user:tool_password@postgres:5432/tool_inventory
+      DATABASE_URL: postgresql://${POSTGRES_USER:-tool_user}:${POSTGRES_PASSWORD:-tool_password}@postgres:5432/${POSTGRES_DB:-tool_inventory}
       SESSION_SECRET: ${SESSION_SECRET:-change_me_long_random_secret}
       COOKIE_NAME: ${COOKIE_NAME:-tool_inventory_session}
       SESSION_DAYS: ${SESSION_DAYS:-7}
+      PASSWORD_RESET_MINUTES: ${PASSWORD_RESET_MINUTES:-30}
       ADMIN_EMAIL: ${ADMIN_EMAIL:-}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
       ADMIN_NAME: ${ADMIN_NAME:-}
@@ -44,14 +45,14 @@ services:
       SMTP_SECURE: ${SMTP_SECURE:-false}
       ADMIN_SUMMARY_EMAIL: ${ADMIN_SUMMARY_EMAIL:-}
       BACKUP_DIR: /app/backups
+      UPLOAD_DIR: /app/uploads
       SUPABASE_URL: ${SUPABASE_URL:-}
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY:-}
       SUPABASE_STORAGE_BUCKET: ${SUPABASE_STORAGE_BUCKET:-tool-inventory-uploads}
       SUPABASE_SIGNED_URL_SECONDS: ${SUPABASE_SIGNED_URL_SECONDS:-3600}
-    ports:
-      - "4000:4000"
     volumes:
-      - ./backups:/app/backups
+      - "${BACKUP_HOST_DIR:-./backups}:/app/backups"
+      - "${UPLOAD_HOST_DIR:-./uploads}:/app/uploads"
     command: sh -c "npm --workspace server run db:migrate:deploy && npm --workspace server run start"
 
   client:
@@ -59,10 +60,11 @@ services:
       context: .
       dockerfile: client/Dockerfile
     container_name: tool_inventory_client
+    restart: unless-stopped
     depends_on:
       - server
     ports:
-      - "5173:80"
+      - "${CLIENT_PORT:-5173}:80"
 
 volumes:
   postgres_data:

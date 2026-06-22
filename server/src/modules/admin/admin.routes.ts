@@ -5,6 +5,13 @@ import { requireRoles } from "../../middleware/role.middleware";
 import { asyncHandler } from "../../utils/async-handler";
 import { adminDashboardController } from "./admin.controller";
 import {
+  backupOverviewController,
+  restoreBackupController,
+  runBackupController,
+  testBackupDirectoryController,
+  updateBackupSettingsController as updateBackupConfigurationController,
+} from "../backups/backup.controller";
+import {
   adminSettingsController,
   adminUsersController,
   cancelInvitationController,
@@ -34,3 +41,8 @@ adminRoutes.post("/invitations/:id/cancel", asyncHandler(cancelInvitationControl
 adminRoutes.get("/settings", asyncHandler(adminSettingsController));
 adminRoutes.patch("/settings", asyncHandler(updateAdminSettingsController));
 adminRoutes.post("/email/send-test", asyncHandler(sendTestEmailController));
+adminRoutes.get("/backups", asyncHandler(backupOverviewController));
+adminRoutes.patch("/backups/settings", asyncHandler(updateBackupConfigurationController));
+adminRoutes.post("/backups/test-directory", asyncHandler(testBackupDirectoryController));
+adminRoutes.post("/backups/run", asyncHandler(runBackupController));
+adminRoutes.post("/backups/restore", asyncHandler(restoreBackupController));

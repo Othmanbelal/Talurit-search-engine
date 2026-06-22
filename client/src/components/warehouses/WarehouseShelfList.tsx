@@ -46,14 +46,23 @@ function ShelfCard({ canEdit, onAddSlot, onDeleteShelf, onDeleteSlot, onUpdateSh
           </div>
         ) : null}
       </div>
-      {canEdit ? (
+      {canEdit && shelf.shelfKind !== "rack_level" ? (
         <form className="mt-3 flex gap-2" onSubmit={addSlot}>
           <input className="min-w-0 flex-1 rounded-md border border-line bg-slate-950 px-3 py-2 text-sm text-white" onChange={(event) => setSlotInput(event.target.value)} placeholder="Add FACK" value={slotInput} />
           <button className="inline-flex items-center gap-2 rounded-md border border-line px-3 py-2 text-sm font-semibold text-slate-200" type="submit"><Plus size={15} /> Slot</button>
         </form>
       ) : null}
       <div className="mt-4 flex flex-wrap gap-2">
-        {shelf.slots.map((slot) => <SlotChip canEdit={canEdit} key={slot.id} onDeleteSlot={onDeleteSlot} onUpdateSlot={onUpdateSlot} slot={slot} />)}
+        {shelf.slots.map((slot) => (
+          <SlotChip
+            canEdit={canEdit}
+            isRackLevel={shelf.shelfKind === "rack_level"}
+            key={slot.id}
+            onDeleteSlot={onDeleteSlot}
+            onUpdateSlot={onUpdateSlot}
+            slot={slot}
+          />
+        ))}
       </div>
     </article>
   );
@@ -87,10 +96,16 @@ function ShelfEditForm({ onCancel, onSave, shelf }: { onCancel: () => void; onSa
   );
 }
 
-function SlotChip({ canEdit, onDeleteSlot, onUpdateSlot, slot }: { canEdit: boolean; onDeleteSlot: (slotId: string) => Promise<void>; onUpdateSlot: (slotId: string, input: UpdateWarehouseSlotInput) => Promise<void>; slot: WarehouseSlot }) {
+function SlotChip({ canEdit, isRackLevel, onDeleteSlot, onUpdateSlot, slot }: {
+  canEdit: boolean;
+  isRackLevel: boolean;
+  onDeleteSlot: (slotId: string) => Promise<void>;
+  onUpdateSlot: (slotId: string, input: UpdateWarehouseSlotInput) => Promise<void>;
+  slot: WarehouseSlot;
+}) {
   const [editing, setEditing] = useState(false);
   const [compartment, setCompartment] = useState(slot.compartment);
-  const label = slot.locationAssigned ? `${slot.code} / FACK ${slot.compartment}` : "No location ID assigned";
+  const label = isRackLevel ? rackSlotLabel(slot) : slot.locationAssigned ? `${slot.code} / FACK ${slot.compartment}` : "No location ID assigned";
   if (editing) {
     return (
       <form className="inline-flex items-center gap-1 rounded-md border border-line bg-slate-950 p-1" onSubmit={(event) => { event.preventDefault(); void onUpdateSlot(slot.id, { compartment }).then(() => setEditing(false)); }}>
@@ -104,10 +119,16 @@ function SlotChip({ canEdit, onDeleteSlot, onUpdateSlot, slot }: { canEdit: bool
     <span className={`inline-flex items-center gap-2 rounded-md border px-2 py-1 text-sm ${slot.assignmentCount ? "border-emerald-400/40 bg-emerald-500/10 text-emerald-100" : "border-line bg-slate-950/70 text-slate-200"}`}>
       {slot.slotIndex ? `Slot ${slot.slotIndex}: ` : null}{label}
       {slot.assignmentCount ? <span className="text-xs text-emerald-200">{slot.assignmentCount}</span> : null}
-      {canEdit ? <button className="text-slate-400 hover:text-white" onClick={() => setEditing(true)} title="Rename slot" type="button"><Edit3 size={13} /></button> : null}
+      {canEdit && !isRackLevel ? <button className="text-slate-400 hover:text-white" onClick={() => setEditing(true)} title="Rename slot" type="button"><Edit3 size={13} /></button> : null}
       {canEdit ? <button className="text-red-200 hover:text-red-100" onClick={() => confirmDeleteSlot(slot, onDeleteSlot)} title="Delete slot" type="button"><Trash2 size={13} /></button> : null}
     </span>
   );
+}
+
+function rackSlotLabel(slot: WarehouseSlot) {
+  const placement = slot.assignedPlacement;
+  if (!placement) return "Available";
+  return `${placement.locationCode ?? "Placement unassigned"}${placement.compartment ? ` / FACK ${placement.compartment}` : ""}`;
 }
 
 function confirmDeleteShelf(shelf: WarehouseShelf, onDelete: (id: string) => Promise<void>) {

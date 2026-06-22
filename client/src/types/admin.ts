@@ -89,3 +89,43 @@ export type AdminSettingsPayload = {
   smtpFrom: string;
   smtpSecure: boolean;
 };
+
+export type BackupSettings = {
+  enabled: boolean;
+  intervalHours: number;
+  directory: string;
+  storageRoot: string;
+};
+
+export type BackupLogRecord = {
+  id: string;
+  operation: "backup" | "restore";
+  trigger: "manual" | "automatic" | "pre_restore";
+  fileName?: string | null;
+  filePath?: string | null;
+  status: "PENDING" | "SUCCESS" | "FAILED";
+  message?: string | null;
+  createdByUserName?: string | null;
+  completedAt?: string | null;
+  createdAt: string;
+};
+
+export type BackupFile = {
+  fileName: string;
+  kind: "full" | "database_only_legacy";
+  sizeBytes: number;
+  modifiedAt: string;
+};
+
+export type BackupOverview = {
+  settings: BackupSettings;
+  files: BackupFile[];
+  logs: BackupLogRecord[];
+  lastBackup: BackupLogRecord | null;
+  lastRestore: BackupLogRecord | null;
+  nextAutomaticBackupAt: string | null;
+  activeOperation: {
+    kind: "backup" | "restore";
+    startedAt: string;
+  } | null;
+};

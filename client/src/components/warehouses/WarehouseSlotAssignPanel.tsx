@@ -9,7 +9,7 @@ import { WarehouseSlotQrScanner } from "./WarehouseSlotQrScanner";
 type Props = {
   canEdit: boolean;
   onClose: () => void;
-  slot: Pick<WarehouseSlot | ShelfViewSlot, "id" | "code" | "displayName">;
+  slot: Pick<WarehouseSlot | ShelfViewSlot, "id" | "slotIndex">;
   warehouseId: string;
 };
 
@@ -24,8 +24,8 @@ export function WarehouseSlotAssignPanel({ canEdit, onClose, slot, warehouseId }
       <header className="flex shrink-0 items-start justify-between gap-4 border-b border-line p-5">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Slot assignment</p>
-          <h2 className="mt-1 text-xl font-semibold text-white">{slot.displayName ?? slot.code}</h2>
-          <p className="text-sm text-slate-400">Link a row from linked inventory. Stock quantity and placement stay unchanged.</p>
+          <h2 className="mt-1 text-xl font-semibold text-white">{physicalSlotLabel(slot.slotIndex)}</h2>
+          <p className="text-sm text-slate-400">Choose an item. Its existing placement becomes the visible slot location.</p>
         </div>
         <button className="rounded-md border border-line bg-white/5 p-2 text-slate-300 hover:text-white" onClick={onClose} type="button">
           <X size={18} />
@@ -46,7 +46,7 @@ export function WarehouseSlotAssignPanel({ canEdit, onClose, slot, warehouseId }
           onClose={() => setQrOpen(false)}
           onCode={async (code) => {
             const result = await panel.scan(code);
-            if (!result.matched) throw new Error("No unassigned linked inventory row matches this QR code.");
+            if (!result.matched) throw new Error("No linked inventory row matches this QR code.");
             setMethod("select");
           }}
         />
@@ -125,21 +125,28 @@ function SearchBox({ panel }: { panel: ReturnType<typeof useSlotAssignPanel> }) 
 
 function SearchResults({ panel }: { panel: ReturnType<typeof useSlotAssignPanel> }) {
   if (!panel.isLoading && panel.searchRows.length === 0) {
-    return <p className="mt-3 rounded-md border border-dashed border-line p-4 text-center text-sm text-slate-400">No unassigned linked inventory rows found.</p>;
+    return <p className="mt-3 rounded-md border border-dashed border-line p-4 text-center text-sm text-slate-400">No linked inventory rows found.</p>;
   }
   return <div className="mt-3 space-y-2">{panel.searchRows.map((row) => <InventoryRowOption key={row.id} onAssign={() => void panel.assign({ stockBalanceId: row.id, inventoryTableId: row.tableId ?? undefined })} row={row} saving={panel.isSaving} />)}</div>;
 }
 
 function InventoryRowOption({ onAssign, row, saving }: { onAssign: () => void; row: AssignableInventoryRow; saving: boolean }) {
+  const currentPlacement = row.currentWarehousePlacement;
   return (
     <div className="flex items-center justify-between gap-3 rounded-md border border-line bg-white/[0.03] p-3">
       <div className="min-w-0">
         <p className="truncate text-sm font-semibold text-white">{row.itemName}</p>
         <p className="text-xs text-slate-400">{[row.manufacturer, row.articleNumber, row.tableName].filter(Boolean).join(" | ")}</p>
         <p className="text-xs text-slate-500">{placementText(row.locationCode, row.compartment)} | {row.quantity} {row.unit}</p>
+        {currentPlacement ? (
+          <p className="mt-1 text-xs text-amber-300">
+            Currently in {currentPlacement.warehouseName}
+            {currentPlacement.slotIndex ? ` / slot #${currentPlacement.slotIndex}` : ""}
+          </p>
+        ) : null}
       </div>
       <button className="shrink-0 rounded-md bg-accent px-3 py-2 text-sm font-semibold text-slate-950 disabled:opacity-50" disabled={saving} onClick={onAssign} type="button">
-        Assign
+        {currentPlacement ? "Move here" : "Assign"}
       </button>
     </div>
   );
@@ -151,4 +158,8 @@ function MethodButton({ active, icon, label, onClick }: { active: boolean; icon:
 
 function placementText(locationCode?: string | null, compartment?: string | null) {
   return `Placement: ${locationCode ?? "Unassigned"}${compartment ? ` / FACK ${compartment}` : ""}`;
+}
+
+function physicalSlotLabel(slotIndex?: number | null) {
+  return slotIndex ? `Physical slot #${slotIndex}` : "Physical warehouse slot";
 }

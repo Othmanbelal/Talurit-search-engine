@@ -43,7 +43,7 @@ This repository currently contains Phase 0 through Phase 10 work:
 3. Start PostgreSQL:
 
    ```bash
-   docker compose up -d postgres
+   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d postgres
    ```
 
 4. Run the first Prisma migration:
@@ -101,6 +101,8 @@ The production compose file includes:
 ## Local Network Hosting
 
 Use this mode when the application should run only inside the company/local network.
+For a complete clean-Windows-computer migration, including data restore and old-admin
+cleanup, follow `docs/deployment/windows-clean-pc.md`.
 
 Architecture:
 
@@ -219,6 +221,8 @@ Email is not configured. Invitations and weekly summaries cannot be sent yet.
 ```
 
 Pending invitations remain stored and can be resent after SMTP is fixed.
+The login page also supports single-use password reset links. Reset links expire after
+`PASSWORD_RESET_MINUTES` and require working SMTP plus the correct `APP_PUBLIC_URL`.
 
 Admins can also configure SMTP from `/admin/settings`. Values saved there are stored in the database. The SMTP password is encrypted at rest and is not returned by API responses.
 
@@ -241,11 +245,78 @@ npm run restore:db
 
 ## Backups
 
-Database backups are written to:
+Full application backups are written to `backups/database` and managed from
+`Admin -> Settings -> Database backups`.
+
+New backups use the `.tibackup` package format. Each package includes:
+
+- the complete PostgreSQL database, including every table, row, relation, constraint, sequence, and migration record
+- inventory groups, tables, items, stock rows, locations, FACK values, notes, movement history, and imports
+- warehouse layouts, 3D layout JSON, shelves, physical slots, and item-to-slot assignments
+- users, password hashes, roles, invitations, sessions, application settings, and resource-manager assignments
+- used-in assignments, taken items, urgent issues, notes, interaction logs, and audit/history records
+- every application-managed item picture, QR image, and profile image stored in Supabase Storage
+- every file inside the persistent local uploads folder
+- a manifest with file sizes, SHA-256 checksums, format version, and required configuration fingerprint
+
+The backup center supports:
+
+- manual full application backups
+- automatic backups at a configurable interval
+- selecting a server-side destination inside the configured persistent backup root
+- testing whether the backend can write to the destination
+- viewing the last backup and last restore
+- viewing full `.tibackup` packages, legacy `.dump` files, and recent backup activity
+- restoring a selected backup after exact filename confirmation
+- creating a safety backup automatically before every restore
+
+Before restoring, the backend verifies the archive paths, manifest, every checksum, PostgreSQL dump, and
+the `SESSION_SECRET` fingerprint. It then creates a new full safety backup. Restores use a single
+PostgreSQL transaction, restore managed media and local uploads, and reapply Prisma migrations. If the
+restore fails after it starts, the backend attempts to restore the safety package automatically.
+Other API requests receive a temporary maintenance response while a backup or restore is running.
+
+The following deployment values are intentionally not placed inside downloadable backup packages:
+
+- `.env` secrets
+- `SESSION_SECRET`
+- Supabase service-role keys
+- SMTP environment passwords
+- operating-system, Docker, firewall, and source-code files
+
+Keep those values in a separate protected administrator/IT secret store. A restore requires the same
+`SESSION_SECRET`; this is checked before data is changed. Supabase credentials must also be configured
+when the package contains Supabase-managed media. External image URLs are preserved exactly in the
+database, but files owned by unrelated external websites cannot be controlled by this application.
+
+### Local, OneDrive, SharePoint, or NAS destination
+
+When Docker is used, the host backup destination is configured with `BACKUP_HOST_DIR`. Docker mounts that
+host folder into `/app/backups`, which is the persistent root shown in the admin page.
+
+Examples:
+
+```env
+BACKUP_HOST_DIR=./backups
+BACKUP_HOST_DIR=C:/Users/BackupUser/Company/Tool Inventory Backups
+BACKUP_HOST_DIR=Z:/ToolInventoryBackups
+```
+
+After changing `BACKUP_HOST_DIR`, restart the containers:
+
+```powershell
+docker compose down
+docker compose up -d --build
+```
+
+Inside the admin page, use a destination such as:
 
 ```text
-backups/database
+/app/backups/database
 ```
+
+The browser cannot give the server permanent access to an arbitrary folder on the administrator's own
+computer. The folder must exist on the server or be mounted into the backend container.
 
 Excel export backups will be written to:
 

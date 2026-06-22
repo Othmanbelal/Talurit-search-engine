@@ -28,15 +28,18 @@ import { resourceManagerRoutes } from "./modules/resource-managers/resource-mana
 import { itemNotesRoutes } from "./modules/item-notes/item-notes.routes";
 import { qrScanRoutes } from "./modules/qr-scan/qr-scan.routes";
 import { urgentIssueRoutes } from "./modules/urgent-issues/urgent-issues.routes";
+import { rejectDuringDatabaseMaintenance } from "./middleware/database-maintenance.middleware";
 
 export function createApp() {
   const app = express();
 
+  app.set("trust proxy", 1);
   app.use(helmet());
   app.use(cors({ origin: env.CLIENT_URL, credentials: true }));
   app.use(cookieParser());
   app.use(express.json({ limit: "10mb" }));
   app.use(requestLogger);
+  app.use(rejectDuringDatabaseMaintenance);
 
   app.use(`${API_PREFIX}/auth`, authRoutes);
   app.use(`${API_PREFIX}/admin`, adminRoutes);

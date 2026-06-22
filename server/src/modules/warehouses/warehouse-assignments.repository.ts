@@ -29,6 +29,28 @@ const assignmentInclude = {
   assignedByUser: { select: { id: true, name: true, email: true } },
 } satisfies Prisma.WarehouseSlotAssignmentInclude;
 
+const assignableRowInclude = {
+  item: {
+    select: {
+      id: true,
+      name: true,
+      identifiers: { select: { type: true, value: true } },
+      manufacturer: { select: { id: true, name: true } },
+    },
+  },
+  location: { select: { id: true, code: true } },
+  inventoryTable: { select: { id: true, name: true } },
+  warehouseSlotAssignments: {
+    where: { unassignedAt: null },
+    select: {
+      id: true,
+      warehouse: { select: { id: true, name: true } },
+      slot: { select: { id: true, slotIndex: true } },
+    },
+    take: 1,
+  },
+} satisfies Prisma.StockBalanceInclude;
+
 export type AssignmentRecord = Prisma.WarehouseSlotAssignmentGetPayload<{ include: typeof assignmentInclude }>;
 
 export function findActiveAssignmentsForWarehouse(warehouseId: string) {
@@ -75,7 +97,7 @@ export function countActiveSlotAssignments(slotId: string) {
   return prisma.warehouseSlotAssignment.count({ where: { slotId, unassignedAt: null } });
 }
 
-export function searchAssignableRows(tableIds: string[], search: string, tableId: string | undefined, limit: number) {
+export function searchAssignableRows(tableIds: string[], search: string, tableId: string | undefined, limit?: number) {
   if (tableIds.length === 0) return Promise.resolve([]);
   const allowedTableIds = tableId ? (tableIds.includes(tableId) ? [tableId] : []) : tableIds;
   if (allowedTableIds.length === 0) return Promise.resolve([]);
@@ -91,27 +113,15 @@ export function searchAssignableRows(tableIds: string[], search: string, tableId
   const where: Prisma.StockBalanceWhereInput = {
     archivedAt: null,
     status: "active",
-    warehouseSlotAssignments: { none: { unassignedAt: null } },
     inventoryTableId: { in: allowedTableIds },
     ...searchWhere,
   };
 
   return prisma.stockBalance.findMany({
     where,
-    include: {
-      item: {
-        select: {
-          id: true,
-          name: true,
-          identifiers: { select: { type: true, value: true } },
-          manufacturer: { select: { id: true, name: true } },
-        },
-      },
-      location: { select: { id: true, code: true } },
-      inventoryTable: { select: { id: true, name: true } },
-    },
-    orderBy: { item: { name: "asc" } },
-    take: limit,
+    include: assignableRowInclude,
+    orderBy: [{ inventoryTable: { name: "asc" } }, { item: { name: "asc" } }],
+    ...(limit ? { take: limit } : {}),
   });
 }
 
@@ -122,7 +132,6 @@ export function findAssignableRowsByQrCandidates(tableIds: string[], candidates:
       archivedAt: null,
       status: "active",
       inventoryTableId: { in: tableIds },
-      warehouseSlotAssignments: { none: { unassignedAt: null } },
       item: {
         OR: [
           { qrCodeId: { in: candidates } },
@@ -131,24 +140,13 @@ export function findAssignableRowsByQrCandidates(tableIds: string[], candidates:
         ],
       },
     },
-    include: {
-      item: {
-        select: {
-          id: true,
-          name: true,
-          identifiers: { select: { type: true, value: true } },
-          manufacturer: { select: { id: true, name: true } },
-        },
-      },
-      location: { select: { id: true, code: true } },
-      inventoryTable: { select: { id: true, name: true } },
-    },
+    include: assignableRowInclude,
     orderBy: [{ inventoryTable: { name: "asc" } }, { item: { name: "asc" } }],
     take: limit,
   });
 }
 
-export function createAssignment(data: {
+export function replaceAssignment(data: {
   warehouseId: string;
   slotId: string;
   stockBalanceId: string;
@@ -157,19 +155,31 @@ export function createAssignment(data: {
   assignedByUserId?: string | null;
   notes?: string | null;
   activeSlotKey: string;
-}) {
-  return prisma.warehouseSlotAssignment.create({
-    data: {
-      warehouseId: data.warehouseId,
-      slotId: data.slotId,
-      stockBalanceId: data.stockBalanceId,
-      itemId: data.itemId,
-      inventoryTableId: data.inventoryTableId,
-      assignedByUserId: data.assignedByUserId,
-      notes: data.notes,
-      activeSlotKey: data.activeSlotKey,
-    },
-    include: assignmentInclude,
+}, existingAssignmentId?: string) {
+  return prisma.$transaction(async (tx) => {
+    if (existingAssignmentId) {
+      await tx.warehouseSlotAssignment.update({
+        where: { id: existingAssignmentId },
+        data: {
+          unassignedAt: new Date(),
+          unassignedByUserId: data.assignedByUserId,
+          activeSlotKey: null,
+        },
+      });
+    }
+    return tx.warehouseSlotAssignment.create({
+      data: {
+        warehouseId: data.warehouseId,
+        slotId: data.slotId,
+        stockBalanceId: data.stockBalanceId,
+        itemId: data.itemId,
+        inventoryTableId: data.inventoryTableId,
+        assignedByUserId: data.assignedByUserId,
+        notes: data.notes,
+        activeSlotKey: data.activeSlotKey,
+      },
+      include: assignmentInclude,
+    });
   });
 }
 

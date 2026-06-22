@@ -22,3 +22,13 @@ export function hashInvitationToken(token: string) {
     .update(`invite.${token}.${env.SESSION_SECRET}`)
     .digest("hex");
 }
+
+export function createPasswordResetToken() {
+  return randomBytes(32).toString("base64url");
+}
+
+export function hashPasswordResetToken(token: string) {
+  return createHash("sha256")
+    .update(`password-reset.${token}.${env.SESSION_SECRET}`)
+    .digest("hex");
+}

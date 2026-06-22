@@ -34,11 +34,33 @@ export async function signedStorageUrl(ref: string) {
   return data.signedUrl;
 }
 
+export async function downloadStorageObject(ref: string) {
+  const parsed = parseStorageRef(ref);
+  if (!parsed) throw new AppError("Invalid storage reference.", 400);
+  const { data, error } = await supabase().storage.from(parsed.bucket).download(parsed.path);
+  if (error || !data) throw new AppError(`Could not download ${ref}: ${error?.message ?? "File unavailable."}`, 502);
+  return {
+    buffer: Buffer.from(await data.arrayBuffer()),
+    contentType: data.type || "application/octet-stream",
+  };
+}
+
+export async function restoreStorageObject(ref: string, buffer: Buffer, contentType: string) {
+  const parsed = parseStorageRef(ref);
+  if (!parsed) throw new AppError("Invalid storage reference.", 400);
+  const { error } = await supabase().storage.from(parsed.bucket).upload(parsed.path, buffer, {
+    cacheControl: "31536000",
+    contentType,
+    upsert: true,
+  });
+  if (error) throw new AppError(`Could not restore ${ref}: ${error.message}`, 502);
+}
+
 export function isStorageRef(value?: string | null) {
   return Boolean(value?.startsWith(STORAGE_REF_PREFIX));
 }
 
-function parseStorageRef(ref: string) {
+export function parseStorageRef(ref: string) {
   if (!ref.startsWith(STORAGE_REF_PREFIX)) return null;
   const withoutPrefix = ref.slice(STORAGE_REF_PREFIX.length);
   const slashIndex = withoutPrefix.indexOf("/");

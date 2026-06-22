@@ -143,7 +143,7 @@ export const tableLinkParamSchema = z.object({
 export const searchInventoryRowsQuerySchema = z.object({
   search: z.string().trim().optional(),
   tableId: z.string().trim().optional(),
-  limit: z.coerce.number().int().min(1).max(100).default(20),
+  limit: z.coerce.number().int().min(1).max(5000).optional(),
 });
 
 export const scanInventoryRowsSchema = z.object({

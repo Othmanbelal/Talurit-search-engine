@@ -1,7 +1,6 @@
 import { Box, ChevronDown, ChevronUp, Link2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useWarehouseSceneObjects } from "../../hooks/useWarehouseSceneObjects";
-import { getLocationCodesRequest } from "../../services/warehouse.service";
 import type { WarehouseSceneObject, WarehouseShelf } from "../../types/warehouse";
 import { WarehouseRackSlotDesigner } from "./WarehouseRackSlotDesigner";
 
@@ -15,11 +14,6 @@ type Props = {
 export function WarehouseSceneObjectsPanel({ canEdit, onGenerated, shelves, warehouseId }: Props) {
   const scene = useWarehouseSceneObjects(warehouseId);
   const [expanded, setExpanded] = useState<string | null>(null);
-  const [locationCodes, setLocationCodes] = useState<string[]>([]);
-
-  useEffect(() => {
-    getLocationCodesRequest(warehouseId).then((r) => setLocationCodes(r.codes)).catch(() => undefined);
-  }, [warehouseId]);
 
   if (scene.isLoading) return <div className="h-24 animate-pulse rounded-lg border border-line bg-white/5" />;
 
@@ -28,7 +22,7 @@ export function WarehouseSceneObjectsPanel({ canEdit, onGenerated, shelves, ware
       <div className="flex items-center justify-between gap-3">
         <div>
           <h3 className="font-semibold text-white">Rack slot configuration</h3>
-          <p className="text-sm text-slate-400">Click a rack to configure its shelf levels and assign location codes to slots.</p>
+          <p className="text-sm text-slate-400">Click a rack to configure its shelf levels and physical pallet slots.</p>
         </div>
         <span className="rounded-full border border-line px-3 py-1 text-xs text-slate-300">{scene.sceneObjects.length} racks</span>
       </div>
@@ -74,7 +68,6 @@ export function WarehouseSceneObjectsPanel({ canEdit, onGenerated, shelves, ware
               {isOpen && canEdit ? (
                 <div className="border-t border-line px-3 pb-3 pt-3">
                   <WarehouseRackSlotDesigner
-                    availableCodes={locationCodes}
                     existingShelves={shelves}
                     key={object.externalObjectId}
                     object={object}

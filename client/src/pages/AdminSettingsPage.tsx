@@ -1,11 +1,14 @@
 import { Settings } from "lucide-react";
 import { EmailSettingsPanel } from "../components/admin/EmailSettingsPanel";
+import { BackupManagementPanel } from "../components/admin/BackupManagementPanel";
 import { StatusPanel } from "../components/dashboard/StatusPanel";
 import { useAdminDashboard } from "../hooks/useAdminDashboard";
 import { useAdminSettings } from "../hooks/useAdminSettings";
+import { useAdminBackups } from "../hooks/useAdminBackups";
 
 export function AdminSettingsPage() {
   const adminSettings = useAdminSettings();
+  const adminBackups = useAdminBackups();
   const { data: dashboardData } = useAdminDashboard();
 
   return (
@@ -41,6 +44,8 @@ export function AdminSettingsPage() {
         onSendTest={adminSettings.sendTestEmail}
         settings={adminSettings.settings}
       />
+
+      <BackupManagementPanel backups={adminBackups} />
     </div>
   );
 }

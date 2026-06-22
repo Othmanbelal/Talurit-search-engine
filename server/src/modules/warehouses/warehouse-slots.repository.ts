@@ -7,7 +7,19 @@ const shelfInclude = {
   slots: {
     include: {
       storageLocation: { select: { id: true, code: true } },
-      _count: { select: { assignments: true } },
+      assignments: {
+        where: { unassignedAt: null },
+        select: {
+          stockBalance: {
+            select: {
+              compartment: true,
+              location: { select: { code: true } },
+            },
+          },
+        },
+        take: 1,
+      },
+      _count: { select: { assignments: { where: { unassignedAt: null } } } },
     },
     orderBy: [{ sortOrder: "asc" }, { compartment: "asc" }],
   },

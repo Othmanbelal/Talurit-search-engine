@@ -58,7 +58,7 @@ export function useSlotAssignPanel(warehouseId: string, slotId: string | null) {
   const search = useCallback(async (query: string, tableId?: string) => {
     setSearchQuery(query);
     try {
-      const result = await searchInventoryRowsRequest(warehouseId, { search: query, tableId, limit: 20 });
+      const result = await searchInventoryRowsRequest(warehouseId, { search: query, tableId });
       setSearchRows(result.rows);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to search inventory rows.");
@@ -69,7 +69,7 @@ export function useSlotAssignPanel(warehouseId: string, slotId: string | null) {
     try {
       const result = await scanWarehouseInventoryRowsRequest(warehouseId, code);
       setSearchRows(result.rows);
-      if (!result.matched) setError("No unassigned linked inventory row matches this QR code.");
+      if (!result.matched) setError("No linked inventory row matches this QR code.");
       else setError(null);
       return result;
     } catch (err) {

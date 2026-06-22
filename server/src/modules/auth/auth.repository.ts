@@ -58,6 +58,61 @@ export function deleteSessionByTokenHash(tokenHash: string) {
   });
 }
 
+export function replacePasswordResetToken(userId: string, tokenHash: string, expiresAt: Date) {
+  return prisma.$transaction(async (tx) => {
+    await tx.passwordResetToken.updateMany({
+      where: { userId, usedAt: null },
+      data: { usedAt: new Date() },
+    });
+    return tx.passwordResetToken.create({
+      data: { userId, tokenHash, expiresAt },
+    });
+  });
+}
+
+export function findPasswordResetToken(tokenHash: string) {
+  return prisma.passwordResetToken.findUnique({
+    where: { tokenHash },
+    select: {
+      id: true,
+      userId: true,
+      expiresAt: true,
+      usedAt: true,
+      user: { select: { isActive: true } },
+    },
+  });
+}
+
+export function resetPasswordAndSessions(args: {
+  tokenId: string;
+  userId: string;
+  passwordHash: string;
+}) {
+  return prisma.$transaction(async (tx) => {
+    const consumed = await tx.passwordResetToken.updateMany({
+      where: {
+        id: args.tokenId,
+        userId: args.userId,
+        usedAt: null,
+        expiresAt: { gt: new Date() },
+      },
+      data: { usedAt: new Date() },
+    });
+    if (consumed.count !== 1) {
+      throw new AppError("Password reset link is invalid or expired.", 400);
+    }
+    await tx.user.update({
+      where: { id: args.userId },
+      data: { passwordHash: args.passwordHash },
+    });
+    await tx.session.deleteMany({ where: { userId: args.userId } });
+    await tx.passwordResetToken.updateMany({
+      where: { userId: args.userId, usedAt: null },
+      data: { usedAt: new Date() },
+    });
+  });
+}
+
 export function findInvitationByTokenHash(tokenHash: string) {
   return prisma.userInvitation.findUnique({
     where: { tokenHash },

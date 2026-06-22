@@ -38,13 +38,13 @@ export function WarehouseSlotMapPanel({ canEdit = false, warehouseId }: Props) {
           </span>
           <div>
             <h2 className="text-lg font-semibold text-white">Slot map</h2>
-            <p className="text-sm text-slate-400">Items appear automatically when their location code matches a labeled slot.</p>
+            <p className="text-sm text-slate-400">An occupied slot displays the attached item's existing placement location.</p>
           </div>
         </div>
         <div className="flex gap-4 text-xs">
           <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm border border-emerald-400/40 bg-emerald-500/20" /> Occupied</span>
           <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm border border-line bg-white/5" /> Free</span>
-          <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm border border-dashed border-slate-700" /> No ID</span>
+          <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm border border-dashed border-slate-700" /> Available</span>
         </div>
       </div>
 
@@ -149,14 +149,16 @@ function ShelfLevelSection({ onSelect, selectedSlot, shelf }: {
 }
 
 function SlotDetailPanel({ canEdit, onAssign, onClose, slot }: { canEdit: boolean; onAssign: () => void; onClose: () => void; slot: ShelfViewSlot }) {
-  const label = slot.displayName ?? slot.code ?? "Unlabeled slot";
-  const fack = slot.compartment ? ` / FACK ${slot.compartment}` : "";
+  const firstItem = slot.items[0];
+  const label = firstItem
+    ? `${firstItem.locationCode ?? "Placement unassigned"}${firstItem.compartment ? ` / FACK ${firstItem.compartment}` : ""}`
+    : slot.slotIndex ? `Physical slot #${slot.slotIndex}` : "Physical warehouse slot";
 
   return (
     <Modal maxWidth="max-w-2xl" onClose={onClose}>
       <div className="flex shrink-0 items-center justify-between border-b border-line p-4">
         <div>
-          <h3 className="font-semibold text-white">{label}{fack}</h3>
+          <h3 className="font-semibold text-white">{label}</h3>
           <p className="text-xs text-slate-400">{slot.items.length} item{slot.items.length !== 1 ? "s" : ""} at this slot</p>
         </div>
         <div className="flex items-center gap-2">

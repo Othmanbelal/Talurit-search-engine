@@ -1,13 +1,13 @@
 import { FormEvent, useState } from "react";
 import { LockKeyhole } from "lucide-react";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 export function LoginPage() {
   const { login, user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const [email, setEmail] = useState("admin@example.com");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -59,7 +59,12 @@ export function LoginPage() {
           </label>
 
           <label className="block">
-            <span className="mb-2 block text-sm font-medium text-slate-300">Password</span>
+            <span className="mb-2 flex items-center justify-between text-sm font-medium text-slate-300">
+              Password
+              <Link className="text-xs text-accent hover:underline" to="/forgot-password">
+                Forgot password?
+              </Link>
+            </span>
             <input
               className="w-full rounded-md border border-line bg-slate-950/70 px-3 py-2.5 text-sm text-white outline-none focus:border-accent"
               onChange={(event) => setPassword(event.target.value)}

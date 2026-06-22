@@ -57,6 +57,10 @@ export type WarehouseSlot = {
   palletDepth: number;
   locationAssigned: boolean;
   assignmentCount: number;
+  assignedPlacement?: {
+    locationCode?: string | null;
+    compartment?: string | null;
+  } | null;
   storageLocation?: { id: string; code: string } | null;
   createdAt: string;
   updatedAt: string;
@@ -211,6 +215,13 @@ export type AssignableInventoryRow = {
   compartment?: string | null;
   tableId?: string | null;
   tableName?: string | null;
+  currentWarehousePlacement?: {
+    assignmentId: string;
+    warehouseId: string;
+    warehouseName: string;
+    slotId: string;
+    slotIndex?: number | null;
+  } | null;
 };
 
 export type WarehouseStockPlacement = {

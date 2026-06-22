@@ -1,6 +1,8 @@
 import type {
   AdminSettings,
   AdminSettingsPayload,
+  BackupOverview,
+  BackupSettings,
   AdminUser,
   AdminUsersOverview,
   InviteUserPayload,
@@ -54,5 +56,36 @@ export function sendTestEmailRequest(email?: string) {
   return apiRequest<{ sentTo: string }>("/api/admin/email/send-test", {
     method: "POST",
     body: JSON.stringify({ email: email || undefined }),
+  });
+}
+
+export function getBackupOverviewRequest() {
+  return apiRequest<{ backups: BackupOverview }>("/api/admin/backups");
+}
+
+export function updateBackupSettingsRequest(settings: Omit<BackupSettings, "storageRoot">) {
+  return apiRequest<{ settings: BackupSettings }>("/api/admin/backups/settings", {
+    method: "PATCH",
+    body: JSON.stringify(settings),
+  });
+}
+
+export function testBackupDirectoryRequest(directory: string) {
+  return apiRequest<{ directory: string }>("/api/admin/backups/test-directory", {
+    method: "POST",
+    body: JSON.stringify({ directory }),
+  });
+}
+
+export function runBackupRequest() {
+  return apiRequest<{ backup: BackupOverview["lastBackup"] }>("/api/admin/backups/run", {
+    method: "POST",
+  });
+}
+
+export function restoreBackupRequest(fileName: string, confirmation: string) {
+  return apiRequest<{ restore: BackupOverview["lastRestore"] }>("/api/admin/backups/restore", {
+    method: "POST",
+    body: JSON.stringify({ fileName, confirmation }),
   });
 }

@@ -6,6 +6,7 @@ import { AcceptInvitePage } from "../pages/AcceptInvitePage";
 import { AdminSettingsPage } from "../pages/AdminSettingsPage";
 import { AdminUsersPage } from "../pages/AdminUsersPage";
 import { DashboardPage } from "../pages/DashboardPage";
+import { ForgotPasswordPage } from "../pages/ForgotPasswordPage";
 import { ImportPage } from "../pages/ImportPage";
 import { InventoryPage } from "../pages/InventoryPage";
 import { LocationMapPage } from "../pages/LocationMapPage";
@@ -16,6 +17,7 @@ import { MachinesPage } from "../pages/MachinesPage";
 import { StructuredInventoryGroupPage } from "../pages/StructuredInventoryGroupPage";
 import { StructuredInventoryTablePage } from "../pages/StructuredInventoryTablePage";
 import { ProfilePage } from "../pages/ProfilePage";
+import { ResetPasswordPage } from "../pages/ResetPasswordPage";
 import { TakenItemsPage } from "../pages/TakenItemsPage";
 import { ToolsPage } from "../pages/ToolsPage";
 import { UsedInDetailsPage } from "../pages/UsedInDetailsPage";
@@ -28,6 +30,8 @@ export function AppRouter() {
   return (
     <Routes>
       <Route element={<LoginPage />} path="/login" />
+      <Route element={<ForgotPasswordPage />} path="/forgot-password" />
+      <Route element={<ResetPasswordPage />} path="/reset-password" />
       <Route element={<AcceptInvitePage />} path="/accept-invite" />
       <Route element={<ProtectedRoute />}>
         <Route element={<AppShell />}>

@@ -8,6 +8,7 @@ import { z } from "zod";
 const prisma = new PrismaClient();
 
 const seedEnvSchema = z.object({
+  NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   ADMIN_EMAIL: z.string().email("ADMIN_EMAIL must be a valid email address"),
   ADMIN_PASSWORD: z.string().min(8, "ADMIN_PASSWORD must be at least 8 characters"),
   ADMIN_NAME: z.string().min(1, "ADMIN_NAME is required"),
@@ -23,7 +24,16 @@ function loadSeedEnv() {
     config({ path: envPath });
   }
 
-  return seedEnvSchema.parse(process.env);
+  const seedEnv = seedEnvSchema.parse(process.env);
+  if (seedEnv.NODE_ENV === "production") {
+    if (seedEnv.ADMIN_EMAIL.toLowerCase() === "admin@example.com") {
+      throw new Error("Production ADMIN_EMAIL must be changed from admin@example.com.");
+    }
+    if (seedEnv.ADMIN_PASSWORD.length < 12 || /^changeme/i.test(seedEnv.ADMIN_PASSWORD)) {
+      throw new Error("Production ADMIN_PASSWORD must be a non-placeholder password of at least 12 characters.");
+    }
+  }
+  return seedEnv;
 }
 
 async function seedAdminUser(seedEnv: z.infer<typeof seedEnvSchema>) {

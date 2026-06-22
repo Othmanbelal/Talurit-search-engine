@@ -1448,6 +1448,33 @@ Known limitations:
   clearObjectCache export, and a couple of hand-coded rgba fills / !important rules
   in 2D/chrome CSS.
 
+## Clean-PC Deployment and Password Recovery - Completed
+
+Completed:
+- Added generic forgot-password requests for active users and administrators.
+- Added 30-minute, single-use, cryptographically random reset links with hashes stored in PostgreSQL.
+- Added reset-password completion with bcrypt hashing and invalidation of every existing user session.
+- Added rate limiting for login, reset-link requests, and reset submissions.
+- Added public forgot-password and reset-password pages and removed the default email from login.
+- Removed production host exposure for PostgreSQL and the backend while leaving the frontend available to the LAN.
+- Made Docker PostgreSQL credentials and exposed host ports configurable through `.env`.
+- Added production seed validation that rejects default admin credentials and weak placeholder passwords.
+- Added a confirmation-gated deployment cleanup command that removes item notes, urgent issues, authentication artifacts, and old admins while preserving business data and non-admin users.
+- Added a complete Windows clean-PC deployment and restore runbook.
+
+Verification:
+- npm run lint passed.
+- npm run build passed, with existing Vite bundle-size warnings.
+- npm run check:lines passed.
+- Production and development Docker Compose validation passed.
+- Production placeholder-admin rejection and cleanup confirmation guard passed.
+- Password reset lifecycle passed: generic request response, reset, session invalidation, token reuse rejection, and new-password login.
+- Live data remained intact after container recreation: 4 users, 723 inventory items, 607 stock balances, and 3 warehouses.
+
+Remaining before release:
+- Configure SMTP and send a real reset email through the company mail service.
+- GitHub commit, push, pull request, and deployment tag.
+
 ## Known Risks
 
 - Excel columns vary between sheets.

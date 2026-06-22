@@ -244,6 +244,7 @@ model User {
   itemNotes                ItemNote[]                @relation("ItemNoteAuthor")
   sentUrgentIssues         UrgentIssue[]             @relation("UrgentIssueSender")
   resolvedUrgentIssues     UrgentIssue[]             @relation("UrgentIssueResolver")
+  backupLogs               BackupLog[]               @relation("BackupLogUser")
   createdAt                DateTime                  @default(now())
   updatedAt                DateTime                  @updatedAt
 
@@ -1025,16 +1026,24 @@ model WeeklySummaryLog {
 }
 
 model BackupLog {
-  id        String     @id @default(cuid())
-  type      BackupType
-  fileName  String?
-  filePath  String?
-  status    JobStatus  @default(PENDING)
-  message   String?
-  createdAt DateTime   @default(now())
+  id              String     @id @default(cuid())
+  type            BackupType
+  operation       String     @default("backup")
+  trigger         String     @default("manual")
+  fileName        String?
+  filePath        String?
+  status          JobStatus  @default(PENDING)
+  message         String?
+  createdByUserId String?
+  createdByUser   User?      @relation("BackupLogUser", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  completedAt     DateTime?
+  createdAt       DateTime   @default(now())
 
   @@index([type])
+  @@index([operation])
+  @@index([trigger])
   @@index([status])
+  @@index([createdByUserId])
   @@index([createdAt])
   @@map("backup_logs")
 }

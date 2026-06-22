@@ -1,6 +1,8 @@
-FROM node:20-alpine
+FROM node:20-alpine3.20
 
 WORKDIR /app
+
+RUN apk add --no-cache postgresql16-client
 
 COPY package.json package-lock.json ./
 COPY server/package.json ./server/package.json

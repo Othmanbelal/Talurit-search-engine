@@ -1,9 +1,7 @@
 import { X } from "lucide-react";
 import { Modal } from "../Modal";
-import { useEffect, useState } from "react";
 import { useWarehouseSceneObjects } from "../../hooks/useWarehouseSceneObjects";
 import { useWarehouseShelves } from "../../hooks/useWarehouseShelves";
-import { getLocationCodesRequest } from "../../services/warehouse.service";
 import { WarehouseRackSlotDesigner } from "./WarehouseRackSlotDesigner";
 
 type Props = {
@@ -16,11 +14,6 @@ type Props = {
 export function WarehouseRackConfigPanel({ onClose, onSaved, selectedRackId, warehouseId }: Props) {
   const scene = useWarehouseSceneObjects(warehouseId);
   const shelves = useWarehouseShelves(warehouseId);
-  const [locationCodes, setLocationCodes] = useState<string[]>([]);
-
-  useEffect(() => {
-    getLocationCodesRequest(warehouseId).then((r) => setLocationCodes(r.codes)).catch(() => undefined);
-  }, [warehouseId]);
 
   const object = scene.sceneObjects.find((o) => o.externalObjectId === selectedRackId);
 
@@ -41,7 +34,6 @@ export function WarehouseRackConfigPanel({ onClose, onSaved, selectedRackId, war
           </p>
         ) : (
           <WarehouseRackSlotDesigner
-            availableCodes={locationCodes}
             existingShelves={shelves.shelves}
             key={selectedRackId}
             object={object}

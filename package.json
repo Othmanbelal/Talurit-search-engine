@@ -14,6 +14,7 @@
     "db:seed": "npm --workspace server run db:seed",
     "db:studio": "npm --workspace server run db:studio",
     "db:pull:supabase": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/pull-supabase-to-local.ps1",
+    "deployment:prepare-data": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/prepare-deployment-data.ps1",
     "build": "npm --workspace server run build && npm --workspace client run build",
     "lint": "npm --workspace server run lint && npm --workspace client run lint",
     "check:lines": "node scripts/check-file-lines.mjs",

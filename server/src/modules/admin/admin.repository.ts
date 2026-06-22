@@ -70,6 +70,7 @@ export function getLatestImport() {
 
 export function getLatestBackup() {
   return prisma.backupLog.findFirst({
+    where: { operation: "backup" },
     orderBy: { createdAt: "desc" },
     select: {
       type: true,

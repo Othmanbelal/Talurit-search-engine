@@ -2,7 +2,6 @@ import { AppError } from "../../utils/AppError";
 import {
   closeAssignment,
   countActiveSlotAssignments,
-  createAssignment,
   findActiveAssignmentByStock,
   findActiveAssignmentsForSlot,
   findActiveAssignmentsForWarehouse,
@@ -10,6 +9,7 @@ import {
   findAssignableRowsByQrCandidates,
   findSlotForAssignment,
   findStockBalanceItemId,
+  replaceAssignment,
   searchAssignableRows,
 } from "./warehouse-assignments.repository";
 import { serializeAssignment } from "./warehouse-assignments.serializer";
@@ -61,6 +61,7 @@ export async function scanAssignableInventoryRows(warehouseId: string, input: Sc
 }
 
 function serializeAssignableRow(row: Awaited<ReturnType<typeof searchAssignableRows>>[number]) {
+  const currentAssignment = row.warehouseSlotAssignments[0];
   return {
     id: row.id,
     itemName: row.item.name,
@@ -72,6 +73,13 @@ function serializeAssignableRow(row: Awaited<ReturnType<typeof searchAssignableR
     compartment: row.compartment,
     tableId: row.inventoryTableId,
     tableName: row.inventoryTable?.name ?? null,
+    currentWarehousePlacement: currentAssignment ? {
+      assignmentId: currentAssignment.id,
+      warehouseId: currentAssignment.warehouse.id,
+      warehouseName: currentAssignment.warehouse.name,
+      slotId: currentAssignment.slot.id,
+      slotIndex: currentAssignment.slot.slotIndex,
+    } : null,
   };
 }
 
@@ -86,7 +94,6 @@ export async function assignSlot(warehouseId: string, slotId: string, input: Ass
   if (activeCount >= 1 || activeCount >= slot.maxAssignments) throw new AppError("Slot is already assigned.", 409);
 
   const existing = await findActiveAssignmentByStock(input.stockBalanceId);
-  if (existing) throw new AppError("This inventory row is already assigned to a warehouse slot.", 409);
 
   const stockRow = await findStockBalanceItemId(input.stockBalanceId);
   if (!stockRow) throw new AppError("Inventory row not found.", 404);
@@ -96,7 +103,7 @@ export async function assignSlot(warehouseId: string, slotId: string, input: Ass
   }
 
   const activeSlotKey = slotId;
-  const assignment = await createAssignment({
+  const assignment = await replaceAssignment({
     warehouseId,
     slotId,
     stockBalanceId: input.stockBalanceId,
@@ -105,7 +112,7 @@ export async function assignSlot(warehouseId: string, slotId: string, input: Ass
     assignedByUserId: userId ?? null,
     notes: input.notes ?? null,
     activeSlotKey,
-  });
+  }, existing?.id);
   return serializeAssignment(assignment);
 }
 
