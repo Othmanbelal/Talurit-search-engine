@@ -250,7 +250,10 @@ export type AssignSlotInput = {
 
 export type ShelfViewItem = {
   id: string;
+  assignmentId: string;
+  containerType: "pallet" | "box";
   itemName: string;
+  imageUrl?: string | null;
   manufacturer?: string | null;
   quantity: number;
   unit: string;

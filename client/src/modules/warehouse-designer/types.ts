@@ -3,6 +3,7 @@ export type ObjectType =
   | "pallet-rack"
   | "storage-shelf"
   | "euro-pallet"
+  | "box"
   | "stair"
   | "column"
   | "no-go-zone"

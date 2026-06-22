@@ -1579,6 +1579,20 @@ Verification:
 
 Pending phases: A2 (box/pallet rendering), A1 (premium L/R indicators), A4 (linked card).
 
+## Warehouse 3D - Box vs Pallet Rendering (sub-project A, phase A2) - Completed
+
+Completed:
+- Shelf-view now returns per-item `assignmentId`, `containerType`, and item `imageUrl`.
+- New `createBoxMesh` engine builder (cardboard box: body + lid + tape seam) + `"box"` object type; wired into `Warehouse3DView`.
+- `buildContainerObjects` (extracted to `warehouseContainers.ts`) renders one container per FACK item, subdividing the slot's width; boxes get deterministic size/offset variety seeded by item id; pallets unchanged.
+- Multi-FACK containers use ids `pallet-<slotId>__<index>`; `focusObject` matches the slot prefix so focus highlights all of a slot's containers.
+
+Verification:
+- Server + client type-checks passed; Docker build of both images succeeded; `check:lines` passed.
+- Browser: a FACK slot with a pallet + a box rendered the two containers side-by-side on the shelf, both highlighted when the slot was focused (box shows the cardboard body + lid).
+
+Pending phases: A1 (premium L/R indicators), A4 (linked card).
+
 ## Known Risks
 
 - Excel columns vary between sheets.

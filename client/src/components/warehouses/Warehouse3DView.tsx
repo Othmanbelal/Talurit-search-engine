@@ -13,6 +13,7 @@ import {
   Vector3,
 } from "@babylonjs/core";
 import {
+  createBoxMesh,
   createColumnMesh,
   createEuroPalletDetailMesh,
   createNoGoZoneMesh,
@@ -120,7 +121,12 @@ export function Warehouse3DView({ focusObjectId, height = 520, layout, onRackCli
 }
 
 function focusObject(scene: Scene, camera: ArcRotateCamera, objectId: string) {
-  const meshes = scene.meshes.filter((mesh) => mesh.metadata?.objectId === objectId);
+  // Match the slot's container(s): a single-item slot uses the exact id, while a
+  // multi-FACK slot suffixes each container with "__<index>".
+  const meshes = scene.meshes.filter((mesh) => {
+    const id = mesh.metadata?.objectId as string | undefined;
+    return id === objectId || (typeof id === "string" && id.startsWith(`${objectId}__`));
+  });
   if (meshes.length === 0) return;
   const center = meshes.reduce((sum, mesh) => sum.add(mesh.getBoundingInfo().boundingBox.centerWorld), Vector3.Zero()).scale(1 / meshes.length);
   camera.setTarget(center);
@@ -162,6 +168,7 @@ function buildObjectMesh(scene: Scene, room: Room, obj: SceneObject) {
     switch (obj.type) {
       case "pallet-rack": case "storage-shelf": createRackMesh(scene, room, obj); break;
       case "euro-pallet": createEuroPalletDetailMesh(scene, room, obj); break;
+      case "box": createBoxMesh(scene, room, obj); break;
       case "column": createColumnMesh(scene, room, obj); break;
       case "no-go-zone": createNoGoZoneMesh(scene, room, obj); break;
       case "door": case "window": createOpeningMesh(scene, room, obj); break;

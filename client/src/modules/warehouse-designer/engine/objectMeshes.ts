@@ -126,6 +126,28 @@ export function createEuroPalletDetailMesh(scene: Scene, room: Room, object: Sce
   });
 }
 
+export function createBoxMesh(scene: Scene, room: Room, object: SceneObject) {
+  // Cardboard-style storage box: body + a slightly lighter lid and a centre seam.
+  const body = flatMaterial(scene, "box-body", object.color || "#b08a52");
+  const lid = flatMaterial(scene, "box-lid", "#c79c5e");
+  const seam = flatMaterial(scene, "box-seam", "#8a6a3c");
+  const root = new TransformNode(`${object.id}__build`, scene);
+
+  const width = object.width;
+  const depth = object.depth;
+  const height = object.height;
+  const lidH = Math.min(0.05, height * 0.22);
+
+  addPalletPart(root, scene, object, "box-body", { width, depth, height: height - lidH }, { x: 0, y: -(lidH / 2), z: 0 }, body);
+  addPalletPart(root, scene, object, "box-lid", { width: width * 1.01, depth: depth * 1.01, height: lidH }, { x: 0, y: (height - lidH) / 2, z: 0 }, lid);
+  // Tape seam across the lid.
+  addPalletPart(root, scene, object, "box-seam", { width: width * 0.12, depth: depth * 1.02, height: lidH * 1.05 }, { x: 0, y: (height - lidH) / 2 + 0.001, z: 0 }, seam);
+
+  return finalizeMergedObject(scene, root, object.id, {
+    x: worldX(object, room), y: objectElevation(object) + height / 2, z: worldZ(object, room), rotationY: -object.rotation,
+  });
+}
+
 export function createEuroPalletMesh(scene: Scene, room: Room, object: SceneObject) {
   const material = flatMaterial(scene, "pallet-top", object.color || "#c9955c");
   const mesh = MeshBuilder.CreateBox(object.id, { width: object.width, depth: object.depth, height: object.height }, scene);

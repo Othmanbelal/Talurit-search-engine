@@ -3,6 +3,7 @@ export { createRoomMeshes } from "./roomMeshes";
 export { createRackMesh } from "./rackMeshes";
 export {
   createAisleGuideMesh,
+  createBoxMesh,
   createColumnMesh,
   createNoGoZoneMesh,
   createOpeningMesh,

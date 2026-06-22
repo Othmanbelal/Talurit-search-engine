@@ -1,9 +1,10 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Maximize2, X } from "lucide-react";
 import type { LevelDefinition, SceneObject } from "../../modules/warehouse-designer/types";
-import type { ShelfViewShelf, WarehouseLayout } from "../../types/warehouse";
+import type { WarehouseLayout } from "../../types/warehouse";
 import { useWarehouseShelfView } from "../../hooks/useWarehouseShelfView";
 import { useWarehouseSceneObjects } from "../../hooks/useWarehouseSceneObjects";
+import { buildContainerObjects } from "./warehouseContainers";
 
 const LEVEL_EPS = 0.001;
 
@@ -61,7 +62,7 @@ export function WarehouseViewerPanel({ focusSlotId, onRackSelect, reloadSignal, 
     const layout = warehouse.layoutData as Record<string, unknown>;
     const baseObjects = (layout?.objects as SceneObject[] | undefined) ?? [];
     if (!shelfView.data) return layout;
-    const pallets = buildPalletObjects(shelfView.data.shelves, baseObjects, focusSlotId);
+    const pallets = buildContainerObjects(shelfView.data.shelves, baseObjects, focusSlotId);
     return { ...layout, objects: [...baseObjects, ...pallets] };
   }, [warehouse.layoutData, shelfView.data, focusSlotId]);
 
@@ -71,8 +72,8 @@ export function WarehouseViewerPanel({ focusSlotId, onRackSelect, reloadSignal, 
     if (!showLevelTabs) return mergedLayout;
     const all = (mergedLayout.objects as SceneObject[] | undefined) ?? [];
     const filtered = all.filter((obj) => {
-      if (obj.type === "euro-pallet") {
-        // Pallets sit above their rack; include them if they belong to this level's vertical range
+      if (obj.type === "euro-pallet" || obj.type === "box") {
+        // Containers sit above their rack; include them if they belong to this level's vertical range
         const elev = obj.elevation ?? 0;
         return elev >= selectedElevation - LEVEL_EPS && elev < nextElevation;
       }
@@ -152,71 +153,4 @@ export function WarehouseViewerPanel({ focusSlotId, onRackSelect, reloadSignal, 
       {canvas3d}
     </section>
   );
-}
-
-/**
- * Compute synthetic euro-pallet SceneObjects for all occupied slots.
- * Uses each rack's saved position/rotation/dimensions to place pallets.
- */
-function buildPalletObjects(shelves: ShelfViewShelf[], baseObjects: SceneObject[], focusSlotId?: string | null): SceneObject[] {
-  const pallets: SceneObject[] = [];
-
-  const byObject = new Map<string, ShelfViewShelf[]>();
-  for (const shelf of shelves) {
-    if (shelf.shelfKind !== "rack_level" || !shelf.warehouseObject?.externalObjectId) continue;
-    const oid = shelf.warehouseObject.externalObjectId;
-    const list = byObject.get(oid) ?? [];
-    list.push(shelf);
-    byObject.set(oid, list);
-  }
-
-  for (const [extId, rackShelves] of byObject.entries()) {
-    const rack = rackShelves[0].warehouseObject!;
-    // Prefer the live SceneObject from layoutData — it's always in sync with the designer
-    const base = baseObjects.find((o) => o.id === extId);
-    const rackWidth = base?.width ?? rack.width ?? 2.4;
-    const rackHeight = base?.height ?? rack.height ?? 4;
-    const rackPosX = base?.position.x ?? rack.positionX ?? 0;
-    const rackPosY = base?.position.y ?? rack.positionY ?? 0;
-    const rackElevation = base?.elevation ?? rack.elevation ?? 0;
-    const rackRotation = base?.rotation ?? rack.rotation ?? 0;
-    const maxLevel = Math.max(...rackShelves.map((s) => s.levelNumber ?? 1));
-    // Level N board sits at N/maxLevel * rackHeight (same as createRackMesh shelf board y)
-    const levelSpacing = rackHeight / Math.max(maxLevel, 1);
-
-    for (const shelf of rackShelves) {
-      const levelNumber = shelf.levelNumber ?? 1;
-      // Pallet sits on top of the shelf board: board y = levelNumber * levelSpacing
-      const elevation = rackElevation + levelNumber * levelSpacing;
-
-      // Divide shelf width equally: each slot owns rackWidth/totalSlots metres
-      const totalSlots = Math.max(...shelf.slots.map((s) => s.slotIndex ?? 1), 1);
-      const sectionWidth = rackWidth / totalSlots;
-      const cos = Math.cos(rackRotation);
-      const sin = Math.sin(rackRotation);
-
-      for (const slot of shelf.slots) {
-        if (slot.items.length === 0) continue;
-        const slotIndex = slot.slotIndex ?? 1;
-        // Centre of section i (1-based): left-edge + (i - 0.5) * sectionWidth
-        const localX = -rackWidth / 2 + (slotIndex - 0.5) * sectionWidth;
-
-        pallets.push({
-          id: `pallet-${slot.id}`,
-          name: slot.items.length === 1 ? slot.items[0].itemName : `${slot.items.length} items`,
-          type: "euro-pallet",
-          position: { x: rackPosX + localX * cos, y: rackPosY + localX * sin },
-          elevation,
-          rotation: rackRotation,
-          width: sectionWidth - 0.04, // 4 cm gap between adjacent pallets
-          depth: slot.palletDepth - 0.04,
-          height: 0.15,
-          color: slot.id === focusSlotId ? "#22c55e" : "#f0a500",
-          locked: true,
-        });
-      }
-    }
-  }
-
-  return pallets;
 }

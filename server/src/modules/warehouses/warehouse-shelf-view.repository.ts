@@ -72,7 +72,9 @@ export async function findShelvesWithItems(warehouseId: string, tableIds: string
       stockBalance: { archivedAt: null, status: "active" },
     },
     select: {
+      id: true,
       slotId: true,
+      containerType: true,
       stockBalance: {
         select: {
           id: true,
@@ -80,7 +82,7 @@ export async function findShelvesWithItems(warehouseId: string, tableIds: string
           unit: true,
           compartment: true,
           location: { select: { code: true } },
-          item: { select: { name: true, manufacturer: { select: { name: true } } } },
+          item: { select: { name: true, imageUrl: true, manufacturer: { select: { name: true } } } },
           inventoryTable: { select: { id: true, name: true } },
         },
       },
@@ -99,9 +101,12 @@ export async function findShelvesWithItems(warehouseId: string, tableIds: string
     ...shelf,
     slots: shelf.slots.map((slot) => ({
       ...slot,
-      items: (assignmentsBySlot.get(slot.id) ?? []).map(({ stockBalance }) => ({
+      items: (assignmentsBySlot.get(slot.id) ?? []).map(({ id, containerType, stockBalance }) => ({
         id: stockBalance.id,
+        assignmentId: id,
+        containerType: (containerType === "box" ? "box" : "pallet") as "pallet" | "box",
         itemName: stockBalance.item.name,
+        imageUrl: stockBalance.item.imageUrl ?? null,
         manufacturer: stockBalance.item.manufacturer?.name ?? null,
         quantity: Number(stockBalance.quantity),
         unit: stockBalance.unit,
@@ -148,7 +153,10 @@ function slotSelect() {
 
 type ShelfViewItem = {
   id: string;
+  assignmentId: string;
+  containerType: "pallet" | "box";
   itemName: string;
+  imageUrl: string | null;
   manufacturer: string | null;
   quantity: number;
   unit: string;
