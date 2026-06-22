@@ -76,13 +76,16 @@
   top: 50%;
   right: 12px;
   transform: translateY(-50%);
-  color: var(--wd-text-muted);
-  background: var(--wd-panel-solid);
-  border: 1px solid var(--wd-panel-border);
+  margin-left: 0;
+  /* !important to beat the legacy dark-theme rule that forces the gold accent. */
+  color: var(--wd-text-muted) !important;
+  background: var(--wd-panel-solid) !important;
+  border: 1px solid var(--wd-panel-border) !important;
 }
 .wd-root .topbar-expand-btn:hover {
-  color: var(--wd-selection);
-  border-color: var(--wd-selection);
+  color: var(--wd-selection) !important;
+  border-color: var(--wd-selection) !important;
+  background: var(--wd-panel-solid) !important;
 }
 
 /* Status pill */
