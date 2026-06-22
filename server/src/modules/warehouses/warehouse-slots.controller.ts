@@ -5,6 +5,7 @@ import {
   createSlotSchema,
   generateShelvesSchema,
   idParamSchema,
+  shelfFackSchema,
   shelfParamSchema,
   slotParamSchema,
   updateShelfSchema,
@@ -17,6 +18,7 @@ import {
   deleteWarehouseSlot,
   generateWarehouseShelves,
   listWarehouseShelves,
+  setShelfFack,
   updateWarehouseShelf,
   updateWarehouseSlot,
 } from "./warehouse-slots.service";
@@ -60,6 +62,12 @@ export async function createWarehouseSlotController(request: Request, response: 
 export async function updateWarehouseSlotController(request: Request, response: Response) {
   const { id, slotId } = slotParamSchema.parse(request.params);
   const shelf = await updateWarehouseSlot(id, slotId, updateSlotSchema.parse(request.body));
+  return response.json(successResponse({ shelf }));
+}
+
+export async function setShelfFackController(request: Request, response: Response) {
+  const { id, shelfId } = shelfParamSchema.parse(request.params);
+  const shelf = await setShelfFack(id, shelfId, shelfFackSchema.parse(request.body));
   return response.json(successResponse({ shelf }));
 }
 

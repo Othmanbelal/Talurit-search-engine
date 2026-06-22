@@ -27,6 +27,7 @@ import type {
   GenerateRackSlotsFromSceneObjectInput,
   UpdateShelfInput,
   UpdateSlotInput,
+  ShelfFackInput,
 } from "./warehouse.schemas";
 import { getWarehouse } from "./warehouse.service";
 
@@ -152,17 +153,59 @@ export async function updateWarehouseSlot(warehouseId: string, slotId: string, i
   if (input.compartment && input.compartment !== slot.compartment && (await countActiveSlotAssignments(slotId))) {
     throw new AppError("Cannot rename an occupied slot.", 409);
   }
+  const fackData = resolveFackUpdate(slot.fackEnabled, slot.fackCount, slot.assignments.length, input);
   const updated = await prisma.warehouseSlot.update({
     where: { id: slotId },
     data: {
       compartment: input.compartment ? compartmentLabel(input.compartment) : undefined,
       displayName: input.displayName,
       isActive: input.isActive,
+      ...fackData,
     },
     select: { shelfId: true },
   });
   await touchWarehouse(warehouseId);
   return findRequiredShelf(warehouseId, updated.shelfId).then(serializeShelf);
+}
+
+/** Apply a FACK toggle/count to every slot under a shelf (bulk). */
+export async function setShelfFack(warehouseId: string, shelfId: string, input: ShelfFackInput) {
+  const shelf = await findRequiredShelf(warehouseId, shelfId);
+  if (input.enabled && input.count == null) {
+    throw new AppError("Enter a FACK count to enable FACK for these slots.", 400);
+  }
+  const capacity = input.enabled ? (input.count as number) : 1;
+  for (const slot of shelf.slots) {
+    if (slot._count.assignments > capacity) {
+      throw new AppError(`Slot ${slot.compartment} holds more items than the new capacity (${capacity}).`, 409);
+    }
+  }
+  await prisma.warehouseSlot.updateMany({
+    where: { shelfId },
+    data: { fackEnabled: input.enabled, fackCount: input.enabled ? input.count : null, maxAssignments: capacity },
+  });
+  await touchWarehouse(warehouseId);
+  return findRequiredShelf(warehouseId, shelfId).then(serializeShelf);
+}
+
+/** Validate and build the FACK update for a single slot. Empty when nothing FACK-related changes. */
+function resolveFackUpdate(
+  currentEnabled: boolean,
+  currentCount: number | null,
+  activeAssignments: number,
+  input: UpdateSlotInput,
+): { fackEnabled?: boolean; fackCount?: number | null; maxAssignments?: number } {
+  if (input.fackEnabled === undefined && input.fackCount === undefined) return {};
+  const enabled = input.fackEnabled ?? currentEnabled;
+  const count = input.fackCount !== undefined ? input.fackCount : currentCount;
+  if (enabled && (count == null || count < 1)) {
+    throw new AppError("Enter a FACK count to enable FACK for this slot.", 400);
+  }
+  const capacity = enabled ? (count as number) : 1;
+  if (capacity < activeAssignments) {
+    throw new AppError(`Cannot set capacity below the ${activeAssignments} item(s) currently in this slot.`, 409);
+  }
+  return { fackEnabled: enabled, fackCount: enabled ? count : null, maxAssignments: capacity };
 }
 
 export async function deleteWarehouseSlot(warehouseId: string, slotId: string) {

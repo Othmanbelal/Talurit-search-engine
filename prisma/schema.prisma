@@ -814,6 +814,10 @@ model WarehouseSlot {
   palletWidth       Float                     @default(1.2)
   palletDepth       Float                     @default(0.8)
   maxAssignments    Int                       @default(1)
+  // FACK capacity (sub-project A3). When fackEnabled, the slot can host up to
+  // fackCount different items (one per FACK); otherwise it is a single unit.
+  fackEnabled       Boolean                   @default(false)
+  fackCount         Int?
   isActive          Boolean                   @default(true)
   metadata          Json                      @default("{}")
   warehouse         WarehouseLayout           @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
@@ -865,7 +869,13 @@ model WarehouseSlotAssignment {
   inventoryTableId   String?
   itemId             String
   quantity           Decimal         @default(1)
+  // activeSlotKey encodes slotId:stockBalanceId for active rows so a slot can hold
+  // several distinct items (one per FACK) while blocking the same row twice (A3).
   activeSlotKey      String?         @unique
+  // containerType: "pallet" | "box" (chosen at link time); fackNumber snapshots the
+  // item's inventory FACK (StockBalance.compartment) at assignment.
+  containerType      String          @default("pallet")
+  fackNumber         String?
   notes              String?
   assignedByUserId   String?
   unassignedByUserId String?

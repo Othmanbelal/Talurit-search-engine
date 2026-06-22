@@ -125,6 +125,13 @@ export const updateSlotSchema = z.object({
   compartment: z.string().trim().min(1).optional(),
   displayName: z.string().trim().nullable().optional(),
   isActive: z.boolean().optional(),
+  fackEnabled: z.boolean().optional(),
+  fackCount: z.coerce.number().int().min(1).max(20).nullable().optional(),
+});
+
+export const shelfFackSchema = z.object({
+  enabled: z.boolean(),
+  count: z.coerce.number().int().min(1).max(20).optional(),
 });
 
 export const linkGroupSchema = z.object({ groupId: z.string().min(1) });
@@ -154,6 +161,7 @@ export const scanInventoryRowsSchema = z.object({
 export const assignSlotSchema = z.object({
   stockBalanceId: z.string().min(1),
   inventoryTableId: z.string().optional(),
+  containerType: z.enum(["pallet", "box"]).default("pallet"),
   notes: z.string().max(500).optional(),
 });
 
@@ -185,6 +193,7 @@ export type CreateShelfInput = z.infer<typeof createShelfSchema>;
 export type UpdateShelfInput = z.infer<typeof updateShelfSchema>;
 export type CreateSlotInput = z.infer<typeof createSlotSchema>;
 export type UpdateSlotInput = z.infer<typeof updateSlotSchema>;
+export type ShelfFackInput = z.infer<typeof shelfFackSchema>;
 
 function isJsonObject(value: Record<string, unknown>) {
   try {

@@ -89,7 +89,7 @@ export function findAssignment(assignmentId: string, warehouseId: string) {
 export function findSlotForAssignment(slotId: string) {
   return prisma.warehouseSlot.findFirst({
     where: { id: slotId },
-    select: { id: true, warehouseId: true, isActive: true, maxAssignments: true },
+    select: { id: true, warehouseId: true, isActive: true, maxAssignments: true, fackEnabled: true, fackCount: true },
   });
 }
 
@@ -155,6 +155,8 @@ export function replaceAssignment(data: {
   assignedByUserId?: string | null;
   notes?: string | null;
   activeSlotKey: string;
+  containerType: string;
+  fackNumber: string | null;
 }, existingAssignmentId?: string) {
   return prisma.$transaction(async (tx) => {
     if (existingAssignmentId) {
@@ -177,6 +179,8 @@ export function replaceAssignment(data: {
         assignedByUserId: data.assignedByUserId,
         notes: data.notes,
         activeSlotKey: data.activeSlotKey,
+        containerType: data.containerType,
+        fackNumber: data.fackNumber,
       },
       include: assignmentInclude,
     });
@@ -193,6 +197,6 @@ export function closeAssignment(assignmentId: string, unassignedByUserId?: strin
 export function findStockBalanceItemId(stockBalanceId: string) {
   return prisma.stockBalance.findFirst({
     where: { id: stockBalanceId },
-    select: { id: true, itemId: true, inventoryTableId: true },
+    select: { id: true, itemId: true, inventoryTableId: true, compartment: true },
   });
 }

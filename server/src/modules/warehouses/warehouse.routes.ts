@@ -19,6 +19,7 @@ import {
   deleteWarehouseSlotController,
   generateWarehouseShelvesController,
   listWarehouseShelvesController,
+  setShelfFackController,
   updateWarehouseShelfController,
   updateWarehouseSlotController,
 } from "./warehouse-slots.controller";
@@ -79,6 +80,7 @@ warehouseRoutes.patch("/:id/shelves/:shelfId", requireResourceAccess("warehouse"
 warehouseRoutes.delete("/:id/shelves/:shelfId", requireResourceAccess("warehouse", (req) => req.params.id), asyncHandler(deleteWarehouseShelfController));
 warehouseRoutes.post("/:id/shelves/:shelfId/slots", requireResourceAccess("warehouse", (req) => req.params.id), asyncHandler(createWarehouseSlotController));
 warehouseRoutes.patch("/:id/slots/:slotId", requireResourceAccess("warehouse", (req) => req.params.id), asyncHandler(updateWarehouseSlotController));
+warehouseRoutes.patch("/:id/shelves/:shelfId/fack", requireResourceAccess("warehouse", (req) => req.params.id), asyncHandler(setShelfFackController));
 warehouseRoutes.delete("/:id/slots/:slotId", requireResourceAccess("warehouse", (req) => req.params.id), asyncHandler(deleteWarehouseSlotController));
 
 // Slot assignments

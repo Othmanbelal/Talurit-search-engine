@@ -53,6 +53,11 @@ export type WarehouseSlot = {
   sortOrder: number;
   isActive: boolean;
   maxAssignments: number;
+  fackEnabled: boolean;
+  fackCount?: number | null;
+  capacity: number;
+  usedCount: number;
+  freeCount: number;
   palletWidth: number;
   palletDepth: number;
   locationAssigned: boolean;
@@ -180,6 +185,8 @@ export type WarehouseSlotAssignment = {
   warehouseId: string;
   slotId: string;
   activeSlotKey?: string | null;
+  containerType: "pallet" | "box";
+  fackNumber?: string | null;
   assignedAt: string;
   slot: {
     id: string;
@@ -237,6 +244,7 @@ export type WarehouseStockPlacement = {
 export type AssignSlotInput = {
   stockBalanceId: string;
   inventoryTableId?: string;
+  containerType?: "pallet" | "box";
   notes?: string;
 };
 
@@ -312,4 +320,8 @@ export type UpdateWarehouseSlotInput = {
   compartment?: string;
   displayName?: string | null;
   isActive?: boolean;
+  fackEnabled?: boolean;
+  fackCount?: number | null;
 };
+
+export type ShelfFackInput = { enabled: boolean; count?: number };

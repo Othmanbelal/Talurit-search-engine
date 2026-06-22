@@ -1561,6 +1561,24 @@ Verification:
 - API: master toggle + row config persist and serialize; bad order link and enable-without-threshold rejected (400); configuring a low row wrote a `ReorderNotificationLog` and left `lowStockNotifiedAt` null on failed send (SMTP-safe retry), error recorded ("No managers assigned").
 - Browser: header shows "Low stock: On"; low row renders the LOW badge + yellow "Low stock configured" button; the config popover opens with toggle/threshold/order-link.
 
+## Warehouse 3D - FACK Capacity Model (sub-project A, phase A3) - Completed
+
+Design spec: `docs/superpowers/specs/2026-06-22-warehouse-3d-premium-slots-design.md` (A built in phases A3 → A2 → A1 → A4).
+
+Completed:
+- Schema (migration `20260622160000_warehouse_fack_capacity`): `WarehouseSlot.fackEnabled/fackCount`; `WarehouseSlotAssignment.containerType/fackNumber`; `activeSlotKey` re-keyed to `slotId:stockBalanceId` so a slot holds up to fackCount distinct items (same row still unique per slot).
+- Assign service: capacity = fackEnabled ? fackCount : 1; rejects when full ("Slot is full (used/capacity)"); persists chosen container type and snapshots the item's inventory FACK (`StockBalance.compartment`) as `fackNumber`.
+- Slot config: per-slot FACK via `PATCH /:id/slots/:slotId` (fackEnabled/fackCount) and bulk per-shelf `PATCH /:id/shelves/:shelfId/fack`; both reject reducing capacity below current assignments and keep `maxAssignments` in sync.
+- Serializers expose slot `capacity/usedCount/freeCount/fackEnabled/fackCount` and assignment `containerType/fackNumber`.
+- Frontend: `WarehouseSlotAssignPanel` shows FACK used/capacity, a per-slot FACK settings editor, a pallet/box choice at link time, and allows multiple assignments until full; current assignments show container + FACK.
+
+Verification:
+- Server + client type-checks passed; Docker build of both images succeeded; `check:lines` passed.
+- Migration applied; all four columns present.
+- API: FACK=2 set; pallet + box assigned (201, 201); 3rd rejected (409 "Slot is full (2/2 FACK used)"); assignments report containers [box,pallet] + fackNumbers [3,1]; lowering capacity below usage rejected (409).
+
+Pending phases: A2 (box/pallet rendering), A1 (premium L/R indicators), A4 (linked card).
+
 ## Known Risks
 
 - Excel columns vary between sheets.

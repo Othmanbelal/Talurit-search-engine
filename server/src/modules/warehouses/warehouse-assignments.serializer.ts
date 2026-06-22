@@ -6,6 +6,8 @@ export function serializeAssignment(assignment: AssignmentRecord) {
     warehouseId: assignment.warehouseId,
     slotId: assignment.slotId,
     activeSlotKey: assignment.activeSlotKey,
+    containerType: assignment.containerType,
+    fackNumber: assignment.fackNumber,
     assignedAt: assignment.assignedAt.toISOString(),
     slot: {
       id: assignment.slot.id,

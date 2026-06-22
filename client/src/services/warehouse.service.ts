@@ -14,6 +14,7 @@ import type {
   UpdateWarehouseInput,
   UpdateWarehouseShelfInput,
   UpdateWarehouseSlotInput,
+  ShelfFackInput,
   WarehouseArchiveMode,
   WarehouseInventoryLinks,
   WarehouseLayout,
@@ -135,6 +136,13 @@ export function updateWarehouseSlotRequest(id: string, slotId: string, input: Up
 
 export function deleteWarehouseSlotRequest(id: string, slotId: string) {
   return apiRequest<{ deleted: true }>(`/api/warehouses/${id}/slots/${slotId}`, { method: "DELETE" });
+}
+
+export function setShelfFackRequest(id: string, shelfId: string, input: ShelfFackInput) {
+  return apiRequest<{ shelf: WarehouseShelf }>(`/api/warehouses/${id}/shelves/${shelfId}/fack`, {
+    method: "PATCH",
+    body: JSON.stringify(input),
+  });
 }
 
 // Inventory links

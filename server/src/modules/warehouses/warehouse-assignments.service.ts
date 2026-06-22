@@ -90,10 +90,16 @@ export async function assignSlot(warehouseId: string, slotId: string, input: Ass
   if (slot.warehouseId !== warehouseId) throw new AppError("Slot does not belong to this warehouse.", 403);
   if (!slot.isActive) throw new AppError("Slot is inactive.", 409);
 
-  const activeCount = await countActiveSlotAssignments(slotId);
-  if (activeCount >= 1 || activeCount >= slot.maxAssignments) throw new AppError("Slot is already assigned.", 409);
-
   const existing = await findActiveAssignmentByStock(input.stockBalanceId);
+
+  // Capacity = FACK count when FACK is on, otherwise a single unit. Moving a row
+  // already in this slot does not consume an extra unit.
+  const capacity = slot.fackEnabled && slot.fackCount ? slot.fackCount : 1;
+  const activeCount = await countActiveSlotAssignments(slotId);
+  const occupied = activeCount - (existing && existing.slotId === slotId ? 1 : 0);
+  if (occupied >= capacity) {
+    throw new AppError(`Slot is full (${occupied}/${capacity} FACK used).`, 409);
+  }
 
   const stockRow = await findStockBalanceItemId(input.stockBalanceId);
   if (!stockRow) throw new AppError("Inventory row not found.", 404);
@@ -102,7 +108,9 @@ export async function assignSlot(warehouseId: string, slotId: string, input: Ass
     throw new AppError("Inventory row must belong to a table linked to this warehouse.", 403);
   }
 
-  const activeSlotKey = slotId;
+  // Encodes (slot, row) so the same row can't occupy the same slot twice while
+  // different rows share the slot's FACK cells.
+  const activeSlotKey = `${slotId}:${input.stockBalanceId}`;
   const assignment = await replaceAssignment({
     warehouseId,
     slotId,
@@ -112,6 +120,8 @@ export async function assignSlot(warehouseId: string, slotId: string, input: Ass
     assignedByUserId: userId ?? null,
     notes: input.notes ?? null,
     activeSlotKey,
+    containerType: input.containerType,
+    fackNumber: stockRow.compartment ?? null,
   }, existing?.id);
   return serializeAssignment(assignment);
 }
