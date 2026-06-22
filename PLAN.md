@@ -1526,6 +1526,23 @@ Verification:
 - API end-to-end: login/`me` return `landingResolvedPath`; setting page/group/table resolves correctly; arbitrary path and non-existent target rejected (400); reset returns `/dashboard`.
 - Browser end-to-end: Profile page renders all sections; selecting Warehouses saved and navigating to `/` redirected to `/warehouses`.
 
+## Urgent Issues - Resolution Updates for Reporters (sub-project B) - Completed
+
+Design spec: `docs/superpowers/specs/2026-06-22-urgent-issue-resolution-updates-design.md`
+
+Completed:
+- Added `UrgentIssue.senderAcknowledgedAt` (additive nullable migration `20260622140000_urgent_issue_acknowledged`).
+- Serializer computes `unread` (resolved + not acknowledged for the current resolution; comparing against `resolvedAt` re-marks a re-resolved issue as unread).
+- New `PATCH /api/urgent-issues/:id/acknowledge` (reporter-only; 403 for non-sender, 404 for missing).
+- `MyReportedIssuesWidget`: unread pulse dot + highlight ring, "N new" count badge, "Mark all read", acknowledge-on-click, "Resolved by X · <when>", and refetch on tab refocus.
+- Widget now renders for every role (self-hides when the user has no reported issues) instead of employees only.
+
+Verification:
+- Server and client type-checks passed; Docker build of both images succeeded; `check:lines` passed.
+- Migration applied in Docker; `urgent_issues.senderAcknowledgedAt` column present.
+- API end-to-end: report → open & not unread; resolve → unread + resolvedBy + resolvedAt; acknowledge → read; re-resolve → unread again; bad id → 404.
+- Browser end-to-end: widget shows "1 new" + unread dot for admin; "Mark all read" cleared the badge/dot and persisted server-side (unread=false).
+
 ## Known Risks
 
 - Excel columns vary between sheets.

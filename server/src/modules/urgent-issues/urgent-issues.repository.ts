@@ -72,6 +72,14 @@ export async function resolveIssue(id: string, resolvedById: string) {
   });
 }
 
+export async function acknowledgeIssue(id: string) {
+  return prisma.urgentIssue.update({
+    where: { id },
+    data: { senderAcknowledgedAt: new Date() },
+    include: INCLUDE_FULL,
+  });
+}
+
 export async function unresolveIssue(id: string) {
   return prisma.urgentIssue.update({
     where: { id },

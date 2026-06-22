@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import type { UrgentIssueStatus } from "@prisma/client";
 import { CreateUrgentIssueSchema } from "./urgent-issues.schemas";
 import {
+  acknowledgeResolution,
   listMyReportedIssues,
   listUrgentIssues,
   markResolved,
@@ -29,6 +30,11 @@ export async function listUrgentIssuesController(req: Request, res: Response) {
 export async function listMyIssuesController(req: Request, res: Response) {
   const issues = await listMyReportedIssues(req.user!.id);
   res.json({ success: true, data: issues });
+}
+
+export async function acknowledgeUrgentIssueController(req: Request, res: Response) {
+  const issue = await acknowledgeResolution(req.params.id, req.user!.id);
+  res.json({ success: true, data: issue });
 }
 
 export async function resolveUrgentIssueController(req: Request, res: Response) {

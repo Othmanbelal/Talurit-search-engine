@@ -125,16 +125,13 @@ export function DashboardPage() {
       )}
 
       {isEmployee && (
-        <>
-          <Widget>
-            <TakenItemsWidget />
-          </Widget>
-
-          <Widget>
-            <MyReportedIssuesWidget onIssueClick={handleIssueClick} />
-          </Widget>
-        </>
+        <Widget>
+          <TakenItemsWidget />
+        </Widget>
       )}
+
+      {/* Visible to every role; self-hides when the user has no reported issues. */}
+      <MyReportedIssuesWidget onIssueClick={handleIssueClick} />
 
       <Widget>
         <RecentNotesWidget onNoteClick={handleNoteClick} />

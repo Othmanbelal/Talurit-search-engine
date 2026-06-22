@@ -1,6 +1,7 @@
 import { AppError } from "../../utils/AppError";
 import { prisma } from "../../db/prisma";
 import {
+  acknowledgeIssue,
   createUrgentIssue,
   deleteExpiredResolvedIssues,
   findAllIssues,
@@ -107,6 +108,16 @@ export async function listUrgentIssues(
 export async function listMyReportedIssues(senderId: string) {
   await deleteExpiredResolvedIssues();
   return (await findIssuesBySender(senderId)).map(serializeIssue);
+}
+
+export async function acknowledgeResolution(issueId: string, userId: string) {
+  const issue = await findIssueById(issueId);
+  if (!issue) throw new AppError("Issue not found", 404);
+  // Only the reporter may acknowledge their own issue's resolution.
+  if (issue.senderId !== userId) {
+    throw new AppError("Only the reporter can acknowledge this issue", 403);
+  }
+  return serializeIssue(await acknowledgeIssue(issueId));
 }
 
 export async function markResolved(issueId: string, userId: string, userRole: string) {

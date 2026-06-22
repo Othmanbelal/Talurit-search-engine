@@ -23,6 +23,7 @@ export type UrgentIssue = {
   itemSnapshot: IssueItemSnapshot;
   status: "open" | "resolved";
   resolvedAt: string | null;
+  unread: boolean;
   createdAt: string;
   sender: IssueSender | null;
   resolvedBy: { id: string; name: string } | null;

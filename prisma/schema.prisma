@@ -1106,6 +1106,9 @@ model UrgentIssue {
   itemSnapshot   Json
   status         UrgentIssueStatus @default(open)
   resolvedAt     DateTime?
+  // When the reporter acknowledged the current resolution. Unread when this is
+  // null or older than resolvedAt (so a re-resolved issue becomes unread again).
+  senderAcknowledgedAt DateTime?
   createdAt      DateTime          @default(now())
   table          InventoryTable    @relation(fields: [tableId], references: [id], onDelete: Cascade)
   stockBalance   StockBalance      @relation(fields: [stockBalanceId], references: [id], onDelete: Cascade)

@@ -17,6 +17,9 @@ export const urgentIssuesService = {
   listMy(): Promise<UrgentIssue[]> {
     return apiRequest(`${BASE}/my`);
   },
+  acknowledge(id: string): Promise<UrgentIssue> {
+    return apiRequest(`${BASE}/${id}/acknowledge`, { method: "PATCH" });
+  },
   resolve(id: string): Promise<UrgentIssue> {
     return apiRequest(`${BASE}/${id}/resolve`, { method: "PATCH" });
   },

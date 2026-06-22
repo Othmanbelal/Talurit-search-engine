@@ -1,6 +1,6 @@
 # Urgent Issues — Resolution Updates for Reporters — Design Spec
 **Date:** 2026-06-22
-**Status:** Draft (awaiting user review)
+**Status:** Implemented (2026-06-22)
 **Sub-project:** B of 4 (sequence: D → B → C → A)
 **Builds on:** `2026-05-29-notes-and-urgent-issues-design.md`
 
