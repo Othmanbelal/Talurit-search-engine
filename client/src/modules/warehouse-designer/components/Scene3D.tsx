@@ -81,10 +81,12 @@ export function Scene3D({ onEditObject }: Scene3DProps) {
   const updateObject = useStudioStore((state) => state.updateObject);
   const objectsRef = useRef(objects);
   const roomRef = useRef(room);
+  const selectedIdRef = useRef(selectedId);
   useEffect(() => {
     objectsRef.current = objects;
     roomRef.current = room;
-  }, [objects, room]);
+    selectedIdRef.current = selectedId;
+  }, [objects, room, selectedId]);
 
   // Incremental 3D scene management
   const objectCacheRef = useRef<Map<string, CachedNode>>(new Map());
@@ -267,6 +269,7 @@ export function Scene3D({ onEditObject }: Scene3DProps) {
       }
     }
     applyObjectOutlines(scene);
+    highlightById(scene, selectedIdRef.current ?? null);
     const frameKey = `${room.width}|${room.depth}|${room.height}|${sceneBounds.minX}|${sceneBounds.maxX}|${sceneBounds.minY}|${sceneBounds.maxY}`;
     if (!hasFramedSceneRef.current || lastFrameKeyRef.current !== frameKey) {
       frameScene(cameraRef.current!);
