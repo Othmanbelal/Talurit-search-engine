@@ -2,6 +2,9 @@ import { UserRole } from "@prisma/client";
 import { z } from "zod";
 
 const roleSchema = z.nativeEnum(UserRole);
+const pictureReferenceSchema = z.string().refine((value) => {
+  return /^(local|supabase):\/\/[^/]+\/.+/.test(value) || z.string().url().safeParse(value).success;
+}, "Profile picture must be an uploaded image reference or valid URL");
 
 export const inviteUserSchema = z.object({
   email: z.string().email().transform((email) => email.trim().toLowerCase()),
@@ -17,7 +20,7 @@ export const updateUserSchema = z.object({
       firstName: z.string().trim().min(1).max(80).optional(),
       lastName: z.string().trim().min(1).max(80).optional(),
       phoneNumber: z.string().trim().max(40).optional().or(z.literal("")),
-      profilePictureUrl: z.string().url().optional().or(z.literal("")),
+      profilePictureUrl: pictureReferenceSchema.optional().or(z.literal("")),
     })
     .optional(),
 });

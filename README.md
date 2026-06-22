@@ -178,20 +178,26 @@ Important:
 
 ## File Storage
 
-Uploaded item pictures, QR images, and profile pictures use Supabase Storage in production. PostgreSQL stores only storage references; image bytes are not stored in normal database text fields, and Render/local disk is not used for production uploads.
-
-Create a private Supabase Storage bucket, or let the configured service role upload to an existing private bucket, then set these variables on Render and in local `.env` when uploads are needed:
+PostgreSQL stores only file references. Local Docker deployments should use:
 
 ```env
+STORAGE_DRIVER=local
+UPLOAD_HOST_DIR=C:/ToolInventory/uploads
+```
+
+Local uploads use the mounted `/app/uploads` folder and authenticated backend.
+
+For Supabase-hosted media, use:
+
+```env
+STORAGE_DRIVER=supabase
 SUPABASE_URL=https://PROJECT_REF.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 SUPABASE_STORAGE_BUCKET=tool-inventory-uploads
 SUPABASE_SIGNED_URL_SECONDS=3600
 ```
 
-The service role key is a backend secret. Do not put it in Vercel or any frontend environment.
-
-Images are rendered through the backend media endpoint, which creates a short-lived signed Supabase URL for authenticated users.
+Keep the service-role key backend-only. Existing `supabase://` references remain readable when configured. Full backups include local uploads.
 
 ## Email Setup
 

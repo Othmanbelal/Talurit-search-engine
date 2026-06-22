@@ -35,6 +35,7 @@ const envSchema = z.object({
   ADMIN_SUMMARY_EMAIL: z.string().optional().default(""),
   BACKUP_DIR: z.string().default("./backups"),
   UPLOAD_DIR: z.string().default("./uploads"),
+  STORAGE_DRIVER: z.enum(["local", "supabase"]).default("local"),
   SUPABASE_URL: z.preprocess((value) => value === "" ? undefined : value, z.string().url().optional()),
   SUPABASE_SERVICE_ROLE_KEY: z.string().optional().default(""),
   SUPABASE_STORAGE_BUCKET: z.string().default("tool-inventory-uploads"),

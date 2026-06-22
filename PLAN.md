@@ -1475,6 +1475,37 @@ Remaining before release:
 - Configure SMTP and send a real reset email through the company mail service.
 - GitHub commit, push, pull request, and deployment tag.
 
+## Mounted Upload Restore Hotfix - Completed
+
+Completed:
+- Backup restore no longer attempts to remove the `/app/uploads` Docker bind-mount root.
+- Restore and automatic rollback now clear only the mounted folder's children before copying packaged uploads.
+- Added retry handling for transient Windows file locks during child cleanup.
+- Preserved full replacement semantics so files absent from the selected package do not survive a restore.
+
+Verification:
+- Server type-check and production build passed.
+- Docker bind-mount cleanup test passed without removing the mount root.
+- Full backup restore was exercised against an isolated PostgreSQL database and upload mount.
+
+## Local Image Storage - Completed
+
+Completed:
+- Added `STORAGE_DRIVER=local|supabase`, with local storage as the Docker deployment default.
+- Item pictures, QR images, and profile pictures can now be stored under the persistent `/app/uploads` mount.
+- Local uploads use opaque `local://...` database references instead of filesystem paths.
+- The authenticated backend media endpoint now serves both local and Supabase-managed images.
+- Existing `supabase://` references remain backward compatible.
+- Added path-containment validation so local references cannot escape the configured upload root.
+- Local files continue to be captured and restored by full `.tibackup` packages.
+- Sanitized the deployment environment template so it contains placeholders only.
+
+Verification:
+- Server and client type-checks passed.
+- Docker local upload returned a `local://` reference and persisted under the mounted upload folder.
+- Unauthenticated media access returned 401; authenticated media bytes matched the uploaded image.
+- A full backup package included all local upload files.
+
 ## Known Risks
 
 - Excel columns vary between sheets.

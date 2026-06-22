@@ -103,6 +103,7 @@ ADMIN_SUMMARY_EMAIL=new-admin@company.com
 
 BACKUP_HOST_DIR=C:/ToolInventory/backups
 UPLOAD_HOST_DIR=C:/ToolInventory/uploads
+STORAGE_DRIVER=local
 ```
 
 Do not use `admin@example.com`, `ChangeMe123`, or the example secret values.
@@ -161,6 +162,8 @@ Confirm:
 - `Forgot password?` sends a link;
 - the link expires, is single-use, and signs out old sessions;
 - a new full backup succeeds.
+- item, QR, and profile image uploads appear under `C:\ToolInventory\uploads`;
+- uploaded images remain visible after a container restart.
 
 ## 11. Open only the frontend firewall port
 

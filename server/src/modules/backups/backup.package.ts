@@ -14,6 +14,7 @@ import { basename, join, relative, resolve, sep } from "node:path";
 import { tmpdir } from "node:os";
 import { env } from "../../config/env";
 import { AppError } from "../../utils/AppError";
+import { getLocalUploadRoot } from "../uploads/storage.local";
 import { downloadStorageObject, restoreStorageObject } from "../uploads/storage.service";
 import {
   createBackupArchive,
@@ -108,15 +109,27 @@ export async function restorePackageFiles(
     await restoreStorageObject(record.ref, buffer, record.contentType);
   }
 
-  const uploadRoot = getUploadRoot();
-  await rm(uploadRoot, { recursive: true, force: true });
-  await mkdir(uploadRoot, { recursive: true });
+  const uploadRoot = getLocalUploadRoot();
+  await clearDirectoryContents(uploadRoot);
   for (const record of manifest.localUploads) {
     const relativePath = record.file.replace(/^local-uploads\//, "");
     const destination = resolveInside(uploadRoot, relativePath);
     await mkdir(resolve(destination, ".."), { recursive: true });
     await cp(resolvePackageFile(workDirectory, record.file), destination);
   }
+}
+
+async function clearDirectoryContents(directory: string) {
+  // The uploads root is commonly a Docker bind mount. Removing the mount point
+  // itself fails with EBUSY on Windows, so remove only its children.
+  await mkdir(directory, { recursive: true });
+  const entries = await readdir(directory, { withFileTypes: true });
+  await Promise.all(entries.map((entry) => rm(join(directory, entry.name), {
+    recursive: true,
+    force: true,
+    maxRetries: 3,
+    retryDelay: 100,
+  })));
 }
 
 export async function closeFullBackupPackage(workDirectory: string) {
@@ -160,7 +173,7 @@ async function captureStorageObjects(workDirectory: string) {
 }
 
 async function captureLocalUploads(workDirectory: string) {
-  const uploadRoot = getUploadRoot();
+  const uploadRoot = getLocalUploadRoot();
   if (!existsSync(uploadRoot)) return [];
   const files = await walkFiles(uploadRoot);
   const records: FileRecord[] = [];
@@ -237,13 +250,6 @@ function resolveInside(root: string, file: string) {
     throw new AppError("Backup package contains an invalid file path.", 400);
   }
   return candidate;
-}
-
-function getUploadRoot() {
-  if (env.UPLOAD_DIR.startsWith("/") || /^[A-Za-z]:[\\/]/.test(env.UPLOAD_DIR)) return resolve(env.UPLOAD_DIR);
-  const current = process.cwd();
-  const projectRoot = existsSync(resolve(current, "prisma/schema.prisma")) ? current : resolve(current, "..");
-  return resolve(projectRoot, env.UPLOAD_DIR);
 }
 
 function secretFingerprint() {
