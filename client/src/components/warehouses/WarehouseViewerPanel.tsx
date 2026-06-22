@@ -1,10 +1,12 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Maximize2, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import type { LevelDefinition, SceneObject } from "../../modules/warehouse-designer/types";
-import type { WarehouseLayout } from "../../types/warehouse";
+import type { ShelfViewItem, WarehouseLayout } from "../../types/warehouse";
 import { useWarehouseShelfView } from "../../hooks/useWarehouseShelfView";
 import { useWarehouseSceneObjects } from "../../hooks/useWarehouseSceneObjects";
 import { buildContainerObjects } from "./warehouseContainers";
+import { WarehouseLinkedItemCard } from "./WarehouseLinkedItemCard";
 
 const LEVEL_EPS = 0.001;
 
@@ -22,7 +24,26 @@ type Props = {
 export function WarehouseViewerPanel({ focusSlotId, onRackSelect, reloadSignal, warehouse }: Props) {
   const shelfView = useWarehouseShelfView(warehouse.id);
   const scene = useWarehouseSceneObjects(warehouse.id);
+  const navigate = useNavigate();
   const [expanded, setExpanded] = useState(false);
+  const [focusScreenPos, setFocusScreenPos] = useState<{ x: number; y: number } | null>(null);
+  const [cardDismissed, setCardDismissed] = useState(false);
+
+  // The focused slot's item(s), for the linked-item card.
+  const focusItems = useMemo<ShelfViewItem[]>(() => {
+    if (!focusSlotId || !shelfView.data) return [];
+    for (const shelf of shelfView.data.shelves) {
+      const slot = shelf.slots.find((s) => s.id === focusSlotId);
+      if (slot) return slot.items;
+    }
+    return [];
+  }, [focusSlotId, shelfView.data]);
+
+  useEffect(() => { setCardDismissed(false); setFocusScreenPos(null); }, [focusSlotId]);
+
+  function openItem(item: ShelfViewItem) {
+    if (item.tableId) navigate(`/inventory/tables/${item.tableId}?highlight=${item.id}`);
+  }
 
   // Extract levels from saved layoutData
   const levels = useMemo<LevelDefinition[]>(() => {
@@ -124,16 +145,23 @@ export function WarehouseViewerPanel({ focusSlotId, onRackSelect, reloadSignal, 
     </div>
   ) : null;
 
+  const showCard = focusItems.length > 0 && !cardDismissed;
   const canvas3d = (
-    <Suspense fallback={<div className="animate-pulse bg-white/[0.03]" style={{ height: expanded ? "calc(100vh - 52px)" : 520 }} />}>
-      <Warehouse3DView
-        focusObjectId={focusSlotId ? `pallet-${focusSlotId}` : undefined}
-        height={expanded ? (typeof window !== "undefined" ? window.innerHeight - 52 : 760) : 520}
-        layout={filteredLayout}
-        onRackClick={onRackSelect}
-        rackIds={rackIds}
-      />
-    </Suspense>
+    <div className="relative">
+      <Suspense fallback={<div className="animate-pulse bg-white/[0.03]" style={{ height: expanded ? "calc(100vh - 52px)" : 520 }} />}>
+        <Warehouse3DView
+          focusObjectId={focusSlotId ? `pallet-${focusSlotId}` : undefined}
+          height={expanded ? (typeof window !== "undefined" ? window.innerHeight - 52 : 760) : 520}
+          layout={filteredLayout}
+          onFocusScreenPos={showCard ? setFocusScreenPos : undefined}
+          onRackClick={onRackSelect}
+          rackIds={rackIds}
+        />
+      </Suspense>
+      {showCard ? (
+        <WarehouseLinkedItemCard items={focusItems} onClose={() => setCardDismissed(true)} onOpen={openItem} screenPos={focusScreenPos} />
+      ) : null}
+    </div>
   );
 
   if (expanded) {

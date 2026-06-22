@@ -6,6 +6,7 @@ import {
   DirectionalLight,
   Engine,
   HemisphericLight,
+  Matrix,
   Mesh,
   PBRMaterial,
   PointerEventTypes,
@@ -34,15 +35,18 @@ type Props = {
   height?: number;
   layout: Record<string, unknown> | null | undefined;
   onRackClick?: (id: string) => void;
+  onFocusScreenPos?: (pos: { x: number; y: number } | null) => void;
   rackIds?: Set<string>;
 };
 
-export function Warehouse3DView({ focusObjectId, height = 520, layout, onRackClick, rackIds }: Props) {
+export function Warehouse3DView({ focusObjectId, height = 520, layout, onRackClick, onFocusScreenPos, rackIds }: Props) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const engineRef = useRef<Engine | null>(null);
   const onRackClickRef = useRef(onRackClick);
+  const onFocusScreenPosRef = useRef(onFocusScreenPos);
   const rackIdsRef = useRef(rackIds);
   useEffect(() => { onRackClickRef.current = onRackClick; }, [onRackClick]);
+  useEffect(() => { onFocusScreenPosRef.current = onFocusScreenPos; }, [onFocusScreenPos]);
   useEffect(() => { rackIdsRef.current = rackIds; }, [rackIds]);
   // Resize Babylon when canvas height changes (expand/collapse)
   useEffect(() => { engineRef.current?.resize(); }, [height]);
@@ -90,7 +94,7 @@ export function Warehouse3DView({ focusObjectId, height = 520, layout, onRackCli
 
     // Override the designer's light-beige room materials with dark industrial theme
     applyDarkTheme(scene);
-    if (focusObjectId) focusObject(scene, camera, focusObjectId);
+    const focusCenter = focusObjectId ? focusObject(scene, camera, focusObjectId) : null;
 
     // Premium hover/select: rim-light glow + left/right orientation markers on racks.
     const highlight = createRackHighlight(scene);
@@ -133,7 +137,19 @@ export function Warehouse3DView({ focusObjectId, height = 520, layout, onRackCli
       }
     });
 
-    engine.runRenderLoop(() => scene.render());
+    engine.runRenderLoop(() => {
+      scene.render();
+      // Project the focused container to screen so the linked card can draw a connector.
+      if (focusCenter && onFocusScreenPosRef.current) {
+        const projected = Vector3.Project(
+          focusCenter,
+          Matrix.Identity(),
+          scene.getTransformMatrix(),
+          camera.viewport.toGlobal(canvas.clientWidth, canvas.clientHeight),
+        );
+        onFocusScreenPosRef.current({ x: projected.x, y: projected.y });
+      }
+    });
     const onResize = () => engine.resize();
     window.addEventListener("resize", onResize);
     return () => {
@@ -153,14 +169,14 @@ export function Warehouse3DView({ focusObjectId, height = 520, layout, onRackCli
   );
 }
 
-function focusObject(scene: Scene, camera: ArcRotateCamera, objectId: string) {
+function focusObject(scene: Scene, camera: ArcRotateCamera, objectId: string): Vector3 | null {
   // Match the slot's container(s): a single-item slot uses the exact id, while a
   // multi-FACK slot suffixes each container with "__<index>".
   const meshes = scene.meshes.filter((mesh) => {
     const id = mesh.metadata?.objectId as string | undefined;
     return id === objectId || (typeof id === "string" && id.startsWith(`${objectId}__`));
   });
-  if (meshes.length === 0) return;
+  if (meshes.length === 0) return null;
   const center = meshes.reduce((sum, mesh) => sum.add(mesh.getBoundingInfo().boundingBox.centerWorld), Vector3.Zero()).scale(1 / meshes.length);
   camera.setTarget(center);
   camera.radius = Math.max(2.2, Math.min(camera.radius, 4.5));
@@ -175,6 +191,7 @@ function focusObject(scene: Scene, camera: ArcRotateCamera, objectId: string) {
       mesh.material = material;
     }
   }
+  return center;
 }
 
 /** Override the designer's light beige room materials for a dark premium look. */

@@ -1605,6 +1605,19 @@ Verification:
 
 Pending phase: A4 (linked card).
 
+## Warehouse 3D - Linked Item Card (sub-project A, phase A4) - Completed
+
+Completed:
+- New `WarehouseLinkedItemCard`: a premium "Stored here" overlay showing the focused slot's item(s) — image/icon (package/box fallback), name, table, quantity, placement (P10A:x / FACK), container type — with an "Open inventory row" action and dismiss.
+- `Warehouse3DView` projects the focused container's world centre to screen each frame (`Vector3.Project`) via a new `onFocusScreenPos` callback; `focusObject` returns the centre.
+- `WarehouseViewerPanel` shows the card when arriving with `?slot=` focus, resolves the slot's items from the shelf-view, draws a gold leader line from the card to the projected point, and "Open inventory row" routes to the table with the row highlighted.
+
+Verification:
+- Client type-check passed; Docker client build succeeded; `check:lines` passed.
+- Browser: arriving via `?slot=` showed the "Stored here" card with the item (Batteri · Verktygsrum · 8 pcs · P10A:2 / FACK 1) + icon + "Open inventory row", the focused green pallet, and the gold connector — no console errors.
+
+Sub-project A (warehouse 3D premium slots) is complete: A3 FACK capacity, A2 box/pallet rendering, A1 hover/select indicators, A4 linked card. All four requested sub-projects (D, B, C, A) are implemented.
+
 ## Known Risks
 
 - Excel columns vary between sheets.
