@@ -1315,6 +1315,49 @@ Verification:
 - npm run lint passed.
 - npm run build passed.
 
+## Warehouse Placement-Driven Slot Labels - Completed
+
+Completed:
+- Physical rack slots no longer require users to choose a location ID or FACK while configuring the rack.
+- Occupied rack slots display the attached inventory row's existing placement and FACK as the visible slot location.
+- The linked-table picker returns all active rows from linked inventory tables instead of stopping at 20.
+- Inventory rows already assigned to another warehouse slot remain visible and can be moved directly to the selected free slot.
+- Moving a row closes its previous warehouse assignment and creates the new assignment in one database transaction.
+- Active assignment counts and shelf-list placement labels now ignore historical unassigned records.
+
+Verification:
+- npm run check:lines passed.
+- npm run lint passed.
+- npm run build passed.
+
+## Admin Backup Management - Completed
+
+Completed:
+- Added an admin backup center for manual database backups and restores.
+- Added configurable automatic backup enablement, interval in hours, and persistent destination folder.
+- Added destination write testing and validation inside the configured backup storage root.
+- Added available backup file listing, recent operation history, last backup, last restore, and next scheduled backup.
+- Added exact filename confirmation and an automatic safety backup before every restore.
+- Database restores use a single PostgreSQL transaction and reapply Prisma migrations.
+- New API requests receive a maintenance response while a restore is active.
+- Added persistent backup operation metadata, trigger, completion time, and initiating administrator.
+- Added PostgreSQL client tooling to the backend Docker image.
+- Added configurable `BACKUP_HOST_DIR` mounting for local folders, cloud-synced folders, and NAS-mounted folders.
+- Replaced new database-only dumps with versioned `.tibackup` full application packages.
+- Full packages include the complete PostgreSQL database, referenced Supabase-managed media, local uploads, and an integrity manifest.
+- Added SHA-256 verification for every package file and configuration fingerprint validation before restore.
+- Backup operations temporarily place the API in maintenance mode so database references and captured files stay consistent.
+- Failed restores automatically attempt rollback from the full safety package.
+- Legacy `.dump` files remain visible and are clearly identified as database-only backups.
+
+Verification:
+- npm run check:lines passed.
+- npm run lint passed.
+- npm run build passed.
+- Full package creation and integrity validation passed.
+- A full package database was restored into an isolated PostgreSQL database.
+- Warehouse, slot-assignment, inventory-table, stock-row, resource-manager, settings, and user counts matched the source database.
+
 ## Local Network Hosting Preparation - Completed
 
 Completed:
@@ -1333,6 +1376,77 @@ Verification:
 - npm run check:lines passed.
 - npm run lint passed.
 - npm run build passed, with existing Vite bundle-size warnings.
+
+## Warehouse Builder Visual Overhaul - Completed
+
+Completed:
+- Reworked the warehouse studio into a consistent dark industrial interface with safety-yellow and technical-cyan accents.
+- Replaced the flat 2D canvas treatment with a technical floor surface, dot field, clearer boundaries, and object-specific colors.
+- Rebuilt the 3D environment with concrete flooring, a dark perimeter deck, safety markings, fog, tone mapping, and balanced industrial lighting.
+- Rebuilt rack geometry with steel uprights, colored beams, shelf decks, braces, and footplates.
+- Added automatic camera framing so large layouts open at a usable warehouse overview.
+- Limited expensive shadow casting on very large scenes while preserving the upgraded materials and geometry.
+- Unified the plan, split, and 3D controls, panels, badges, drawers, and camera presets under the same visual system.
+
+Verification:
+- Browser-tested split and full 3D views against the current large warehouse layout.
+- No failed application requests or page errors occurred during the final browser check.
+- npm --workspace client run lint passed.
+- npm run check:lines passed.
+- npm run build passed, with existing Vite bundle-size warnings.
+
+## Warehouse Designer Flat-Schematic Light Overhaul - Completed
+
+Replaced the rejected dark industrial look with a soft, bright, premium **light
+flat-schematic** treatment, and fixed the low FPS at the architecture level
+(stayed on Babylon.js — the bottleneck was per-part PBR materials and zero
+batching, not the engine). Light theme is scoped to the warehouse-designer
+module only; the rest of the app keeps its dark-navy identity.
+
+Files created:
+- client/src/modules/warehouse-designer/theme/designTokens.ts (single token source)
+- client/src/modules/warehouse-designer/styles/chunk-23.css (.wd-root CSS variables)
+- client/src/modules/warehouse-designer/styles/chunk-24.css (chrome overflow rules)
+- client/src/modules/warehouse-designer/engine/materialPalette.ts (shared frozen flat materials)
+- client/src/modules/warehouse-designer/engine/meshMerge.ts (per-object mesh merge)
+- client/src/modules/warehouse-designer/engine/sceneGrid.ts (single-mesh blueprint grid)
+- client/src/modules/warehouse-designer/engine/engineSetup.ts (engine budget + outlines)
+
+Files changed:
+- engine/sceneEnvironment.ts (flat light; removed fog, ACES, real-time shadows)
+- engine/babylonCore.ts, rackMeshes.ts, objectMeshes.ts, roomMeshes.ts (shared flat
+  materials + per-object merge; eliminated all per-part PBR allocation)
+- engine/objectMeshCache.ts (disposal no longer frees shared scene-lifetime materials)
+- components/Scene3D.tsx (new engine setup, thin outline pass, accent selection,
+  no shadow wiring; re-applies selection after each scene diff)
+- components/PlanView.tsx + 2D-view CSS (repainted to the same tokens as 3D)
+- chrome CSS chunks + App.tsx (.wd-root) — light glass panels via CSS variables
+
+What works now:
+- One consistent flat-schematic light language across 3D, 2D, and chrome, all driven
+  by a single token source (TS + CSS vars), so the layers cannot drift.
+- Off-white/grey canvas, faint blueprint grid, soft-grey structure, thin outlines,
+  muted desaturated status tints (sage/dusty-blue/clay), single accent for selection.
+- Performance fixed at the root: shared frozen flat StandardMaterials (no per-part
+  PBR), each object merged into one mesh, real-time shadows/fog removed, grid as one
+  LineSystem draw call, FXAA + adaptive hardware scaling, frozen world matrices.
+
+Verification:
+- npm run lint (server + client) passed.
+- npm --workspace client run build passed (existing Vite bundle-size warnings only).
+- npm run check:lines passed — no non-schema source file exceeds 350 lines.
+- Final whole-branch review (opus): Preservation Guarantee holds — picking, transform
+  gizmo + elevation, incremental add/update/remove diff, camera presets, disposal, and
+  theme scoping all verified preserved; one selection-outline regression found and
+  fixed.
+
+Known limitations:
+- Live in-browser regression + Docker container rebuild were pending at hand-off
+  because the local Docker daemon was not running; rebuild with
+  `docker compose up -d --build` and exercise the Preservation checklist in 2D/3D.
+- Minor polish deferred (non-blocking): adaptive-scaling hysteresis, an unused
+  clearObjectCache export, and a couple of hand-coded rgba fills / !important rules
+  in 2D/chrome CSS.
 
 ## Known Risks
 
