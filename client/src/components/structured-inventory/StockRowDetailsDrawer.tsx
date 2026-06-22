@@ -15,17 +15,22 @@ import { EditBody, type FormState } from "./StockRowEditBody";
 import { StockRowHistory } from "./StockRowHistory";
 import { ItemNotesPanel } from "./ItemNotesPanel";
 import { UrgentIssueModal } from "./UrgentIssueModal";
+import { LowStockSection } from "./LowStockSection";
 
 export function StockRowDetailsDrawer({
   historyKey,
+  lowStockConfigurable,
   onClose,
+  onConfigureLowStock,
   onSave,
   row,
   tableId,
   tableName,
 }: {
   historyKey?: number;
+  lowStockConfigurable?: boolean;
   onClose: () => void;
+  onConfigureLowStock?: (row: StructuredStockRow) => void;
   onSave: (rowId: string, input: UpdateStockRowInput) => Promise<void>;
   row: StructuredStockRow | null;
   tableId?: string;
@@ -107,6 +112,7 @@ export function StockRowDetailsDrawer({
               <ViewBody
                 form={form}
                 historyKey={historyKey}
+                lowStockConfigure={lowStockConfigurable ? onConfigureLowStock : undefined}
                 row={row}
                 warehousePlacement={warehousePlacement}
               />
@@ -158,11 +164,13 @@ export function StockRowDetailsDrawer({
 function ViewBody({
   form,
   historyKey,
+  lowStockConfigure,
   row,
   warehousePlacement,
 }: {
   form: FormState;
   historyKey?: number;
+  lowStockConfigure?: (row: StructuredStockRow) => void;
   row: StructuredStockRow;
   warehousePlacement: WarehouseStockPlacement | null;
 }) {
@@ -174,6 +182,7 @@ function ViewBody({
           <DetailCard item={item} key={item.label} />
         ))}
       </section>
+      <LowStockSection onConfigure={lowStockConfigure} row={row} />
       {warehousePlacement && (
         <section className="rounded-lg border border-accent/30 bg-accent/5 p-4">
           <div className="flex items-center justify-between gap-3">

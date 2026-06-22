@@ -13,6 +13,7 @@ import {
 } from "./urgent-issues.repository";
 import { serializeIssue } from "./urgent-issues.serializer";
 import { sendUrgentIssueEmail } from "./urgent-issues.email";
+import { resolveManagerTableIds } from "../managers/manager-access";
 import type { UrgentIssueStatus } from "@prisma/client";
 
 async function buildItemSnapshot(stockBalanceId: string) {
@@ -35,28 +36,6 @@ async function buildItemSnapshot(stockBalanceId: string) {
     quantity: Number(row.quantity),
     unit: row.unit,
   };
-}
-
-async function resolveManagerTableIds(userId: string): Promise<string[]> {
-  const managers = await prisma.resourceManager.findMany({
-    where: { userId },
-    select: { resourceType: true, resourceId: true },
-  });
-  const directTableIds = managers
-    .filter((m) => m.resourceType === "inventory_table")
-    .map((m) => m.resourceId);
-  const groupIds = managers
-    .filter((m) => m.resourceType === "inventory_group")
-    .map((m) => m.resourceId);
-  let inheritedTableIds: string[] = [];
-  if (groupIds.length > 0) {
-    const tables = await prisma.inventoryTable.findMany({
-      where: { groupId: { in: groupIds } },
-      select: { id: true },
-    });
-    inheritedTableIds = tables.map((t) => t.id);
-  }
-  return [...new Set([...directTableIds, ...inheritedTableIds])];
 }
 
 export async function reportUrgentIssue(

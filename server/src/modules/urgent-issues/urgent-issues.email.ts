@@ -1,5 +1,5 @@
-import { prisma } from "../../db/prisma";
 import { sendEmail } from "../email/email.service";
+import { getManagerEmails } from "../managers/manager-access";
 
 type IssueEmailData = {
   tableId: string;
@@ -14,43 +14,6 @@ type IssueEmailData = {
   senderRole: string;
   senderEmail: string;
 };
-
-/**
- * Collect unique email addresses of all managers responsible for the table:
- * direct table managers + parent group managers.
- */
-async function getManagerEmails(tableId: string): Promise<string[]> {
-  const table = await prisma.inventoryTable.findUnique({
-    where: { id: tableId },
-    select: { groupId: true },
-  });
-
-  const resourceIds: { resourceType: string; resourceId: string }[] = [
-    { resourceType: "inventory_table", resourceId: tableId },
-  ];
-
-  if (table?.groupId) {
-    resourceIds.push({ resourceType: "inventory_group", resourceId: table.groupId });
-  }
-
-  const managers = await prisma.resourceManager.findMany({
-    where: {
-      OR: resourceIds.map((r) => ({
-        resourceType: r.resourceType as "inventory_table" | "inventory_group",
-        resourceId: r.resourceId,
-      })),
-    },
-    include: {
-      user: { select: { email: true, isActive: true } },
-    },
-  });
-
-  const emails = managers
-    .filter((m) => m.user.isActive)
-    .map((m) => m.user.email);
-
-  return [...new Set(emails)];
-}
 
 function buildHtml(data: IssueEmailData): string {
   const articleRow = data.articleNumber

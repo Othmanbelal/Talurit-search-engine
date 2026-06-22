@@ -13,6 +13,7 @@ import {
 } from "./stock-movement-records";
 import { serializeTakenItem } from "./stock-movement.serializer";
 import { logInteraction } from "./interaction-log";
+import { evaluateLowStock } from "../low-stock/low-stock.service";
 
 export async function takeStockItem(tableId: string, rowId: string, input: StockMovementActionInput, userId?: string) {
   const row = await loadAvailableRow(tableId, rowId, input.quantity);
@@ -39,6 +40,7 @@ export async function takeStockItem(tableId: string, rowId: string, input: Stock
     notes: input.notes,
     itemName: row.item?.name,
   }).catch((err: unknown) => console.error("[logInteraction:take]", err));
+  void evaluateLowStock(row.id);
 }
 
 export async function useStockItemInCard(tableId: string, rowId: string, input: UseInCardInput, userId?: string) {
@@ -74,6 +76,7 @@ export async function useStockItemInCard(tableId: string, rowId: string, input: 
     notes: input.notes,
     itemName: row.item?.name,
   }).catch((err: unknown) => console.error("[logInteraction:use_in]", err));
+  void evaluateLowStock(row.id);
 }
 
 export async function getTakenItems() {
@@ -97,6 +100,7 @@ export async function returnTakenItem(id: string, userId?: string) {
     quantity: item.quantity.toString(),
     itemName: item.item?.name,
   }).catch((err: unknown) => console.error("[logInteraction:return]", err));
+  void evaluateLowStock(item.sourceStockBalanceId);
 }
 
 export async function returnUsedInAssignment(id: string, userId?: string) {
@@ -115,6 +119,7 @@ export async function returnUsedInAssignment(id: string, userId?: string) {
     quantity: assignment.quantity.toString(),
     itemName: assignment.item?.name,
   }).catch((err: unknown) => console.error("[logInteraction:return_used]", err));
+  void evaluateLowStock(assignment.sourceStockBalanceId);
 }
 
 async function loadAvailableRow(tableId: string, rowId: string, quantity: number) {

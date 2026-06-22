@@ -1,4 +1,4 @@
-import { ArrowLeft, Plus, Settings2, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Settings2, Trash2, TrendingDown } from "lucide-react";
 import { InlineManagerStrip } from "../components/InlineManagerStrip";
 import { FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -8,6 +8,7 @@ import { StockRowAddDrawer } from "../components/structured-inventory/StockRowAd
 import { StockRowDetailsDrawer } from "../components/structured-inventory/StockRowDetailsDrawer";
 import { StockRowMovementModal } from "../components/structured-inventory/StockRowMovementModal";
 import { StructuredStockRowsTable } from "../components/structured-inventory/StructuredStockRowsTable";
+import { LowStockConfigPopover } from "../components/structured-inventory/LowStockConfigPopover";
 import { StructuredTableSearchFilters } from "../components/structured-inventory/StructuredTableSearchFilters";
 import { TableColumnSettingsPanel } from "../components/structured-inventory/TableColumnSettingsPanel";
 import { TableWidgets } from "../components/structured-inventory/TableWidgets";
@@ -15,6 +16,7 @@ import { useMyResourceManagers } from "../hooks/useMyResourceManagers";
 import { usePermissions } from "../hooks/usePermissions";
 import { useStructuredInventoryTable } from "../hooks/useStructuredInventory";
 import { getStructuredStockRowRequest } from "../services/structured-inventory.service";
+import { setTableLowStockRequest } from "../services/low-stock.service";
 import type { AddStockRowInput, StructuredStockRow, StructuredTableFilters } from "../types/structured-inventory";
 
 export function StructuredInventoryTablePage() {
@@ -29,6 +31,7 @@ export function StructuredInventoryTablePage() {
   const [isLayoutOpen, setIsLayoutOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState<StructuredStockRow | null>(null);
   const [movingRow, setMovingRow] = useState<StructuredStockRow | null>(null);
+  const [lowStockRow, setLowStockRow] = useState<StructuredStockRow | null>(null);
   const [movementVersion, setMovementVersion] = useState(0);
   const highlightedRowId = searchParams.get("highlight");
   const initialSearch = searchParams.get("search") ?? "";
@@ -89,6 +92,12 @@ export function StructuredInventoryTablePage() {
     await inventory.updateColumns({ ...cs, allowedSearchAttributes: allowed });
   }
 
+  async function toggleTableLowStock() {
+    if (!id || !inventory.table) return;
+    await setTableLowStockRequest(id, !inventory.table.lowStockEnabled);
+    await inventory.loadRows();
+  }
+
   async function deleteTable() {
     if (!window.confirm("Remove this table and its table rows?")) return;
     await inventory.deleteTable();
@@ -118,6 +127,15 @@ export function StructuredInventoryTablePage() {
           )}
         </div>
         <div className="flex flex-wrap gap-2">
+          {canManageThisTable && inventory.table ? (
+            <button
+              className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-semibold ${inventory.table.lowStockEnabled ? "border-amber-400/50 bg-amber-500/15 text-amber-300" : "border-line bg-white/5 text-slate-200"}`}
+              onClick={toggleTableLowStock}
+              type="button"
+            >
+              <TrendingDown size={16} /> Low stock: {inventory.table.lowStockEnabled ? "On" : "Off"}
+            </button>
+          ) : null}
           {canManageInventory ? (
             <>
               <button className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-semibold ${isLayoutOpen ? "border-accent bg-accent/15 text-accent" : "border-line bg-white/5 text-slate-200"}`} onClick={() => setIsLayoutOpen((current) => !current)} type="button">
@@ -167,6 +185,8 @@ export function StructuredInventoryTablePage() {
         <>
           <StructuredStockRowsTable
             highlightedRowId={highlightedRowId}
+            lowStockConfigurable={canManageThisTable && !!inventory.table?.lowStockEnabled}
+            onConfigureLowStock={setLowStockRow}
             rows={inventory.rows.items}
             table={inventory.table}
             onArchive={canManageInventory ? (row) => void inventory.archiveRow(row.id) : undefined}
@@ -185,6 +205,8 @@ export function StructuredInventoryTablePage() {
       ) : null}
       <StockRowDetailsDrawer
         historyKey={movementVersion}
+        lowStockConfigurable={canManageThisTable && !!inventory.table?.lowStockEnabled}
+        onConfigureLowStock={(row) => { setSelectedRow(null); setLowStockRow(row); }}
         row={selectedRow}
         tableId={id}
         tableName={inventory.table?.name}
@@ -194,6 +216,14 @@ export function StructuredInventoryTablePage() {
           setSelectedRow(null);
         }}
       />
+      {lowStockRow && id ? (
+        <LowStockConfigPopover
+          onClose={() => setLowStockRow(null)}
+          onSaved={() => void inventory.loadRows()}
+          row={lowStockRow}
+          tableId={id}
+        />
+      ) : null}
       <StockRowMovementModal
         row={movingRow}
         onClose={() => setMovingRow(null)}

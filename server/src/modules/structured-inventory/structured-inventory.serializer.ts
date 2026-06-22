@@ -83,6 +83,7 @@ export function serializeTableSummary(table: {
   sourceSheetName: string | null;
   tableType: string;
   columnSettings?: unknown;
+  lowStockEnabled?: boolean;
   createdAt: Date;
   updatedAt: Date;
   _count?: { stockBalances?: number };
@@ -94,6 +95,7 @@ export function serializeTableSummary(table: {
     sourceSheetName: table.sourceSheetName,
     tableType: table.tableType,
     columnSettings: normalizeColumnSettings(table.columnSettings),
+    lowStockEnabled: table.lowStockEnabled ?? false,
     rowCount: table._count?.stockBalances ?? 0,
     createdAt: table.createdAt,
     updatedAt: table.updatedAt,
@@ -118,6 +120,9 @@ export function serializeStockRow(row: StockRowRecord) {
     status: row.status,
     notes: row.notes,
     archivedAt: row.archivedAt,
+    lowStockEnabled: row.lowStockEnabled,
+    lowStockThreshold: row.lowStockThreshold ? toNumber(row.lowStockThreshold) : null,
+    reorderUrl: row.reorderUrl,
     usageTags: usageTags(row),
     activityTags: activityTags(row),
     warehousePlacement: warehousePlacement(row),

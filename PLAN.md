@@ -1543,6 +1543,24 @@ Verification:
 - API end-to-end: report → open & not unread; resolve → unread + resolvedBy + resolvedAt; acknowledge → read; re-resolve → unread again; bad id → 404.
 - Browser end-to-end: widget shows "1 new" + unread dot for admin; "Mark all read" cleared the badge/dot and persisted server-side (unread=false).
 
+## Low Stock - Thresholds, Reorder Links & Auto-Email (sub-project C) - Completed
+
+Design spec: `docs/superpowers/specs/2026-06-22-low-stock-reorder-design.md`
+
+Completed:
+- Schema (migration `20260622150000_low_stock_reorder`): `StockBalance.lowStockEnabled/lowStockThreshold/reorderUrl/lowStockNotifiedAt`, `InventoryTable.lowStockEnabled`, new `ReorderNotificationLog`.
+- New `low-stock` module: `evaluateLowStock` (crossing detection — one email per downward crossing, re-arm when restocked above threshold, mark notified only on successful send), config service, premium reorder email (CTA only when an order link is set), and a `setInterval`-based reconciliation sweep started from `index.ts`.
+- Config endpoints (admin or table/group manager): `PATCH /api/low-stock/tables/:id` (master toggle) and `PATCH /api/low-stock/tables/:id/rows/:rowId` (enabled/threshold/optional reorder URL); order link validated as http(s); enabling requires a threshold.
+- Shared `managers/manager-access.ts` (`resolveManagerTableIds`, `isTableManager`, `getManagerEmails`) extracted and now used by both urgent-issues and low-stock.
+- `evaluateLowStock` hooked into take/use/return movements and manual row edits.
+- Frontend: table master-toggle button; per-row low-stock action button (yellow when defined, grey otherwise); "LOW" badge on enabled at/below-threshold rows (all roles); `LowStockConfigPopover`; `LowStockSection` in the item details drawer.
+
+Verification:
+- Server and client type-checks passed; Docker build of both images succeeded; `check:lines` passed.
+- Migration applied in Docker; all low-stock columns + `reorder_notification_logs` present.
+- API: master toggle + row config persist and serialize; bad order link and enable-without-threshold rejected (400); configuring a low row wrote a `ReorderNotificationLog` and left `lowStockNotifiedAt` null on failed send (SMTP-safe retry), error recorded ("No managers assigned").
+- Browser: header shows "Low stock: On"; low row renders the LOW badge + yellow "Low stock configured" button; the config popover opens with toggle/threshold/order-link.
+
 ## Known Risks
 
 - Excel columns vary between sheets.

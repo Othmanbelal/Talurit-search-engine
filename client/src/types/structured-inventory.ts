@@ -15,6 +15,7 @@ export type StructuredInventoryTableSummary = {
   sourceSheetName?: string | null;
   tableType: string;
   columnSettings: TableColumnSettings;
+  lowStockEnabled: boolean;
   rowCount: number;
   createdAt: string;
   updatedAt: string;
@@ -90,6 +91,9 @@ export type StructuredStockRow = {
   status: "active" | "archived" | string;
   notes?: string | null;
   archivedAt?: string | null;
+  lowStockEnabled: boolean;
+  lowStockThreshold?: number | null;
+  reorderUrl?: string | null;
   usageTags: { cardId: string; cardName: string; quantity: number }[];
   activityTags?: ActivityTag[];
   warehousePlacement?: {

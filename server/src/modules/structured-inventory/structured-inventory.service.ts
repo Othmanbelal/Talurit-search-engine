@@ -38,6 +38,7 @@ import {
 import { duplicateSummary, findDuplicateGroups, mergeDuplicateRows } from "./duplicate-records";
 import { logInteraction } from "./interaction-log";
 import { cleanupResourceManagers } from "../resource-managers/resource-managers.service";
+import { evaluateLowStock } from "../low-stock/low-stock.service";
 
 export async function listStructuredInventories() {
   const [groups, ungroupedTables] = await Promise.all([
@@ -129,6 +130,8 @@ export async function updateStructuredStockRow(tableId: string, rowId: string, i
   const before = await getStructuredStockRow(tableId, rowId);
   await updateStockRowRecord(tableId, rowId, input, userId);
   await logInteraction({ action: "edit", stockBalanceId: rowId, inventoryTableId: tableId, itemId: before.item.id, userId, itemName: before.item.name }).catch((err: unknown) => console.error("[logInteraction:edit]", err));
+  // Re-check low stock after a manual quantity edit (may cross or clear the threshold).
+  void evaluateLowStock(rowId);
   return getStructuredStockRow(tableId, rowId);
 }
 

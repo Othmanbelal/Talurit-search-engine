@@ -1,6 +1,7 @@
 import type React from "react";
-import { Archive, ChevronRight, Eye, PackageMinus, RotateCcw, Trash2, Warehouse } from "lucide-react";
+import { Archive, ChevronRight, Eye, PackageMinus, RotateCcw, TrendingDown, Trash2, Warehouse } from "lucide-react";
 import type { StructuredInventoryTable, StructuredStockRow, TableColumnSettings } from "../../types/structured-inventory";
+import { isRowLow, isRowLowStockDefined } from "../../utils/lowStock";
 
 export type StockColumnKey = string;
 
@@ -19,18 +20,22 @@ export const defaultStockColumns: StockColumnKey[] = ["item", "article", "manufa
 
 export function StructuredStockRowsTable({
   onArchive,
+  onConfigureLowStock,
   onDelete,
   onMove,
   onOpen,
   onRestore,
   onView3d,
+  lowStockConfigurable,
   rows,
   table,
   highlightedRowId,
 }: {
   onArchive?: (row: StructuredStockRow) => void;
+  onConfigureLowStock?: (row: StructuredStockRow) => void;
   onDelete?: (row: StructuredStockRow) => void;
   highlightedRowId?: string | null;
+  lowStockConfigurable?: boolean;
   onMove?: (row: StructuredStockRow) => void;
   onOpen: (row: StructuredStockRow) => void;
   onRestore?: (row: StructuredStockRow) => void;
@@ -39,6 +44,7 @@ export function StructuredStockRowsTable({
   table: StructuredInventoryTable | null;
 }) {
   const visibleColumns = selectedColumns(table);
+  const lowStockOn = table?.lowStockEnabled ?? false;
   if (rows.length === 0) {
     return <div className="rounded-lg border border-line bg-panel p-6 text-sm text-slate-400">No stock rows found.</div>;
   }
@@ -60,7 +66,10 @@ export function StructuredStockRowsTable({
           >
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="truncate font-semibold text-white">{row.item.name}</p>
+                <p className="flex items-center gap-2 truncate font-semibold text-white">
+                  {row.item.name}
+                  {isRowLow(row, lowStockOn) ? <LowBadge /> : null}
+                </p>
                 <p className="mt-0.5 text-sm text-slate-400">
                   {row.item.articleNumber ?? row.item.alternativeArticleNumber ?? "-"}
                 </p>
@@ -99,9 +108,12 @@ export function StructuredStockRowsTable({
               {rows.map((row) => (
                 <tr className={row.id === highlightedRowId ? "bg-accent/15 ring-1 ring-inset ring-accent/60" : "hover:bg-white/[0.03]"} id={`row-${row.id}`} key={row.id}>
                   {visibleColumns.map((column) => (
-                    <Cell key={column} strong={column === "item"}>{renderStockCell(row, column)}</Cell>
+                    <Cell key={column} strong={column === "item"}>
+                      {renderStockCell(row, column)}
+                      {column === "item" && isRowLow(row, lowStockOn) ? <span className="ml-2 align-middle"><LowBadge /></span> : null}
+                    </Cell>
                   ))}
-                  <Cell><RowActions row={row} onArchive={onArchive} onDelete={onDelete} onMove={onMove} onOpen={onOpen} onRestore={onRestore} onView3d={onView3d} /></Cell>
+                  <Cell><RowActions row={row} lowStockConfigurable={lowStockConfigurable} onArchive={onArchive} onConfigureLowStock={onConfigureLowStock} onDelete={onDelete} onMove={onMove} onOpen={onOpen} onRestore={onRestore} onView3d={onView3d} /></Cell>
                 </tr>
               ))}
             </tbody>
@@ -112,9 +124,11 @@ export function StructuredStockRowsTable({
   );
 }
 
-function RowActions({ onArchive, onDelete, onMove, onOpen, onRestore, onView3d, row }: {
+function RowActions({ onArchive, onConfigureLowStock, onDelete, onMove, onOpen, onRestore, onView3d, lowStockConfigurable, row }: {
   onArchive?: (row: StructuredStockRow) => void;
+  onConfigureLowStock?: (row: StructuredStockRow) => void;
   onDelete?: (row: StructuredStockRow) => void;
+  lowStockConfigurable?: boolean;
   onMove?: (row: StructuredStockRow) => void;
   onOpen: (row: StructuredStockRow) => void;
   onRestore?: (row: StructuredStockRow) => void;
@@ -125,6 +139,7 @@ function RowActions({ onArchive, onDelete, onMove, onOpen, onRestore, onView3d, 
     <div className="flex gap-2">
       <IconButton label="Open" onClick={() => onOpen(row)}><Eye size={15} /></IconButton>
       {onMove ? <IconButton label="Take out / Use in" onClick={() => onMove(row)}><PackageMinus size={15} /></IconButton> : null}
+      {lowStockConfigurable && onConfigureLowStock ? <LowStockButton defined={isRowLowStockDefined(row)} onClick={() => onConfigureLowStock(row)} /> : null}
       {onView3d && row.warehousePlacement ? <TextIconButton label="3D" onClick={() => onView3d(row)}><Warehouse size={14} /></TextIconButton> : null}
       {row.status === "archived"
         ? (onRestore ? <IconButton label="Restore" onClick={() => onRestore(row)}><RotateCcw size={15} /></IconButton> : null)
@@ -132,6 +147,22 @@ function RowActions({ onArchive, onDelete, onMove, onOpen, onRestore, onView3d, 
       {onDelete ? <IconButton danger label="Remove" onClick={() => onDelete(row)}><Trash2 size={15} /></IconButton> : null}
     </div>
   );
+}
+
+function LowStockButton({ defined, onClick }: { defined: boolean; onClick: () => void }) {
+  // Yellow once low stock is defined for the item; neutral grey otherwise.
+  const tone = defined
+    ? "border-amber-400/50 bg-amber-500/15 text-amber-300 hover:border-amber-300"
+    : "border-line bg-white/[0.04] text-slate-300 hover:border-accent hover:text-accent";
+  return (
+    <button className={`rounded-md border p-2 ${tone}`} onClick={onClick} title={defined ? "Low stock configured" : "Set up low stock"} type="button">
+      <TrendingDown size={15} />
+    </button>
+  );
+}
+
+function LowBadge() {
+  return <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold text-amber-300">LOW</span>;
 }
 
 function TextIconButton({ children, label, onClick }: { children: React.ReactNode; label: string; onClick: () => void }) {

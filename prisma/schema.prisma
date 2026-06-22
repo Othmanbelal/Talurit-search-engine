@@ -498,6 +498,9 @@ model InventoryTable {
   sourceSheetName          String?
   tableType                String
   columnSettings           Json                          @default("{}")
+  // Master low-stock switch for the table (sub-project C). When false, no low-stock
+  // monitoring or emails occur for any row in the table.
+  lowStockEnabled          Boolean                       @default(false)
   group                    InventoryGroup?               @relation(fields: [groupId], references: [id], onDelete: SetNull)
   stockBalances            StockBalance[]
   urgentIssues             UrgentIssue[]
@@ -649,6 +652,12 @@ model StockBalance {
   currency                 String                    @default("SEK")
   status                   String                    @default("active")
   notes                    String?
+  // Low-stock reorder config (sub-project C). lowStockNotifiedAt is set only on a
+  // successful reorder email and cleared when restocked above the threshold (re-arm).
+  lowStockEnabled          Boolean                   @default(false)
+  lowStockThreshold        Decimal?
+  reorderUrl               String?
+  lowStockNotifiedAt       DateTime?
   archivedAt               DateTime?
   archivedByUserId         String?
   sourceImportRowId        String?
@@ -663,6 +672,7 @@ model StockBalance {
   interactionLogs          ItemInteractionLog[]
   itemNotes                ItemNote[]
   urgentIssues             UrgentIssue[]
+  reorderLogs              ReorderNotificationLog[]
   createdAt                DateTime                  @default(now())
   updatedAt                DateTime                  @updatedAt
 
@@ -670,6 +680,7 @@ model StockBalance {
   @@index([locationId])
   @@index([inventoryTableId])
   @@index([status])
+  @@index([lowStockEnabled])
   @@index([inventoryTableId, itemId, locationId, compartment])
   @@map("stock_balances")
 }
@@ -1094,6 +1105,25 @@ model ItemNote {
   @@index([stockBalanceId])
   @@index([authorId])
   @@map("item_notes")
+}
+
+model ReorderNotificationLog {
+  id             String        @id @default(cuid())
+  stockBalanceId String?
+  itemName       String
+  tableName      String
+  quantity       Decimal
+  threshold      Decimal
+  reorderUrl     String?
+  recipients     String
+  success        Boolean
+  error          String?
+  createdAt      DateTime      @default(now())
+  stockBalance   StockBalance? @relation(fields: [stockBalanceId], references: [id], onDelete: SetNull)
+
+  @@index([stockBalanceId])
+  @@index([createdAt])
+  @@map("reorder_notification_logs")
 }
 
 model UrgentIssue {

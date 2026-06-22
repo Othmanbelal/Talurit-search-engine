@@ -1,6 +1,6 @@
 # Low Stock — Thresholds, Reorder Links & Auto-Email — Design Spec
 **Date:** 2026-06-22
-**Status:** Draft (awaiting user review)
+**Status:** Implemented (2026-06-22)
 **Sub-project:** C of 4 (sequence: D → B → C → A)
 
 ---
