@@ -11,6 +11,15 @@ export type PublicUser = {
     phoneNumber: string | null;
     profilePictureUrl: string | null;
   } | null;
+  // Resolved landing route for this user (defaults to /dashboard).
+  landingResolvedPath: string;
+};
+
+/** Profile fields needed to resolve a landing route (not all returned to the client). */
+export type LandingProfileFields = {
+  landingType: string | null;
+  landingPath: string | null;
+  landingTargetId: string | null;
 };
 
 export type LoginResult = {

@@ -13,7 +13,8 @@ export function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const state = location.state as { from?: { pathname?: string } } | null;
-  const redirectTo = state?.from?.pathname ?? "/dashboard";
+  // Fall back to the index route ("/"), which resolves each user's landing preference.
+  const redirectTo = state?.from?.pathname ?? "/";
 
   if (user) {
     return <Navigate replace to={redirectTo} />;

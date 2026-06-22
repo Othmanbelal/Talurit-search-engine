@@ -1,7 +1,9 @@
 import { compare, hash } from "bcryptjs";
 import { AppError } from "../../utils/AppError";
 import type { ChangePasswordInput, UpdateProfileInput } from "./profile.schemas";
+import { landingTargetExists, resolveLandingPath, type LandingType } from "./landing";
 import {
+  clearLandingPreference,
   findUserWithProfile,
   updateProfilePicture,
   updateUserPassword,
@@ -15,7 +17,16 @@ export async function getProfile(userId: string) {
 }
 
 export async function updateProfile(userId: string, input: UpdateProfileInput) {
-  const updated = await upsertUserProfile(userId, input);
+  // Validate a group/table landing target exists before persisting it.
+  if ((input.landingType === "group" || input.landingType === "table") && input.landingTargetId) {
+    const exists = await landingTargetExists(input.landingType, input.landingTargetId);
+    if (!exists) throw new AppError("The selected landing destination no longer exists.", 400);
+  }
+  // Clearing the preference: normalize all three fields to null together.
+  const data = input.landingType === null
+    ? { ...input, landingPath: null, landingTargetId: null }
+    : input;
+  const updated = await upsertUserProfile(userId, data);
   if (!updated) throw new AppError("User not found.", 404);
   return serializeProfile(updated);
 }
@@ -34,7 +45,7 @@ export async function uploadProfilePicture(userId: string, imageUrl: string) {
   return { profilePictureUrl: imageUrl };
 }
 
-function serializeProfile(user: {
+type ProfileRecord = {
   id: string;
   email: string;
   name: string;
@@ -45,13 +56,35 @@ function serializeProfile(user: {
     lastName: string;
     phoneNumber: string | null;
     profilePictureUrl: string | null;
+    landingType: string | null;
+    landingPath: string | null;
+    landingTargetId: string | null;
   } | null;
-}) {
+};
+
+async function serializeProfile(user: ProfileRecord) {
+  const profile = user.profile;
+  const { path, stale } = await resolveLandingPath({
+    landingType: profile?.landingType ?? null,
+    landingPath: profile?.landingPath ?? null,
+    landingTargetId: profile?.landingTargetId ?? null,
+  });
+  // A target that was deleted is cleared so the UI resets to the default.
+  if (stale) await clearLandingPreference(user.id);
+
   return {
     id: user.id,
     email: user.email,
     name: user.name,
     role: user.role,
-    profile: user.profile ?? null,
+    profile: profile
+      ? {
+          ...profile,
+          landingType: stale ? null : (profile.landingType as LandingType | null),
+          landingPath: stale ? null : profile.landingPath,
+          landingTargetId: stale ? null : profile.landingTargetId,
+        }
+      : null,
+    landingResolvedPath: path,
   };
 }

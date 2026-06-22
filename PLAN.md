@@ -1506,6 +1506,26 @@ Verification:
 - Unauthenticated media access returned 401; authenticated media bytes matched the uploaded image.
 - A full backup package included all local upload files.
 
+## User Settings - Landing Page & Profile Polish (sub-project D) - Completed
+
+Design spec: `docs/superpowers/specs/2026-06-22-user-settings-landing-page-design.md`
+
+Completed:
+- Added a per-user landing preference (`UserProfile.landingType/landingPath/landingTargetId`, additive nullable migration `20260622130000_user_landing_preference`).
+- Users can land on any allowlisted app page, a specific inventory group, or a specific inventory table; selection is saved from the Profile page.
+- Server resolves the landing route on login and `/api/auth/me` (`landingResolvedPath`); a deleted group/table target is cleared and falls back to `/dashboard`.
+- `landingPath` is validated against a fixed route allowlist (no open redirect); group/table targets are verified to exist before saving.
+- Login + a new index route (`/` → `LandingRedirect`) send each user to their resolved landing path; an explicit deep-link still wins.
+- Profile picture upload now opens a crop & preview modal (`react-easy-crop`) with zoom + drag-and-drop.
+- Change-password form gained a live strength meter, requirement checklist, and show/hide toggles.
+- Added an in-house app-wide `ToastProvider` (glass toasts) replacing inline notices; `ProfilePage` split into focused `components/profile/*` files.
+
+Verification:
+- Server and client type-checks passed; production build passed; `check:lines` passed (no non-schema file over 350 lines).
+- Migration applied in Docker; `user_profiles` landing columns present.
+- API end-to-end: login/`me` return `landingResolvedPath`; setting page/group/table resolves correctly; arbitrary path and non-existent target rejected (400); reset returns `/dashboard`.
+- Browser end-to-end: Profile page renders all sections; selecting Warehouses saved and navigating to `/` redirected to `/warehouses`.
+
 ## Known Risks
 
 - Excel columns vary between sheets.

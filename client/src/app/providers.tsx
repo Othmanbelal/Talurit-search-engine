@@ -1,10 +1,13 @@
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "./auth-context";
+import { ToastProvider } from "../components/feedback/ToastProvider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <BrowserRouter>
-      <AuthProvider>{children}</AuthProvider>
+      <AuthProvider>
+        <ToastProvider>{children}</ToastProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

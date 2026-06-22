@@ -204,26 +204,22 @@ export function acceptInvitationWithSession(args: {
   });
 }
 
-const publicUserSelect = {
-  id: true,
-  email: true,
-  name: true,
-  role: true,
-  profile: {
-    select: {
-      firstName: true,
-      lastName: true,
-      phoneNumber: true,
-      profilePictureUrl: true,
-    },
-  },
-};
-
 const profileSelect = {
   firstName: true,
   lastName: true,
   phoneNumber: true,
   profilePictureUrl: true,
+  landingType: true,
+  landingPath: true,
+  landingTargetId: true,
+};
+
+const publicUserSelect = {
+  id: true,
+  email: true,
+  name: true,
+  role: true,
+  profile: { select: profileSelect },
 };
 
 function profileData(args: {

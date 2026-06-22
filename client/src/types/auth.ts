@@ -11,6 +11,8 @@ export type AuthUser = {
     phoneNumber: string | null;
     profilePictureUrl: string | null;
   } | null;
+  // Resolved landing route for this user (defaults to /dashboard).
+  landingResolvedPath?: string;
 };
 
 export type LoginResponse = {

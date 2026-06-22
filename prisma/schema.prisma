@@ -277,6 +277,12 @@ model UserProfile {
   lastName          String
   phoneNumber       String?
   profilePictureUrl String?
+  // Landing preference: where the app opens after login / on app open.
+  // landingType: "page" | "group" | "table" (null = default dashboard).
+  // landingPath holds an allowlisted route for "page"; landingTargetId holds the group/table id otherwise.
+  landingType       String?
+  landingPath       String?
+  landingTargetId   String?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)

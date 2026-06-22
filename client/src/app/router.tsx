@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AppShell } from "../components/layout/AppShell";
 import { AdminRoute } from "./admin-route";
+import { LandingRedirect } from "./landing-redirect";
 import { ProtectedRoute } from "./protected-route";
 import { AcceptInvitePage } from "../pages/AcceptInvitePage";
 import { AdminSettingsPage } from "../pages/AdminSettingsPage";
@@ -35,6 +36,7 @@ export function AppRouter() {
       <Route element={<AcceptInvitePage />} path="/accept-invite" />
       <Route element={<ProtectedRoute />}>
         <Route element={<AppShell />}>
+          <Route element={<LandingRedirect />} index />
           <Route element={<DashboardPage />} path="/dashboard" />
           <Route element={<ImportPage />} path="/import" />
           <Route element={<InventoryPage />} path="/inventory" />

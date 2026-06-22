@@ -1,6 +1,6 @@
 # User Settings — Landing Page & Premium Polish — Design Spec
 **Date:** 2026-06-22
-**Status:** Draft (awaiting user review)
+**Status:** Implemented (2026-06-22)
 **Sub-project:** D of 4 (sequence chosen: D → B → C → A)
 
 ---

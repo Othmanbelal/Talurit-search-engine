@@ -28,15 +28,40 @@ import {
   hashPasswordResetToken,
   hashSessionToken,
 } from "./auth.tokens";
+import { resolveLandingPath } from "../profile/landing";
 import type { LoginResult, PublicUser } from "./auth.types";
 
-function toPublicUser(user: PublicUser): PublicUser {
+type RawUserRecord = Omit<PublicUser, "profile" | "landingResolvedPath"> & {
+  profile?:
+    | (NonNullable<PublicUser["profile"]> & {
+        landingType: string | null;
+        landingPath: string | null;
+        landingTargetId: string | null;
+      })
+    | null;
+};
+
+async function toPublicUser(user: RawUserRecord): Promise<PublicUser> {
+  const { path } = await resolveLandingPath({
+    landingType: user.profile?.landingType ?? null,
+    landingPath: user.profile?.landingPath ?? null,
+    landingTargetId: user.profile?.landingTargetId ?? null,
+  });
   return {
     id: user.id,
     email: user.email,
     name: user.name,
     role: user.role,
-    profile: user.profile ?? null,
+    // Landing fields stay server-side; only the resolved route is exposed here.
+    profile: user.profile
+      ? {
+          firstName: user.profile.firstName,
+          lastName: user.profile.lastName,
+          phoneNumber: user.profile.phoneNumber,
+          profilePictureUrl: user.profile.profilePictureUrl,
+        }
+      : null,
+    landingResolvedPath: path,
   };
 }
 
@@ -69,7 +94,7 @@ export async function login(input: LoginInput): Promise<LoginResult> {
   await updateLastLogin(user.id);
 
   return {
-    user: toPublicUser(user),
+    user: await toPublicUser(user),
     sessionToken,
     expiresAt,
   };
@@ -103,6 +128,7 @@ export async function getCurrentUser(sessionToken?: string): Promise<PublicUser>
 
   return toPublicUser(session.user);
 }
+
 
 export async function requestPasswordReset(input: ForgotPasswordInput) {
   const user = await findUserForLogin(input.email);
@@ -178,7 +204,7 @@ export async function acceptInvitation(input: AcceptInviteInput): Promise<LoginR
   });
 
   return {
-    user: toPublicUser(user),
+    user: await toPublicUser(user),
     sessionToken,
     expiresAt,
   };
