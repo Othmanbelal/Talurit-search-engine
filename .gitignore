@@ -14,3 +14,5 @@ backups/excel/*
 !backups/excel/.gitkeep
 uploads/*
 !uploads/.gitkeep
+# Local HTTPS certificates and private keys (LAN camera support) — never commit
+certs/

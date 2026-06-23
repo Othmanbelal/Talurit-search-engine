@@ -64,8 +64,12 @@ services:
     restart: unless-stopped
     depends_on:
       - server
+    # Serve HTTPS so the QR camera works over the LAN. Users open https://<host-ip>:5173
     ports:
-      - "${CLIENT_PORT:-5173}:80"
+      - "${CLIENT_PORT:-5173}:443"
+    volumes:
+      - "./certs/lan-cert.pem:/etc/nginx/certs/lan-cert.pem:ro"
+      - "./certs/lan-key.pem:/etc/nginx/certs/lan-key.pem:ro"
 
 volumes:
   postgres_data:
