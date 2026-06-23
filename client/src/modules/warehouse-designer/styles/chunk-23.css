@@ -6,14 +6,15 @@
   --wd-grid: #d4dade;
   --wd-grid-strong: #c3cbd1;
 
-  --wd-panel: rgba(255, 255, 255, 0.78);
-  --wd-panel-solid: #f4f6f8;
-  --wd-panel-border: #d3dadf;
-  --wd-panel-shadow: 0 6px 24px rgba(40, 56, 70, 0.12);
+  /* Dark glass chrome so the studio menus match the app and stay readable. */
+  --wd-panel: rgba(16, 24, 39, 0.86);
+  --wd-panel-solid: #141d2c;
+  --wd-panel-border: rgba(148, 163, 184, 0.22);
+  --wd-panel-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
 
-  --wd-text: #2b3338;
-  --wd-text-muted: #6b767d;
-  --wd-text-faint: #93a0a7;
+  --wd-text: #e6edf5;
+  --wd-text-muted: #9aa7b5;
+  --wd-text-faint: #6b7886;
 
   --wd-structure: #7e8b94;
   --wd-shelf: #aab5bc;
@@ -91,7 +92,7 @@
 /* Status pill */
 .wd-root .status-pill {
   color: var(--wd-text);
-  background: rgba(40, 56, 70, 0.06);
+  background: rgba(255, 255, 255, 0.07);
   border-color: var(--wd-panel-border);
 }
 
@@ -100,7 +101,7 @@
 .wd-root .icon-button,
 .wd-root .edit-selected-button {
   color: var(--wd-text);
-  background: rgba(40, 56, 70, 0.06);
+  background: rgba(255, 255, 255, 0.07);
   border-color: var(--wd-panel-border);
 }
 .wd-root .ghost-button:hover,
@@ -199,14 +200,14 @@
   backdrop-filter: blur(18px);
 }
 .wd-root .drawer-header {
-  background: rgba(40, 56, 70, 0.04);
+  background: rgba(255, 255, 255, 0.05);
   border-bottom-color: var(--wd-panel-border);
   color: var(--wd-text);
 }
 .wd-root .drawer-header h2 { color: var(--wd-text); }
 .wd-root .mini-close {
   color: var(--wd-text-muted);
-  background: rgba(40, 56, 70, 0.06);
+  background: rgba(255, 255, 255, 0.07);
   border-color: var(--wd-panel-border);
 }
 .wd-root .mini-close:hover {
@@ -223,7 +224,7 @@
   backdrop-filter: blur(18px);
 }
 .wd-root .floating-inspector-handle {
-  background: rgba(40, 56, 70, 0.04);
+  background: rgba(255, 255, 255, 0.05);
   border-bottom-color: var(--wd-panel-border);
   color: var(--wd-text);
 }
@@ -232,7 +233,7 @@
 .wd-root .camera-presets button,
 .wd-root .suggestion-actions button {
   color: var(--wd-text);
-  background: rgba(40, 56, 70, 0.06);
+  background: rgba(255, 255, 255, 0.07);
   border-color: var(--wd-panel-border);
 }
 .wd-root .floating-inspector-handle button:hover,
@@ -255,22 +256,22 @@
 .wd-root .status-chip {
   color: var(--wd-text-muted);
   border-color: var(--wd-panel-border);
-  background: rgba(40, 56, 70, 0.06);
+  background: rgba(255, 255, 255, 0.07);
 }
 .wd-root .status-chip.ok {
-  color: #2d6a3f;
+  color: #8fd9a8;
   border-color: rgba(143, 174, 147, 0.45);
-  background: rgba(143, 174, 147, 0.12);
+  background: rgba(143, 174, 147, 0.16);
 }
 .wd-root .status-chip.warning {
-  color: #7a5c1a;
-  border-color: rgba(180, 148, 80, 0.38);
-  background: rgba(180, 148, 80, 0.1);
+  color: #e6c068;
+  border-color: rgba(180, 148, 80, 0.45);
+  background: rgba(180, 148, 80, 0.16);
 }
 .wd-root .status-chip.error {
-  color: #8b2c2c;
-  border-color: rgba(193, 154, 134, 0.42);
-  background: rgba(193, 154, 134, 0.12);
+  color: #e0a3a3;
+  border-color: rgba(193, 154, 134, 0.5);
+  background: rgba(193, 154, 134, 0.16);
 }
 
 /* Command palette */
@@ -289,12 +290,12 @@
 .wd-root .command-search input { color: var(--wd-text); }
 .wd-root .command-search button {
   color: var(--wd-text-muted);
-  background: rgba(40, 56, 70, 0.06);
+  background: rgba(255, 255, 255, 0.07);
   border-color: var(--wd-panel-border);
 }
 .wd-root .command-list button {
   color: var(--wd-text);
-  background: rgba(40, 56, 70, 0.04);
+  background: rgba(255, 255, 255, 0.05);
   border-color: transparent;
 }
 .wd-root .command-list button:hover {
@@ -333,7 +334,7 @@
 .wd-root .camera-presets button,
 .wd-root.premium-overhaul .camera-presets button {
   color: var(--wd-text);
-  background: rgba(40, 56, 70, 0.06);
+  background: rgba(255, 255, 255, 0.07);
   border-color: var(--wd-panel-border);
 }
 .wd-root .camera-presets button:hover,
