@@ -22,6 +22,7 @@ import {
   deleteStructuredStockRow,
   getStructuredInventoryGroup,
   getStructuredInventoryRows,
+  getTableLowStockRows,
   getStructuredDuplicateGroups,
   getStructuredStockRow,
   getStructuredInventoryTable,
@@ -71,6 +72,12 @@ export async function listStructuredInventoryRowsController(request: Request, re
   const query = listStockRowsQuerySchema.parse(request.query);
   const rows = await getStructuredInventoryRows(id, query);
   return response.json(successResponse(rows));
+}
+
+export async function listTableLowStockRowsController(request: Request, response: Response) {
+  const { id } = idParamSchema.parse(request.params);
+  const rows = await getTableLowStockRows(id);
+  return response.json(successResponse({ rows }));
 }
 
 export async function listStructuredDuplicatesController(request: Request, response: Response) {

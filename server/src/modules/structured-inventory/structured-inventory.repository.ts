@@ -140,6 +140,43 @@ export function findStockRow(tableId: string, rowId: string) {
   });
 }
 
+const stockRowFullInclude = {
+  item: { include: { manufacturer: true, category: true, identifiers: true, attributes: true } },
+  location: true,
+  usedInAssignments: { where: { returnedAt: null }, include: { card: true, createdByUser: userNameSelect() } },
+  takenItems: { where: { returnedAt: null }, include: { createdByUser: userNameSelect() } },
+  warehouseSlotAssignments: { where: { unassignedAt: null }, include: warehousePlacementInclude() },
+} satisfies Prisma.StockBalanceInclude;
+
+function lowStockWhere(tableId: string): Prisma.StockBalanceWhereInput {
+  return {
+    inventoryTableId: tableId,
+    status: { not: "archived" },
+    archivedAt: null,
+    lowStockEnabled: true,
+    lowStockThreshold: { not: null },
+  };
+}
+
+/** Count enabled items at/below their threshold (qty<=threshold can't be a Prisma where, so filter in memory). */
+export async function countTableLowStock(tableId: string): Promise<number> {
+  const rows = await prisma.stockBalance.findMany({
+    where: lowStockWhere(tableId),
+    select: { quantity: true, lowStockThreshold: true },
+  });
+  return rows.filter((row) => row.lowStockThreshold != null && row.quantity.lte(row.lowStockThreshold)).length;
+}
+
+/** The actual low-stock rows for a table (for the summary widget's list), fully included for serialization. */
+export async function findTableLowStockRows(tableId: string) {
+  const rows = await prisma.stockBalance.findMany({
+    where: lowStockWhere(tableId),
+    include: stockRowFullInclude,
+    orderBy: { quantity: "asc" },
+  });
+  return rows.filter((row) => row.lowStockThreshold != null && row.quantity.lte(row.lowStockThreshold));
+}
+
 function userNameSelect() {
   return { select: { name: true } } as const;
 }

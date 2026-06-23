@@ -1,4 +1,9 @@
+import type { StructuredStockRow } from "../types/structured-inventory";
 import { apiRequest } from "./http";
+
+export function listTableLowStockRowsRequest(tableId: string) {
+  return apiRequest<{ rows: StructuredStockRow[] }>(`/api/structured-inventory/tables/${tableId}/low-stock`);
+}
 
 export function setTableLowStockRequest(tableId: string, enabled: boolean) {
   return apiRequest<{ tableId: string; lowStockEnabled: boolean }>(`/api/low-stock/tables/${tableId}`, {

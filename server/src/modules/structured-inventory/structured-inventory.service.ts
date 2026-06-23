@@ -9,6 +9,7 @@ import type {
 } from "./structured-inventory.schemas";
 import { addManualStockRow, createGroupRecord, createTableRecord } from "./manual-stock-writer";
 import {
+  countTableLowStock,
   deleteInventoryGroupRecord,
   deleteInventoryTableRecord,
   findInventoryGroup,
@@ -19,6 +20,7 @@ import {
   findStockFilterOptions,
   findStockRowStats,
   findStockRowHistory,
+  findTableLowStockRows,
   findUngroupedTables,
   updateInventoryTableColumns,
 } from "./structured-inventory.repository";
@@ -65,13 +67,14 @@ export async function getStructuredInventoryTable(id: string) {
 }
 
 export async function getStructuredInventoryRows(id: string, query: ListStockRowsQuery) {
-  await getStructuredInventoryTable(id);
+  const table = await getStructuredInventoryTable(id);
   const [total, rows] = await findStockRows(id, query);
   const [stats, filterOptions] = await Promise.all([
     findStockRowStats(id, query),
     findStockFilterOptions(id),
   ]);
   const duplicates = await duplicateSummary(id);
+  const lowStockCount = table.lowStockEnabled ? await countTableLowStock(id) : 0;
 
   return {
     items: rows.map(serializeStockRow),
@@ -79,9 +82,16 @@ export async function getStructuredInventoryRows(id: string, query: ListStockRow
     pageSize: query.pageSize,
     total,
     totalPages: Math.ceil(total / query.pageSize),
-    stats: { ...stats, ...duplicates },
+    stats: { ...stats, ...duplicates, lowStockCount },
     filterOptions,
   };
+}
+
+/** The low-stock rows for a table, for the summary widget's expandable list. */
+export async function getTableLowStockRows(tableId: string) {
+  await getStructuredInventoryTable(tableId);
+  const rows = await findTableLowStockRows(tableId);
+  return rows.map(serializeStockRow);
 }
 
 export async function createStructuredInventoryGroup(input: CreateInventoryGroupInput) {

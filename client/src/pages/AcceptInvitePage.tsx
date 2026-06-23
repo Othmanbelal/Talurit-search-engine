@@ -1,8 +1,12 @@
-import { FormEvent, useState } from "react";
-import { KeyRound } from "lucide-react";
+import { FormEvent, useRef, useState } from "react";
+import { Camera, KeyRound, User } from "lucide-react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { acceptInviteRequest } from "../services/auth.service";
+import { uploadProfilePictureRequest } from "../services/profile.service";
+import { AvatarCropModal } from "../components/profile/AvatarCropModal";
+
+const MAX_BYTES = 3 * 1024 * 1024;
 
 export function AcceptInvitePage() {
   const { refreshUser, user } = useAuth();
@@ -12,41 +16,54 @@ export function AcceptInvitePage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [profilePictureUrl, setProfilePictureUrl] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [photoBlob, setPhotoBlob] = useState<Blob | null>(null);
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   if (user) {
     return <Navigate replace to="/dashboard" />;
   }
 
+  function openFile(file: File | undefined) {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) { setError("Please choose an image file."); return; }
+    if (file.size > MAX_BYTES) { setError("Image must be 3 MB or smaller."); return; }
+    setError(null);
+    const reader = new FileReader();
+    reader.onload = () => setCropSrc(reader.result as string);
+    reader.readAsDataURL(file);
+  }
+
+  function handleCropped(blob: Blob) {
+    if (photoPreview) URL.revokeObjectURL(photoPreview);
+    setPhotoBlob(blob);
+    setPhotoPreview(URL.createObjectURL(blob));
+    setCropSrc(null);
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
-
-    if (!token) {
-      setError("Invitation token is missing.");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
+    if (!token) { setError("Invitation token is missing."); return; }
+    if (password !== confirmPassword) { setError("Passwords do not match."); return; }
 
     setIsSubmitting(true);
-
     try {
-      await acceptInviteRequest({
-        token,
-        firstName,
-        lastName,
-        phoneNumber: phoneNumber || undefined,
-        profilePictureUrl: profilePictureUrl || undefined,
-        password,
-      });
+      // Accepting the invite creates the account AND logs the user in (sets the session).
+      await acceptInviteRequest({ token, firstName, lastName, phoneNumber: phoneNumber || undefined, password });
+      // Now authenticated: upload the chosen photo via the same endpoint as Profile settings.
+      if (photoBlob) {
+        try {
+          await uploadProfilePictureRequest(new File([photoBlob], "avatar.jpg", { type: "image/jpeg" }));
+        } catch {
+          // Non-blocking: account is created; they can add a photo later in Profile settings.
+        }
+      }
       await refreshUser();
       navigate("/dashboard", { replace: true });
     } catch (acceptError) {
@@ -75,19 +92,14 @@ export function AcceptInvitePage() {
           </p>
         ) : (
           <form className="space-y-4" onSubmit={handleSubmit}>
+            <AvatarChooser onPick={() => fileRef.current?.click()} preview={photoPreview} />
+            <input accept="image/*" className="hidden" onChange={(e) => { openFile(e.target.files?.[0]); e.target.value = ""; }} ref={fileRef} type="file" />
+
             <div className="grid gap-4 sm:grid-cols-2">
               <TextInput label="First name" onChange={setFirstName} required value={firstName} />
               <TextInput label="Last name" onChange={setLastName} required value={lastName} />
             </div>
-
             <TextInput label="Phone number" onChange={setPhoneNumber} value={phoneNumber} />
-            <TextInput
-              label="Profile picture URL"
-              onChange={setProfilePictureUrl}
-              type="url"
-              value={profilePictureUrl}
-            />
-
             <PasswordInput label="Password" onChange={setPassword} value={password} />
             <PasswordInput label="Confirm password" onChange={setConfirmPassword} value={confirmPassword} />
 
@@ -103,17 +115,39 @@ export function AcceptInvitePage() {
           </form>
         )}
       </section>
+
+      {cropSrc ? <AvatarCropModal imageSrc={cropSrc} onCancel={() => setCropSrc(null)} onCropped={handleCropped} /> : null}
     </main>
   );
 }
 
-function TextInput({
-  label,
-  onChange,
-  required,
-  type = "text",
-  value,
-}: {
+function AvatarChooser({ onPick, preview }: { onPick: () => void; preview: string | null }) {
+  return (
+    <div className="flex items-center gap-4">
+      <div className="relative">
+        {preview ? (
+          <img alt="Profile" className="h-16 w-16 rounded-full border border-line object-cover" src={preview} />
+        ) : (
+          <div className="flex h-16 w-16 items-center justify-center rounded-full border border-line bg-white/[0.06]">
+            <User className="text-slate-400" size={26} />
+          </div>
+        )}
+      </div>
+      <div>
+        <button
+          className="inline-flex items-center gap-2 rounded-md border border-line bg-white/5 px-3 py-2 text-sm font-semibold text-slate-200 hover:border-accent hover:text-accent"
+          onClick={onPick}
+          type="button"
+        >
+          <Camera size={15} /> {preview ? "Change photo" : "Add photo"}
+        </button>
+        <p className="mt-1 text-xs text-slate-500">Optional · PNG, JPG, max 3 MB</p>
+      </div>
+    </div>
+  );
+}
+
+function TextInput({ label, onChange, required, type = "text", value }: {
   label: string;
   onChange: (value: string) => void;
   required?: boolean;
@@ -134,11 +168,7 @@ function TextInput({
   );
 }
 
-function PasswordInput({
-  label,
-  onChange,
-  value,
-}: {
+function PasswordInput({ label, onChange, value }: {
   label: string;
   onChange: (value: string) => void;
   value: string;

@@ -9,6 +9,8 @@ import { StockRowDetailsDrawer } from "../components/structured-inventory/StockR
 import { StockRowMovementModal } from "../components/structured-inventory/StockRowMovementModal";
 import { StructuredStockRowsTable } from "../components/structured-inventory/StructuredStockRowsTable";
 import { LowStockConfigPopover } from "../components/structured-inventory/LowStockConfigPopover";
+import { LowStockSummaryWidget } from "../components/structured-inventory/LowStockSummaryWidget";
+import { Warehouse3DModal } from "../components/warehouses/Warehouse3DModal";
 import { StructuredTableSearchFilters } from "../components/structured-inventory/StructuredTableSearchFilters";
 import { TableColumnSettingsPanel } from "../components/structured-inventory/TableColumnSettingsPanel";
 import { TableWidgets } from "../components/structured-inventory/TableWidgets";
@@ -32,6 +34,7 @@ export function StructuredInventoryTablePage() {
   const [selectedRow, setSelectedRow] = useState<StructuredStockRow | null>(null);
   const [movingRow, setMovingRow] = useState<StructuredStockRow | null>(null);
   const [lowStockRow, setLowStockRow] = useState<StructuredStockRow | null>(null);
+  const [view3d, setView3d] = useState<{ warehouseId: string; slotId: string } | null>(null);
   const [movementVersion, setMovementVersion] = useState(0);
   const highlightedRowId = searchParams.get("highlight");
   const initialSearch = searchParams.get("search") ?? "";
@@ -164,6 +167,9 @@ export function StructuredInventoryTablePage() {
         setSearch={setSearch}
       />
       <ArchiveModeControls active={inventory.archived} onChange={(mode) => inventory.loadRows(search, mode, filters, 1)} />
+      {inventory.table?.lowStockEnabled ? (
+        <LowStockSummaryWidget count={inventory.rows?.stats.lowStockCount ?? 0} onOpenRow={setSelectedRow} tableId={id ?? ""} />
+      ) : null}
       <div className="grid gap-2 md:grid-cols-[1fr_auto]">
         <TableWidgets rows={inventory.rows} table={inventory.table} />
         {inventory.rows && canManageThisTable ? (
@@ -196,8 +202,7 @@ export function StructuredInventoryTablePage() {
             onRestore={canManageInventory ? (row) => void inventory.restoreRow(row.id) : undefined}
             onView3d={(row) => {
               const placement = row.warehousePlacement;
-              if (!placement) return;
-              navigate(`/warehouses/${placement.warehouseId}?view=3d&slot=${placement.slotId}&stock=${row.id}`);
+              if (placement) setView3d({ slotId: placement.slotId, warehouseId: placement.warehouseId });
             }}
           />
           <TablePagination rows={inventory.rows} onPage={(page) => inventory.loadRows(search, inventory.archived, filters, page)} />
@@ -223,6 +228,9 @@ export function StructuredInventoryTablePage() {
           row={lowStockRow}
           tableId={id}
         />
+      ) : null}
+      {view3d ? (
+        <Warehouse3DModal onClose={() => setView3d(null)} slotId={view3d.slotId} warehouseId={view3d.warehouseId} />
       ) : null}
       <StockRowMovementModal
         row={movingRow}

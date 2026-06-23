@@ -137,7 +137,7 @@ export type StructuredStockRowsResponse = {
   pageSize: number;
   total: number;
   totalPages: number;
-  stats: { itemCount: number; differentItems: number; balance: number; currency: string; duplicateGroups: number; duplicateRows: number };
+  stats: { itemCount: number; differentItems: number; balance: number; currency: string; duplicateGroups: number; duplicateRows: number; lowStockCount: number };
   filterOptions: StructuredTableFilterOptions;
 };
 

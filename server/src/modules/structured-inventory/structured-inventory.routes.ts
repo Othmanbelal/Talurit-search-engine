@@ -20,6 +20,7 @@ import {
   listStructuredDuplicatesController,
   listStructuredInventoriesController,
   listStructuredInventoryRowsController,
+  listTableLowStockRowsController,
   mergeStructuredDuplicatesController,
   returnTakenItemController,
   restoreStructuredStockRowController,
@@ -50,6 +51,7 @@ structuredInventoryRoutes.patch("/tables/:id/columns", requireResourceAccess("in
 structuredInventoryRoutes.get("/tables/:id/duplicates", asyncHandler(listStructuredDuplicatesController));
 structuredInventoryRoutes.post("/tables/:id/duplicates/merge", requireResourceAccess("inventory_table", (req) => req.params.id), asyncHandler(mergeStructuredDuplicatesController));
 structuredInventoryRoutes.get("/tables/:id/rows", asyncHandler(listStructuredInventoryRowsController));
+structuredInventoryRoutes.get("/tables/:id/low-stock", asyncHandler(listTableLowStockRowsController));
 structuredInventoryRoutes.post("/tables/:id/rows", requireResourceAccess("inventory_table", (req) => req.params.id), asyncHandler(addStructuredStockRowController));
 structuredInventoryRoutes.get("/tables/:id/rows/:rowId", asyncHandler(getStructuredStockRowController));
 structuredInventoryRoutes.get("/stock-rows/:id/history", asyncHandler(getStructuredStockRowHistoryController));
