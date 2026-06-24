@@ -153,7 +153,7 @@ function buildSections(tool: Tool, t: (key: string) => string) {
   ].filter((section) => section.items.length > 0);
 }
 
-function buildImportDetails(tool: Tool, t?: (key: string) => string): DetailItem[] {
+function buildImportDetails(tool: Tool, t: (key: string) => string): DetailItem[] {
   return compactDetails([
     detail("Stock raw", differentValue(tool.stockRaw, tool.quantity)),
     detail("Count raw", tool.countRaw),
@@ -162,8 +162,8 @@ function buildImportDetails(tool: Tool, t?: (key: string) => string): DetailItem
     detail("Source row", tool.sourceRowNumber),
     detail("Updated", new Date(tool.updatedAt).toLocaleString()),
     detail("Record state", tool.isArchived
-      ? (t ? t("details.stateArchived") : "Archived")
-      : (t ? t("details.stateActive") : "Active")),
+      ? t("details.stateArchived")
+      : t("details.stateActive")),
   ]);
 }
 
