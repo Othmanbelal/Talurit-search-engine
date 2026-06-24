@@ -11,22 +11,25 @@ import {
   X,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
-
-const primaryItems = [
-  { label: "Dashboard", href: "/dashboard", icon: BarChart3 },
-  { label: "Inventory", href: "/inventory", icon: Boxes },
-  { label: "Used In", href: "/used-in", icon: Boxes },
-  { label: "Taken Items", href: "/taken-items", icon: PackageMinus },
-  { label: "Warehouses", href: "/warehouses", icon: Warehouse },
-  { label: "Locations", href: "/locations", icon: MapPinned },
-  { label: "Import", href: "/import", icon: FileSpreadsheet, adminOnly: true },
-  { label: "Users", href: "/admin/users", icon: Users, adminOnly: true },
-  { label: "Settings", href: "/admin/settings", icon: Settings, adminOnly: true },
-];
 
 export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const { user } = useAuth();
+  const { t } = useTranslation("navigation");
+
+  const primaryItems = [
+    { label: t("dashboard"), href: "/dashboard", icon: BarChart3 },
+    { label: t("inventory"), href: "/inventory", icon: Boxes },
+    { label: t("usedIn"), href: "/used-in", icon: Boxes },
+    { label: t("takenItems"), href: "/taken-items", icon: PackageMinus },
+    { label: t("warehouses"), href: "/warehouses", icon: Warehouse },
+    { label: t("locations"), href: "/locations", icon: MapPinned },
+    { label: t("import"), href: "/import", icon: FileSpreadsheet, adminOnly: true },
+    { label: t("users"), href: "/admin/users", icon: Users, adminOnly: true },
+    { label: t("settings"), href: "/admin/settings", icon: Settings, adminOnly: true },
+  ];
+
   const visibleItems = primaryItems.filter((item) => !item.adminOnly || user?.role === "admin");
 
   return (
@@ -48,11 +51,11 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
       >
         <div className="mb-8 flex items-center justify-between px-2">
           <div>
-            <div className="text-lg font-semibold text-white">Tool Inventory</div>
-            <div className="text-sm text-slate-400">Internal system</div>
+            <div className="text-lg font-semibold text-white">{t("appName")}</div>
+            <div className="text-sm text-slate-400">{t("appSubtitle")}</div>
           </div>
           <button
-            aria-label="Close navigation"
+            aria-label={t("closeNavigation")}
             className="rounded-md border border-line p-1.5 text-slate-400 hover:text-white lg:hidden"
             onClick={onClose}
             type="button"
@@ -61,7 +64,7 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
           </button>
         </div>
 
-        <nav className="flex flex-1 flex-col justify-between space-y-6" aria-label="Main navigation">
+        <nav className="flex flex-1 flex-col justify-between space-y-6" aria-label={t("mainNavigation")}>
           <div className="space-y-1">
             {visibleItems.map((item) => {
               const Icon = item.icon;
@@ -100,7 +103,7 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
               to="/profile"
             >
               <UserCircle aria-hidden="true" size={18} />
-              {user?.name || "Profile"}
+              {user?.name || t("profile")}
             </NavLink>
           </div>
         </nav>

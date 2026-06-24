@@ -1,0 +1,18 @@
+{
+  "appName": "Verktygslager",
+  "appSubtitle": "Internt system",
+  "dashboard": "Instrumentpanel",
+  "inventory": "Inventarier",
+  "usedIn": "Används i",
+  "takenItems": "Uttagna artiklar",
+  "warehouses": "Lager",
+  "locations": "Platser",
+  "import": "Importera",
+  "users": "Användare",
+  "settings": "Inställningar",
+  "profile": "Profil",
+  "closeNavigation": "Stäng navigation",
+  "openNavigation": "Öppna navigation",
+  "mainNavigation": "Huvudnavigation",
+  "signOut": "Logga ut"
+}

@@ -1,0 +1,18 @@
+{
+  "appName": "Tool Inventory",
+  "appSubtitle": "Internal system",
+  "dashboard": "Dashboard",
+  "inventory": "Inventory",
+  "usedIn": "Used In",
+  "takenItems": "Taken Items",
+  "warehouses": "Warehouses",
+  "locations": "Locations",
+  "import": "Import",
+  "users": "Users",
+  "settings": "Settings",
+  "profile": "Profile",
+  "closeNavigation": "Close navigation",
+  "openNavigation": "Open navigation",
+  "mainNavigation": "Main navigation",
+  "signOut": "Sign out"
+}
