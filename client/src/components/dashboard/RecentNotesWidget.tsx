@@ -1,5 +1,6 @@
 import { ChevronDown, ChevronUp, MessageSquare, Search } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { itemNotesService } from "../../services/itemNotesService";
 import type { RecentNote } from "../../types/notes";
 import { UserAvatar } from "../UserAvatar";
@@ -17,6 +18,7 @@ type Props = {
 };
 
 export function RecentNotesWidget({ onNoteClick }: Props) {
+  const { t } = useTranslation("dashboard");
   const [notes, setNotes] = useState<RecentNote[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState(true);
@@ -83,7 +85,7 @@ export function RecentNotesWidget({ onNoteClick }: Props) {
           type="button"
         >
           <MessageSquare size={16} className="text-slate-400" />
-          <h2 className="font-semibold text-white">Recent Notes</h2>
+          <h2 className="font-semibold text-white">{t("recentNotes.title")}</h2>
           {totalCount > 0 && (
             <span className="rounded-full bg-slate-700 px-2 py-0.5 text-xs font-semibold text-slate-300">
               {totalCount}
@@ -104,7 +106,7 @@ export function RecentNotesWidget({ onNoteClick }: Props) {
                 onChange={(e) => setSelectedTable(e.target.value)}
                 value={selectedTable}
               >
-                <option value="">All tables</option>
+                <option value="">{t("recentNotes.allTables")}</option>
                 {tables.map((t) => (
                   <option key={t.id} value={t.id}>{t.name}</option>
                 ))}
@@ -115,7 +117,7 @@ export function RecentNotesWidget({ onNoteClick }: Props) {
               <input
                 className="rounded-md border border-line bg-slate-950 pl-7 pr-3 py-1.5 text-xs text-slate-300 placeholder:text-slate-600 focus:border-accent focus:outline-none w-44"
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="Table, item, user…"
+                placeholder={t("recentNotes.searchPlaceholder")}
                 value={search}
               />
             </div>
@@ -126,11 +128,11 @@ export function RecentNotesWidget({ onNoteClick }: Props) {
       {/* Collapsible body */}
       {expanded && (
         <>
-          {loading && <p className="text-sm text-slate-500">Loading notes…</p>}
+          {loading && <p className="text-sm text-slate-500">{t("recentNotes.loadingNotes")}</p>}
 
           {!loading && grouped.length === 0 && (
             <p className="rounded-lg border border-line bg-white/[0.02] p-4 text-sm text-slate-500">
-              {search || selectedTable ? "No notes match your filters." : "No notes added yet."}
+              {search || selectedTable ? t("recentNotes.noMatch") : t("recentNotes.empty")}
             </p>
           )}
 
@@ -153,6 +155,7 @@ export function RecentNotesWidget({ onNoteClick }: Props) {
 }
 
 function NoteRow({ note, onClick }: { note: RecentNote; onClick?: (note: RecentNote) => void }) {
+  const { t } = useTranslation("dashboard");
   const date = new Date(note.createdAt);
   const dateStr = date.toLocaleString("sv-SE", {
     month: "short",
@@ -174,7 +177,7 @@ function NoteRow({ note, onClick }: { note: RecentNote; onClick?: (note: RecentN
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
           <span className="text-xs font-semibold text-white">{note.author?.name ?? "Unknown"}</span>
-          <span className="text-xs text-slate-500">on</span>
+          <span className="text-xs text-slate-500">{t("recentNotes.on")}</span>
           <span className="text-xs font-medium text-amber-300">{note.stockBalance.item.name}</span>
           <span className="text-xs text-slate-500">· {dateStr}</span>
         </div>

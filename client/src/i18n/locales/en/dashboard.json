@@ -1,0 +1,75 @@
+{
+  "sectionLabel": "Overview",
+  "title": "Dashboard",
+  "scanQr": "Scan QR",
+  "adminSummary": {
+    "title": "System Overview",
+    "activeUsers": "Active Users",
+    "pendingInvitations": "Pending Invitations",
+    "inventoryTables": "Inventory Tables",
+    "inventoryGroups": "Inventory Groups"
+  },
+  "urgentIssues": {
+    "title": "Urgent Issues",
+    "loading": "Loading urgent issues…",
+    "empty": "No urgent issues.",
+    "open": "Open",
+    "noOpen": "No open issues.",
+    "resolvedThisWeek": "Resolved this week",
+    "noResolved": "No resolved issues this week.",
+    "retentionNote": "Resolved issues are kept for 7 days.",
+    "resolve": "Resolve",
+    "unresolve": "Unresolve",
+    "qty": "Qty:",
+    "clickToView": "Click to view item details",
+    "resolvedBy": "Resolved by {{name}}"
+  },
+  "recentNotes": {
+    "title": "Recent Notes",
+    "empty": "No notes yet.",
+    "noMatch": "No notes match your filters.",
+    "allTables": "All tables",
+    "searchPlaceholder": "Table, item, user…",
+    "loadingNotes": "Loading notes…",
+    "on": "on"
+  },
+  "takenItems": {
+    "title": "Items I've Taken Out",
+    "empty": "No items currently taken out.",
+    "viewAll": "View all →",
+    "viewAllLink": "view all",
+    "more": "+{{count}} more —",
+    "qty": "Qty:",
+    "return": "Return"
+  },
+  "myReportedIssues": {
+    "title": "My Reported Issues",
+    "empty": "You have no reported issues.",
+    "newCount": "{{count}} new",
+    "markAllRead": "Mark all read",
+    "open": "Open",
+    "resolved": "Resolved ✓",
+    "resolvedBy": "Resolved by {{name}}"
+  },
+  "managerTables": {
+    "title": "My Tables",
+    "empty": "No tables assigned to you yet.",
+    "loading": "Loading…",
+    "itemCount": "{{count}} item",
+    "itemCount_plural": "{{count}} items",
+    "openIssues": "{{count}} open issue",
+    "openIssues_plural": "{{count}} open issues"
+  },
+  "status": {
+    "title": "Operational Status",
+    "latestImport": "Latest import",
+    "latestBackup": "Latest backup",
+    "weeklyEmail": "Weekly email",
+    "noRecord": "No record"
+  },
+  "header": {
+    "label": "Dashboard",
+    "title": "Tool Room Overview",
+    "lowStockThreshold": "Low stock threshold"
+  }
+}

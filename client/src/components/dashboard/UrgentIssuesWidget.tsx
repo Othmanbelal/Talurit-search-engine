@@ -1,16 +1,18 @@
 import { AlertTriangle, CheckCircle, RotateCcw } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useUrgentIssues } from "../../hooks/useUrgentIssues";
 import type { UrgentIssue } from "../../types/urgent-issues";
 import { UserAvatar } from "../UserAvatar";
 
 export function UrgentIssuesWidget({ onIssueClick }: { onIssueClick?: (issue: UrgentIssue) => void }) {
+  const { t } = useTranslation("dashboard");
   const { openIssues, resolvedIssues, loading, error, resolve, unresolve } = useUrgentIssues();
 
   if (loading) {
     return (
       <div className="rounded-lg border border-line bg-white/[0.03] p-5">
-        <p className="text-sm text-slate-500">Loading urgent issues…</p>
+        <p className="text-sm text-slate-500">{t("urgentIssues.loading")}</p>
       </div>
     );
   }
@@ -27,7 +29,7 @@ export function UrgentIssuesWidget({ onIssueClick }: { onIssueClick?: (issue: Ur
     <section className="space-y-3">
       <div className="flex items-center gap-3">
         <AlertTriangle size={16} className="text-red-400" />
-        <h2 className="font-semibold text-white">Urgent Issues</h2>
+        <h2 className="font-semibold text-white">{t("urgentIssues.title")}</h2>
         {openIssues.length > 0 && (
           <span className="rounded-full bg-red-500 px-2 py-0.5 text-xs font-bold text-white">
             {openIssues.length}
@@ -38,11 +40,11 @@ export function UrgentIssuesWidget({ onIssueClick }: { onIssueClick?: (issue: Ur
       <div className="grid gap-4 lg:grid-cols-2">
         <div>
           <p className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-red-400">
-            Open
+            {t("urgentIssues.open")}
           </p>
           {openIssues.length === 0 ? (
             <p className="rounded-lg border border-line bg-white/[0.02] p-4 text-sm text-slate-500">
-              No open issues.
+              {t("urgentIssues.noOpen")}
             </p>
           ) : (
             <div className="space-y-3">
@@ -55,11 +57,11 @@ export function UrgentIssuesWidget({ onIssueClick }: { onIssueClick?: (issue: Ur
 
         <div>
           <p className="mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
-            Resolved this week
+            {t("urgentIssues.resolvedThisWeek")}
           </p>
           {resolvedIssues.length === 0 ? (
             <p className="rounded-lg border border-line bg-white/[0.02] p-4 text-sm text-slate-500">
-              No resolved issues this week.
+              {t("urgentIssues.noResolved")}
             </p>
           ) : (
             <div className="space-y-3">
@@ -68,7 +70,7 @@ export function UrgentIssuesWidget({ onIssueClick }: { onIssueClick?: (issue: Ur
               ))}
             </div>
           )}
-          <p className="mt-3 text-xs text-slate-600">Resolved issues are kept for 7 days.</p>
+          <p className="mt-3 text-xs text-slate-600">{t("urgentIssues.retentionNote")}</p>
         </div>
       </div>
     </section>
@@ -84,6 +86,7 @@ function OpenIssueCard({
   onClick?: (issue: UrgentIssue) => void;
   onResolve: (id: string) => Promise<void>;
 }) {
+  const { t } = useTranslation("dashboard");
   const [resolving, setResolving] = useState(false);
 
   async function handleResolve(e: React.MouseEvent) {
@@ -120,7 +123,7 @@ function OpenIssueCard({
           onClick={(e) => void handleResolve(e)}
           type="button"
         >
-          <CheckCircle size={12} /> {resolving ? "…" : "Resolve"}
+          <CheckCircle size={12} /> {resolving ? "…" : t("urgentIssues.resolve")}
         </button>
       </div>
       <p className="mb-1 text-xs font-semibold text-amber-300">
@@ -129,9 +132,9 @@ function OpenIssueCard({
       <p className="text-sm text-slate-300">"{issue.message}"</p>
       <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-500">
         {issue.itemSnapshot.location && <span>📍 {issue.itemSnapshot.location}</span>}
-        <span>Qty: {issue.itemSnapshot.quantity} {issue.itemSnapshot.unit}</span>
+        <span>{t("urgentIssues.qty")} {issue.itemSnapshot.quantity} {issue.itemSnapshot.unit}</span>
       </div>
-      {onClick && <p className="mt-2 text-[10px] text-slate-600">Click to view item details</p>}
+      {onClick && <p className="mt-2 text-[10px] text-slate-600">{t("urgentIssues.clickToView")}</p>}
     </div>
   );
 }
@@ -145,6 +148,7 @@ function ResolvedIssueCard({
   onClick?: (issue: UrgentIssue) => void;
   onUnresolve: (id: string) => Promise<void>;
 }) {
+  const { t } = useTranslation("dashboard");
   const [unresolvingState, setUnresolvingState] = useState(false);
 
   async function handleUnresolve(e: React.MouseEvent) {
@@ -180,7 +184,7 @@ function ResolvedIssueCard({
           onClick={(e) => void handleUnresolve(e)}
           type="button"
         >
-          <RotateCcw size={10} /> {unresolvingState ? "…" : "Unresolve"}
+          <RotateCcw size={10} /> {unresolvingState ? "…" : t("urgentIssues.unresolve")}
         </button>
       </div>
       <p className="mb-1 text-xs font-semibold text-slate-400">
@@ -188,7 +192,7 @@ function ResolvedIssueCard({
       </p>
       <p className="line-clamp-2 text-xs text-slate-500">"{issue.message}"</p>
       {issue.resolvedBy && (
-        <p className="mt-1 text-xs text-slate-600">Resolved by {issue.resolvedBy.name}</p>
+        <p className="mt-1 text-xs text-slate-600">{t("urgentIssues.resolvedBy", { name: issue.resolvedBy.name })}</p>
       )}
     </div>
   );

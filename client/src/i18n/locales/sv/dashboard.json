@@ -1,0 +1,75 @@
+{
+  "sectionLabel": "Översikt",
+  "title": "Instrumentpanel",
+  "scanQr": "Skanna QR",
+  "adminSummary": {
+    "title": "Systemöversikt",
+    "activeUsers": "Aktiva användare",
+    "pendingInvitations": "Väntande inbjudningar",
+    "inventoryTables": "Inventarietabeller",
+    "inventoryGroups": "Inventariegrupper"
+  },
+  "urgentIssues": {
+    "title": "Brådskande ärenden",
+    "loading": "Laddar brådskande ärenden…",
+    "empty": "Inga brådskande ärenden.",
+    "open": "Öppna",
+    "noOpen": "Inga öppna ärenden.",
+    "resolvedThisWeek": "Lösta denna vecka",
+    "noResolved": "Inga lösta ärenden denna vecka.",
+    "retentionNote": "Lösta ärenden sparas i 7 dagar.",
+    "resolve": "Lös",
+    "unresolve": "Återöppna",
+    "qty": "Antal:",
+    "clickToView": "Klicka för att visa artikeldetaljer",
+    "resolvedBy": "Löst av {{name}}"
+  },
+  "recentNotes": {
+    "title": "Senaste anteckningar",
+    "empty": "Inga anteckningar ännu.",
+    "noMatch": "Inga anteckningar matchar dina filter.",
+    "allTables": "Alla tabeller",
+    "searchPlaceholder": "Tabell, artikel, användare…",
+    "loadingNotes": "Laddar anteckningar…",
+    "on": "om"
+  },
+  "takenItems": {
+    "title": "Uttagna artiklar",
+    "empty": "Inga artiklar uttagna.",
+    "viewAll": "Visa alla →",
+    "viewAllLink": "visa alla",
+    "more": "+{{count}} till —",
+    "qty": "Antal:",
+    "return": "Återlämna"
+  },
+  "myReportedIssues": {
+    "title": "Mina rapporterade ärenden",
+    "empty": "Du har inga rapporterade ärenden.",
+    "newCount": "{{count}} nya",
+    "markAllRead": "Markera alla som lästa",
+    "open": "Öppet",
+    "resolved": "Löst ✓",
+    "resolvedBy": "Löst av {{name}}"
+  },
+  "managerTables": {
+    "title": "Mina tabeller",
+    "empty": "Inga tabeller tilldelade dig ännu.",
+    "loading": "Laddar…",
+    "itemCount": "{{count}} artikel",
+    "itemCount_plural": "{{count}} artiklar",
+    "openIssues": "{{count}} öppet ärende",
+    "openIssues_plural": "{{count}} öppna ärenden"
+  },
+  "status": {
+    "title": "Driftstatus",
+    "latestImport": "Senaste import",
+    "latestBackup": "Senaste säkerhetskopia",
+    "weeklyEmail": "Veckoutskick",
+    "noRecord": "Ingen post"
+  },
+  "header": {
+    "label": "Instrumentpanel",
+    "title": "Verktygrum – Översikt",
+    "lowStockThreshold": "Lågt lagersaldo-gräns"
+  }
+}

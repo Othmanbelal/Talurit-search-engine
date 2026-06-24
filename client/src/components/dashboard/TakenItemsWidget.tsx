@@ -1,5 +1,6 @@
 import { Package, RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import {
   listTakenItemsRequest,
@@ -8,6 +9,7 @@ import {
 import type { TakenStockItem } from "../../types/structured-inventory";
 
 export function TakenItemsWidget() {
+  const { t } = useTranslation("dashboard");
   const [items, setItems] = useState<TakenStockItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [returning, setReturning] = useState<string | null>(null);
@@ -36,7 +38,7 @@ export function TakenItemsWidget() {
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Package size={16} className="text-slate-400" />
-          <h2 className="font-semibold text-white">Items I've Taken Out</h2>
+          <h2 className="font-semibold text-white">{t("takenItems.title")}</h2>
           {items.length > 0 && (
             <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-xs font-bold text-amber-300">
               {items.length}
@@ -45,16 +47,16 @@ export function TakenItemsWidget() {
         </div>
         {items.length > 5 && (
           <Link className="text-xs text-slate-400 hover:text-accent" to="/taken-items">
-            View all →
+            {t("takenItems.viewAll")}
           </Link>
         )}
       </div>
 
-      {loading && <p className="text-sm text-slate-500">Loading…</p>}
+      {loading && <p className="text-sm text-slate-500">{t("managerTables.loading")}</p>}
 
       {!loading && items.length === 0 && (
         <p className="rounded-lg border border-line bg-white/[0.02] p-4 text-sm text-slate-500">
-          No items currently taken out.
+          {t("takenItems.empty")}
         </p>
       )}
 
@@ -70,9 +72,9 @@ export function TakenItemsWidget() {
           ))}
           {items.length > 5 && (
             <p className="text-center text-xs text-slate-500">
-              +{items.length - 5} more —{" "}
+              {t("takenItems.more", { count: items.length - 5 })}{" "}
               <Link className="text-accent hover:underline" to="/taken-items">
-                view all
+                {t("takenItems.viewAllLink")}
               </Link>
             </p>
           )}
@@ -91,12 +93,13 @@ function TakenItemRow({
   onReturn: () => void;
   returning: boolean;
 }) {
+  const { t } = useTranslation("dashboard");
   return (
     <div className="flex items-center justify-between gap-3 rounded-lg border border-line bg-white/[0.03] px-4 py-3">
       <div className="min-w-0">
         <p className="truncate text-sm font-semibold text-white">{item.sourceRow.item.name}</p>
         <p className="text-xs text-slate-500">
-          {item.sourceTable.name} · Qty: {item.quantity} · {formatTimeAgo(new Date(item.createdAt))}
+          {item.sourceTable.name} · {t("takenItems.qty")} {item.quantity} · {formatTimeAgo(new Date(item.createdAt))}
         </p>
       </div>
       <button
@@ -105,7 +108,7 @@ function TakenItemRow({
         onClick={onReturn}
         type="button"
       >
-        <RotateCcw size={12} /> {returning ? "…" : "Return"}
+        <RotateCcw size={12} /> {returning ? "…" : t("takenItems.return")}
       </button>
     </div>
   );

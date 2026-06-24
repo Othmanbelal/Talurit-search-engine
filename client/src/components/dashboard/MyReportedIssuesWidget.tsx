@@ -1,9 +1,11 @@
 import { AlertTriangle, CheckCheck } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { urgentIssuesService } from "../../services/urgentIssuesService";
 import type { UrgentIssue } from "../../types/urgent-issues";
 
 export function MyReportedIssuesWidget({ onIssueClick }: { onIssueClick?: (issue: UrgentIssue) => void }) {
+  const { t } = useTranslation("dashboard");
   const [issues, setIssues] = useState<UrgentIssue[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -50,9 +52,9 @@ export function MyReportedIssuesWidget({ onIssueClick }: { onIssueClick?: (issue
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <AlertTriangle size={16} className="text-amber-400" />
-          <h2 className="font-semibold text-white">My Reported Issues</h2>
+          <h2 className="font-semibold text-white">{t("myReportedIssues.title")}</h2>
           {unreadCount > 0 ? (
-            <span className="rounded-full bg-accent/20 px-2 py-0.5 text-xs font-semibold text-accent">{unreadCount} new</span>
+            <span className="rounded-full bg-accent/20 px-2 py-0.5 text-xs font-semibold text-accent">{t("myReportedIssues.newCount", { count: unreadCount })}</span>
           ) : null}
         </div>
         {unreadCount > 0 ? (
@@ -61,12 +63,12 @@ export function MyReportedIssuesWidget({ onIssueClick }: { onIssueClick?: (issue
             onClick={() => void markAllRead()}
             type="button"
           >
-            <CheckCheck size={13} /> Mark all read
+            <CheckCheck size={13} /> {t("myReportedIssues.markAllRead")}
           </button>
         ) : null}
       </div>
 
-      {loading ? <p className="text-sm text-slate-500">Loading…</p> : null}
+      {loading ? <p className="text-sm text-slate-500">{t("managerTables.loading")}</p> : null}
 
       <div className="space-y-3">
         {issues.map((issue) => (
@@ -78,6 +80,7 @@ export function MyReportedIssuesWidget({ onIssueClick }: { onIssueClick?: (issue
 }
 
 function ReportedIssueCard({ issue, onClick }: { issue: UrgentIssue; onClick: (issue: UrgentIssue) => void }) {
+  const { t } = useTranslation("dashboard");
   const created = formatDateTime(issue.createdAt);
   const resolved = issue.resolvedAt ? relativeTime(issue.resolvedAt) : null;
 
@@ -101,14 +104,14 @@ function ReportedIssueCard({ issue, onClick }: { issue: UrgentIssue; onClick: (i
             issue.status === "open" ? "bg-red-500/15 text-red-300" : "bg-emerald-500/15 text-emerald-300"
           }`}
         >
-          {issue.status === "open" ? "Open" : "Resolved ✓"}
+          {issue.status === "open" ? t("myReportedIssues.open") : t("myReportedIssues.resolved")}
         </span>
       </div>
       <p className="mb-1 text-sm text-slate-300">"{issue.message}"</p>
       <p className="text-xs text-slate-500">{created}</p>
       {issue.resolvedBy ? (
         <p className="mt-1 text-xs text-emerald-300/80">
-          Resolved by {issue.resolvedBy.name}{resolved ? ` · ${resolved}` : ""}
+          {t("myReportedIssues.resolvedBy", { name: issue.resolvedBy.name })}{resolved ? ` · ${resolved}` : ""}
         </p>
       ) : null}
     </button>

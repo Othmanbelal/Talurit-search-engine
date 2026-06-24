@@ -1,5 +1,6 @@
 import { lazy, Suspense, useState } from "react";
 import { QrCode } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { AdminSummaryWidget } from "../components/dashboard/AdminSummaryWidget";
 import { ManagerTablesWidget } from "../components/dashboard/ManagerTablesWidget";
 import { MyReportedIssuesWidget } from "../components/dashboard/MyReportedIssuesWidget";
@@ -27,6 +28,7 @@ const QrScannerModal = lazy(() =>
 );
 
 export function DashboardPage() {
+  const { t } = useTranslation("dashboard");
   const { user } = useAuth();
   const role = user?.role;
   const isAdmin = role === "admin";
@@ -76,15 +78,15 @@ export function DashboardPage() {
     <div className="mx-auto max-w-7xl space-y-8">
       <header className="flex flex-col justify-between gap-4 md:flex-row md:items-end">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">Overview</p>
-          <h1 className="mt-3 text-3xl font-semibold text-white md:text-4xl">Dashboard</h1>
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">{t("sectionLabel")}</p>
+          <h1 className="mt-3 text-3xl font-semibold text-white md:text-4xl">{t("title")}</h1>
         </div>
         <button
           className="inline-flex items-center justify-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-slate-950 shadow-industrial"
           onClick={() => setIsScannerOpen(true)}
           type="button"
         >
-          <QrCode size={17} /> Scan QR
+          <QrCode size={17} /> {t("scanQr")}
         </button>
       </header>
 

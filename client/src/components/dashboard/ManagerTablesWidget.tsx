@@ -1,5 +1,6 @@
 import { ExternalLink } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useMyResourceManagers } from "../../hooks/useMyResourceManagers";
 import { listStructuredInventoriesRequest } from "../../services/structured-inventory.service";
@@ -8,6 +9,7 @@ import type { StructuredInventoryTableSummary } from "../../types/structured-inv
 import type { UrgentIssue } from "../../types/urgent-issues";
 
 export function ManagerTablesWidget() {
+  const { t } = useTranslation("dashboard");
   const { resources } = useMyResourceManagers();
   const [allTables, setAllTables] = useState<StructuredInventoryTableSummary[]>([]);
   const [openIssues, setOpenIssues] = useState<UrgentIssue[]>([]);
@@ -55,18 +57,18 @@ export function ManagerTablesWidget() {
   if (!loaded) {
     return (
       <section className="space-y-3">
-        <h2 className="font-semibold text-white">My Tables</h2>
-        <p className="text-sm text-slate-500">Loading…</p>
+        <h2 className="font-semibold text-white">{t("managerTables.title")}</h2>
+        <p className="text-sm text-slate-500">{t("managerTables.loading")}</p>
       </section>
     );
   }
 
   return (
     <section className="space-y-3">
-      <h2 className="font-semibold text-white">My Tables</h2>
+      <h2 className="font-semibold text-white">{t("managerTables.title")}</h2>
       {managedTables.length === 0 ? (
         <p className="rounded-lg border border-line bg-white/[0.02] p-4 text-sm text-slate-500">
-          No tables assigned to you yet.
+          {t("managerTables.empty")}
         </p>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -84,7 +86,7 @@ export function ManagerTablesWidget() {
                       {table.name}
                     </p>
                     <p className="mt-0.5 text-xs text-slate-500">
-                      {table.rowCount} item{table.rowCount !== 1 ? "s" : ""}
+                      {t(table.rowCount !== 1 ? "managerTables.itemCount_plural" : "managerTables.itemCount", { count: table.rowCount })}
                     </p>
                   </div>
                   <ExternalLink className="shrink-0 text-slate-600 group-hover:text-accent" size={14} />
@@ -92,7 +94,7 @@ export function ManagerTablesWidget() {
                 {issues > 0 && (
                   <div className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-red-500/15 px-2 py-1 text-xs font-semibold text-red-300">
                     <span className="h-1.5 w-1.5 rounded-full bg-red-400" />
-                    {issues} open issue{issues !== 1 ? "s" : ""}
+                    {t(issues !== 1 ? "managerTables.openIssues_plural" : "managerTables.openIssues", { count: issues })}
                   </div>
                 )}
               </Link>

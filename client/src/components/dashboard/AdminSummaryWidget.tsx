@@ -1,11 +1,13 @@
 import { Database, Mail, Table2, Users } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getAdminUsersRequest } from "../../services/admin.service";
 import { listStructuredInventoriesRequest } from "../../services/structured-inventory.service";
 import type { AdminUsersOverview } from "../../types/admin";
 import type { StructuredInventoryOverview } from "../../types/structured-inventory";
 
 export function AdminSummaryWidget() {
+  const { t } = useTranslation("dashboard");
   const [users, setUsers] = useState<AdminUsersOverview | null>(null);
   const [inventory, setInventory] = useState<StructuredInventoryOverview | null>(null);
 
@@ -25,12 +27,12 @@ export function AdminSummaryWidget() {
 
   return (
     <section className="space-y-3">
-      <h2 className="font-semibold text-white">System Overview</h2>
+      <h2 className="font-semibold text-white">{t("adminSummary.title")}</h2>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard icon={Users} label="Active Users" tone="accent" value={activeUsers} />
-        <StatCard icon={Mail} label="Pending Invitations" tone="amber" value={pendingInvitations} />
-        <StatCard icon={Database} label="Inventory Tables" tone="blue" value={totalTables} />
-        <StatCard icon={Table2} label="Inventory Groups" tone="green" value={totalGroups} />
+        <StatCard icon={Users} label={t("adminSummary.activeUsers")} tone="accent" value={activeUsers} />
+        <StatCard icon={Mail} label={t("adminSummary.pendingInvitations")} tone="amber" value={pendingInvitations} />
+        <StatCard icon={Database} label={t("adminSummary.inventoryTables")} tone="blue" value={totalTables} />
+        <StatCard icon={Table2} label={t("adminSummary.inventoryGroups")} tone="green" value={totalGroups} />
       </div>
     </section>
   );
