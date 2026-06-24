@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { FileDown } from "lucide-react";
 import { ToolDetailsDrawer } from "../components/tools/ToolDetailsDrawer";
 import { ToolFormModal } from "../components/tools/ToolFormModal";
@@ -27,6 +28,7 @@ const defaultFilters: ToolFilters = {
 };
 
 export function ToolsPage() {
+  const { t } = useTranslation("tools");
   const { user } = useAuth();
   const [filters, setFilters] = useState<ToolFilters>(defaultFilters);
   const [detailsTool, setDetailsTool] = useState<Tool | null>(null);
@@ -61,7 +63,7 @@ export function ToolsPage() {
     try {
       await action();
     } catch (error) {
-      setActionError(error instanceof Error ? error.message : "Action failed");
+      setActionError(error instanceof Error ? error.message : t("actionFailed"));
     }
   }
 
@@ -94,9 +96,9 @@ export function ToolsPage() {
       <header className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">
-            Inventory
+            {t("sectionLabel")}
           </p>
-          <h1 className="mt-3 text-3xl font-semibold text-white md:text-4xl">Tools</h1>
+          <h1 className="mt-3 text-3xl font-semibold text-white md:text-4xl">{t("title")}</h1>
         </div>
         <div className="flex flex-wrap gap-2">
           {canExport ? (
@@ -106,11 +108,11 @@ export function ToolsPage() {
               onClick={() => void runAction(() => excelExport.exportInventory(filters))}
               type="button"
             >
-              <FileDown size={17} /> {excelExport.isExporting ? "Exporting..." : "Export Excel"}
+              <FileDown size={17} /> {excelExport.isExporting ? t("export.exporting") : t("export.label")}
             </button>
           ) : null}
           <div className="rounded-lg border border-line bg-white/5 px-4 py-3 text-sm text-slate-300">
-            {tools.data ? `${tools.data.total} records` : "Loading records"}
+            {tools.data ? t("records", { count: tools.data.total }) : t("loadingRecords")}
           </div>
         </div>
       </header>
@@ -136,7 +138,7 @@ export function ToolsPage() {
         filters={filters}
         isLoading={tools.isLoading || metadata.isLoading}
         onArchive={(tool) => void runAction(() => tools.archiveTool(tool))}
-        onDelete={(tool) => window.confirm("Remove this tool?") && void runAction(() => tools.deleteTool(tool))}
+        onDelete={(tool) => window.confirm(t("confirmRemove")) && void runAction(() => tools.deleteTool(tool))}
         onEdit={setEditingTool}
         onRestore={(tool) => void runAction(() => tools.restoreTool(tool))}
         onSort={handleSort}

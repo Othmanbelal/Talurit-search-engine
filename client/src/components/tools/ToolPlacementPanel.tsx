@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { ToolMetadata } from "../../types/metadata";
 import type { Tool, ToolPlacementPayload } from "../../types/tools";
 import { formatLocation } from "../../utils/tool-format";
@@ -19,6 +20,7 @@ export function ToolPlacementPanel({
   onMoveToMachine,
   tool,
 }: ToolPlacementPanelProps) {
+  const { t } = useTranslation("tools");
   const placement = getToolPlacement(tool);
   const [locationId, setLocationId] = useState(tool.location?.id ?? "");
   const [machineId, setMachineId] = useState(tool.machine?.id ?? "");
@@ -39,7 +41,7 @@ export function ToolPlacementPanel({
     try {
       await onMove(payload);
     } catch (moveError) {
-      setError(moveError instanceof Error ? moveError.message : "Placement update failed");
+      setError(moveError instanceof Error ? moveError.message : t("placement.updateFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -56,7 +58,7 @@ export function ToolPlacementPanel({
     const quantity = Number(machineQuantity);
 
     if (!Number.isInteger(quantity) || quantity < 1) {
-      setError("Machine quantity must be at least 1.");
+      setError(t("placement.machineMoveQtyError"));
       return;
     }
 
@@ -66,7 +68,7 @@ export function ToolPlacementPanel({
     try {
       await onMoveToMachine(machineId, quantity);
     } catch (moveError) {
-      setError(moveError instanceof Error ? moveError.message : "Machine move failed");
+      setError(moveError instanceof Error ? moveError.message : t("placement.machineMoveFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -76,7 +78,7 @@ export function ToolPlacementPanel({
     <section className="rounded-lg border border-line bg-white/[0.03] p-4">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h3 className="text-sm font-semibold text-white">Placement</h3>
+          <h3 className="text-sm font-semibold text-white">{t("placement.title")}</h3>
           <span className={`mt-2 inline-flex rounded-md border px-2 py-1 text-xs ${placement.tone}`}>
             {placement.label}
           </span>
@@ -88,7 +90,7 @@ export function ToolPlacementPanel({
             onClick={() => void runMove({ placement: "unassigned" })}
             type="button"
           >
-            Mark unassigned
+            {t("placement.markUnassigned")}
           </button>
         ) : null}
       </div>
@@ -96,8 +98,8 @@ export function ToolPlacementPanel({
       {canEdit ? (
         <div className="mt-4 grid gap-3">
           <div className="grid gap-3 lg:grid-cols-[1fr_auto]">
-            <Select label="Existing location" onChange={setLocationId} value={locationId}>
-              <option value="">Select location</option>
+            <Select label={t("placement.existingLocation")} onChange={setLocationId} value={locationId}>
+              <option value="">{t("placement.selectLocation")}</option>
               {locations.map((location) => (
                 <option key={location.id} value={location.id}>
                   {formatLocation(location)}
@@ -106,32 +108,32 @@ export function ToolPlacementPanel({
             </Select>
             <ActionButton
               disabled={!locationId || isSaving}
-              label="Assign location"
+              label={t("placement.assignLocation")}
               onClick={() => void runMove({ placement: "location", locationId })}
             />
           </div>
 
           <div className="grid gap-3 lg:grid-cols-[1fr_120px_auto]">
-            <Select label="Machine" onChange={setMachineId} value={machineId}>
-              <option value="">Select machine</option>
+            <Select label={t("table.machine")} onChange={setMachineId} value={machineId}>
+              <option value="">{t("placement.selectMachine")}</option>
               {metadata.machines.map((machine) => (
                 <option key={machine.id} value={machine.id}>{machine.name}</option>
               ))}
             </Select>
-            <Input label="Qty" onChange={setMachineQuantity} value={machineQuantity} />
+            <Input label={t("placement.qty")} onChange={setMachineQuantity} value={machineQuantity} />
             <ActionButton
               disabled={!machineId || isSaving}
-              label={onMoveToMachine ? "Move to machine" : "Assign machine"}
+              label={onMoveToMachine ? t("placement.moveToMachine") : t("placement.assignMachine")}
               onClick={() => void runMachineMove()}
             />
           </div>
 
           <div className="grid gap-3 lg:grid-cols-[1fr_120px_auto]">
-            <Input label="New PLAN/HYLLA/BACK" onChange={setRawLabel} value={rawLabel} />
-            <Input label="FACK" onChange={setCompartment} value={compartment} />
+            <Input label={t("placement.newLocation")} onChange={setRawLabel} value={rawLabel} />
+            <Input label={t("table.fack")} onChange={setCompartment} value={compartment} />
             <ActionButton
               disabled={!rawLabel.trim() || isSaving}
-              label="Create location"
+              label={t("placement.createLocation")}
               onClick={() =>
                 void runMove({
                   placement: "newLocation",

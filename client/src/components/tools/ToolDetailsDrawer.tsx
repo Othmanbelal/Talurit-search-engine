@@ -1,4 +1,5 @@
 import { ChevronDown, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { formatToolStatus } from "../../constants/tool-statuses";
 import type { ToolMetadata } from "../../types/metadata";
 import type { Tool, ToolPlacementPayload } from "../../types/tools";
@@ -32,28 +33,29 @@ export function ToolDetailsDrawer({
   onMoveToMachine,
   tool,
 }: ToolDetailsDrawerProps) {
+  const { t } = useTranslation("tools");
   if (!tool) return null;
 
-  const sections = buildSections(tool);
-  const importDetails = buildImportDetails(tool);
+  const sections = buildSections(tool, t);
+  const importDetails = buildImportDetails(tool, t);
 
   return (
     <div className="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm">
       <aside className="ml-auto flex h-full w-full max-w-2xl flex-col border-l border-line bg-slate-900 shadow-industrial">
         <header className="flex items-start justify-between border-b border-line px-5 py-4">
           <div className="min-w-0">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">Tool</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">{t("details.toolLabel")}</p>
             <h2 className="mt-2 truncate text-xl font-semibold text-white">{tool.productName}</h2>
             <div className="mt-3 flex flex-wrap gap-2">
               <Pill>{formatToolStatus(tool.status)}</Pill>
-              <Pill>{tool.manufacturer?.name ?? "No manufacturer"}</Pill>
-              <Pill>{tool.toolType?.name ?? "No type"}</Pill>
+              <Pill>{tool.manufacturer?.name ?? t("details.noManufacturer")}</Pill>
+              <Pill>{tool.toolType?.name ?? t("details.noType")}</Pill>
             </div>
           </div>
           <button
             className="rounded-md border border-line p-2 text-slate-300 hover:border-accent"
             onClick={onClose}
-            title="Close"
+            title={t("details.close")}
             type="button"
           >
             <X size={18} />
@@ -84,15 +86,15 @@ export function ToolDetailsDrawer({
           ))}
 
           <section className="rounded-lg border border-line bg-white/[0.03] p-4">
-            <h3 className="text-sm font-semibold text-white">Notes</h3>
+            <h3 className="text-sm font-semibold text-white">{t("details.notes")}</h3>
             <p className="mt-2 whitespace-pre-wrap text-sm text-slate-300">
-              {tool.notes?.trim() ? tool.notes : "No notes recorded."}
+              {tool.notes?.trim() ? tool.notes : t("details.noNotes")}
             </p>
           </section>
 
           <details className="rounded-lg border border-line bg-white/[0.03] p-4">
             <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-white">
-              Import and raw data
+              {t("details.importData")}
               <ChevronDown size={16} />
             </summary>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -107,10 +109,10 @@ export function ToolDetailsDrawer({
   );
 }
 
-function buildSections(tool: Tool) {
+function buildSections(tool: Tool, t: (key: string) => string) {
   return [
     {
-      title: "Identity",
+      title: t("details.sectionIdentity"),
       items: compactDetails([
         detail("Article", tool.articleNumber),
         detail("Alt. article", tool.alternativeArticleNumber),
@@ -119,7 +121,7 @@ function buildSections(tool: Tool) {
       ]),
     },
     {
-      title: "Stock and location",
+      title: t("details.sectionStockLocation"),
       items: compactDetails([
         detail("Quantity", tool.quantity),
         detail("Secondary quantity", tool.quantitySecondary),
@@ -129,7 +131,7 @@ function buildSections(tool: Tool) {
       ]),
     },
     {
-      title: "Geometry and holder",
+      title: t("details.sectionGeometry"),
       items: compactDetails([
         detail("Diameter", tool.diameter),
         detail("Cutting size", tool.cuttingSize),
@@ -142,7 +144,7 @@ function buildSections(tool: Tool) {
       ]),
     },
     {
-      title: "Commercial",
+      title: t("details.sectionCommercial"),
       items: compactDetails([
         detail("Price", tool.priceRaw),
         detail("Total price", differentValue(tool.totalPriceRaw, tool.priceRaw)),
@@ -151,7 +153,7 @@ function buildSections(tool: Tool) {
   ].filter((section) => section.items.length > 0);
 }
 
-function buildImportDetails(tool: Tool): DetailItem[] {
+function buildImportDetails(tool: Tool, t?: (key: string) => string): DetailItem[] {
   return compactDetails([
     detail("Stock raw", differentValue(tool.stockRaw, tool.quantity)),
     detail("Count raw", tool.countRaw),
@@ -159,7 +161,9 @@ function buildImportDetails(tool: Tool): DetailItem[] {
     detail("Source sheet", tool.sourceSheet),
     detail("Source row", tool.sourceRowNumber),
     detail("Updated", new Date(tool.updatedAt).toLocaleString()),
-    detail("Record state", tool.isArchived ? "Archived" : "Active"),
+    detail("Record state", tool.isArchived
+      ? (t ? t("details.stateArchived") : "Archived")
+      : (t ? t("details.stateActive") : "Active")),
   ]);
 }
 

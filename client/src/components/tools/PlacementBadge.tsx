@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { Tool } from "../../types/tools";
 import { getToolPlacement } from "../../utils/tool-placement";
 
@@ -6,8 +7,9 @@ type PlacementBadgeProps = {
 };
 
 export function PlacementBadge({ tool }: PlacementBadgeProps) {
+  const { t } = useTranslation("tools");
   const placement = getToolPlacement(tool);
-  const lines = placementLines(tool);
+  const lines = placementLines(tool, t);
 
   return (
     <span
@@ -22,23 +24,23 @@ export function PlacementBadge({ tool }: PlacementBadgeProps) {
   );
 }
 
-function placementLines(tool: Tool) {
+function placementLines(tool: Tool, t: (key: string) => string) {
   const placement = getToolPlacement(tool);
 
   if (placement.state === "machine") {
-    return { primary: "Machine", secondary: tool.machine?.name ?? tool.machineRaw ?? null };
+    return { primary: t("badge.machine"), secondary: tool.machine?.name ?? tool.machineRaw ?? null };
   }
 
   if (placement.state === "location") {
     return {
-      primary: tool.location?.rawLabel ?? tool.location?.shelf ?? "Storage",
+      primary: tool.location?.rawLabel ?? tool.location?.shelf ?? t("badge.storage"),
       secondary: tool.location?.compartment ? `FACK ${tool.location.compartment}` : null,
     };
   }
 
   if (placement.state === "review") {
-    return { primary: "Review", secondary: "Check location" };
+    return { primary: t("badge.review"), secondary: t("badge.checkLocation") };
   }
 
-  return { primary: "Unassigned", secondary: "No location" };
+  return { primary: t("badge.unassigned"), secondary: t("badge.noLocation") };
 }

@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
 import { formatToolStatus, toolStatuses } from "../../constants/tool-statuses";
 import type { ToolMetadata } from "../../types/metadata";
@@ -48,6 +49,7 @@ export function ToolFormModal({
   open,
   tool,
 }: ToolFormModalProps) {
+  const { t } = useTranslation("tools");
   const [form, setForm] = useState<FormState>(emptyForm);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -66,7 +68,7 @@ export function ToolFormModal({
     setError(null);
 
     if (!form.productName.trim()) {
-      setError("Product name is required.");
+      setError(t("form.productNameRequired"));
       return;
     }
 
@@ -76,7 +78,7 @@ export function ToolFormModal({
       await onSubmit(toPayload(form));
       onClose();
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Unable to save tool");
+      setError(submitError instanceof Error ? submitError.message : t("form.unableToSave"));
     } finally {
       setIsSubmitting(false);
     }
@@ -88,9 +90,9 @@ export function ToolFormModal({
         <header className="flex items-center justify-between border-b border-line px-5 py-4">
           <div>
             <h2 className="text-lg font-semibold text-white">
-              {mode === "create" ? "Add tool" : "Edit tool"}
+              {mode === "create" ? t("form.createTitle") : t("form.editTitle")}
             </h2>
-            <p className="text-sm text-slate-400">Inventory record stored in PostgreSQL.</p>
+            <p className="text-sm text-slate-400">{t("form.subtitle")}</p>
           </div>
           <button className="rounded-md border border-line p-2 text-slate-300" onClick={onClose} type="button">
             <X size={18} />
@@ -99,32 +101,32 @@ export function ToolFormModal({
 
         <form className="overflow-y-auto px-5 py-5" onSubmit={handleSubmit}>
           <div className="grid gap-4 md:grid-cols-2">
-            <TextField label="Product name" onChange={(value) => update("productName", value)} required value={form.productName} />
-            <TextField label="Article number" onChange={(value) => update("articleNumber", value)} value={form.articleNumber} />
-            <SelectField label="Manufacturer" onChange={(value) => update("manufacturerId", value)} value={form.manufacturerId}>
-              <option value="">None</option>
+            <TextField label={t("form.productName")} onChange={(value) => update("productName", value)} required value={form.productName} />
+            <TextField label={t("form.articleNumber")} onChange={(value) => update("articleNumber", value)} value={form.articleNumber} />
+            <SelectField label={t("form.manufacturer")} onChange={(value) => update("manufacturerId", value)} value={form.manufacturerId}>
+              <option value="">{t("form.none")}</option>
               {metadata.manufacturers.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
             </SelectField>
-            <SelectField label="Tool type" onChange={(value) => update("toolTypeId", value)} value={form.toolTypeId}>
-              <option value="">None</option>
+            <SelectField label={t("form.toolType")} onChange={(value) => update("toolTypeId", value)} value={form.toolTypeId}>
+              <option value="">{t("form.none")}</option>
               {metadata.toolTypes.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
             </SelectField>
-            <SelectField label="Location" onChange={(value) => update("locationId", value)} value={form.locationId}>
-              <option value="">None</option>
+            <SelectField label={t("form.location")} onChange={(value) => update("locationId", value)} value={form.locationId}>
+              <option value="">{t("form.none")}</option>
               {metadata.locations.map((item) => <option key={item.id} value={item.id}>{formatLocation(item)}</option>)}
             </SelectField>
-            <SelectField label="Machine" onChange={(value) => update("machineId", value)} value={form.machineId}>
-              <option value="">None</option>
+            <SelectField label={t("form.machine")} onChange={(value) => update("machineId", value)} value={form.machineId}>
+              <option value="">{t("form.none")}</option>
               {metadata.machines.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
             </SelectField>
-            <TextField label="Quantity" onChange={(value) => update("quantity", value)} type="number" value={form.quantity} />
-            <SelectField label="Status" onChange={(value) => update("status", value as ToolStatus)} value={form.status}>
+            <TextField label={t("form.quantity")} onChange={(value) => update("quantity", value)} type="number" value={form.quantity} />
+            <SelectField label={t("form.status")} onChange={(value) => update("status", value as ToolStatus)} value={form.status}>
               {editableStatuses.map((status) => <option key={status} value={status}>{formatToolStatus(status)}</option>)}
             </SelectField>
           </div>
 
           <label className="mt-4 block">
-            <span className="mb-2 block text-sm font-medium text-slate-300">Notes</span>
+            <span className="mb-2 block text-sm font-medium text-slate-300">{t("form.notes")}</span>
             <textarea
               className="min-h-24 w-full rounded-md border border-line bg-slate-950/70 px-3 py-2.5 text-sm text-white outline-none focus:border-accent"
               onChange={(event) => update("notes", event.target.value)}
@@ -136,10 +138,10 @@ export function ToolFormModal({
 
           <footer className="mt-5 flex justify-end gap-2">
             <button className="rounded-md border border-line px-4 py-2 text-sm text-slate-200" onClick={onClose} type="button">
-              Cancel
+              {t("form.cancel")}
             </button>
             <button className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-slate-950 disabled:opacity-60" disabled={isSubmitting} type="submit">
-              {isSubmitting ? "Saving..." : "Save tool"}
+              {isSubmitting ? t("form.saving") : t("form.saveTool")}
             </button>
           </footer>
         </form>

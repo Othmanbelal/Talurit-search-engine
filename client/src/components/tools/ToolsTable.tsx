@@ -1,4 +1,5 @@
 import { Archive, ChevronRight, Eye, Pencil, RotateCcw, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { formatToolStatus } from "../../constants/tool-statuses";
 import type { Tool, ToolFilters } from "../../types/tools";
 import {
@@ -35,6 +36,7 @@ export function ToolsTable({
   onView,
   tools,
 }: ToolsTableProps) {
+  const { t } = useTranslation("tools");
   return (
     <div>
       {/* Mobile: card list */}
@@ -44,7 +46,7 @@ export function ToolsTable({
         ) : null}
         {!isLoading && tools.length === 0 ? (
           <p className="rounded-lg border border-line bg-panel p-6 text-sm text-slate-400">
-            No tools match the current filters.
+            {t("table.noMatch")}
           </p>
         ) : null}
         {!isLoading
@@ -80,17 +82,17 @@ export function ToolsTable({
           <table className="min-w-[1220px] table-fixed divide-y divide-line text-left text-sm">
             <thead className="bg-white/[0.03] text-xs uppercase tracking-wide text-slate-400">
               <tr>
-                <HeaderButton label="Product" onClick={() => onSort("productName")} />
-                <HeaderButton label="Article" onClick={() => onSort("articleNumber")} />
-                <HeaderButton label="Manufacturer" onClick={() => onSort("manufacturer")} />
-                <th className="px-4 py-3 font-medium">Type</th>
-                <th className="px-4 py-3 font-medium">Location</th>
-                <th className="px-4 py-3 font-medium">FACK</th>
-                <th className="w-40 px-4 py-3 font-medium">Placement</th>
-                <th className="px-4 py-3 text-center font-medium" title="Diameter">Ø</th>
-                <HeaderButton label="Qty" onClick={() => onSort("quantity")} />
-                <th className="px-4 py-3 font-medium">Status</th>
-                <th className="w-48 px-4 py-3 font-medium">Actions</th>
+                <HeaderButton label={t("table.product")} onClick={() => onSort("productName")} />
+                <HeaderButton label={t("table.article")} onClick={() => onSort("articleNumber")} />
+                <HeaderButton label={t("table.manufacturer")} onClick={() => onSort("manufacturer")} />
+                <th className="px-4 py-3 font-medium">{t("table.type")}</th>
+                <th className="px-4 py-3 font-medium">{t("table.location")}</th>
+                <th className="px-4 py-3 font-medium">{t("table.fack")}</th>
+                <th className="w-40 px-4 py-3 font-medium">{t("table.placement")}</th>
+                <th className="px-4 py-3 text-center font-medium" title={t("table.diameter")}>{t("table.diameter")}</th>
+                <HeaderButton label={t("table.qty")} onClick={() => onSort("quantity")} />
+                <th className="px-4 py-3 font-medium">{t("table.status")}</th>
+                <th className="w-48 px-4 py-3 font-medium">{t("table.actions")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
@@ -119,17 +121,17 @@ export function ToolsTable({
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-1.5">
-                          <IconButton label="View" onClick={() => onView(tool)} icon={Eye} />
+                          <IconButton label={t("table.view")} onClick={() => onView(tool)} icon={Eye} />
                           {canEdit && !tool.isArchived ? (
-                            <IconButton label="Edit" onClick={() => onEdit(tool)} icon={Pencil} />
+                            <IconButton label={t("table.edit")} onClick={() => onEdit(tool)} icon={Pencil} />
                           ) : null}
                           {canEdit && tool.isArchived ? (
-                            <IconButton label="Restore" onClick={() => onRestore(tool)} icon={RotateCcw} />
+                            <IconButton label={t("table.restore")} onClick={() => onRestore(tool)} icon={RotateCcw} />
                           ) : null}
                           {canEdit && !tool.isArchived ? (
-                            <IconButton label="Archive" onClick={() => onArchive(tool)} icon={Archive} />
+                            <IconButton label={t("table.archive")} onClick={() => onArchive(tool)} icon={Archive} />
                           ) : null}
-                          {canDelete ? <IconButton label="Delete" onClick={() => onDelete(tool)} icon={Trash2} /> : null}
+                          {canDelete ? <IconButton label={t("table.delete")} onClick={() => onDelete(tool)} icon={Trash2} /> : null}
                         </div>
                       </td>
                     </tr>
@@ -139,7 +141,7 @@ export function ToolsTable({
           </table>
         </div>
         <div className="border-t border-line px-4 py-3 text-xs text-slate-500">
-          Sorted by {filters.sortBy} {filters.sortDirection}
+          {t("table.sortedBy", { field: filters.sortBy, direction: filters.sortDirection })}
         </div>
       </section>
     </div>
@@ -192,10 +194,11 @@ function LoadingRows() {
 }
 
 function EmptyRow() {
+  const { t } = useTranslation("tools");
   return (
     <tr>
       <td className="px-4 py-10 text-center text-slate-400" colSpan={11}>
-        No tools match the current filters.
+        {t("table.noMatch")}
       </td>
     </tr>
   );
