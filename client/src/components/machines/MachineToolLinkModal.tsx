@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Search, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useToolLookup } from "../../hooks/useToolLookup";
 import type { Tool } from "../../types/tools";
 import { formatLocation, formatNullable } from "../../utils/tool-format";
@@ -19,6 +20,7 @@ export function MachineToolLinkModal({
   onSubmit,
   open,
 }: MachineToolLinkModalProps) {
+  const { t } = useTranslation("machines");
   const [query, setQuery] = useState("");
   const [quantity, setQuantity] = useState("1");
   const [selectedToolId, setSelectedToolId] = useState("");
@@ -89,9 +91,9 @@ export function MachineToolLinkModal({
       <section className="w-full max-w-2xl rounded-lg border border-line bg-slate-900 shadow-industrial">
         <header className="flex items-start justify-between border-b border-line px-5 py-4">
           <div>
-            <h2 className="text-lg font-semibold text-white">Add item to {machineName}</h2>
+            <h2 className="text-lg font-semibold text-white">{t("linkModal.addItemTo", { machineName })}</h2>
             <p className="text-sm text-slate-400">
-              Link an existing inventory item and move quantity into this machine.
+              {t("linkModal.linkExistingInventory")}
             </p>
           </div>
           <button className="rounded-md border border-line p-2 text-slate-300" onClick={onClose} type="button">
@@ -105,14 +107,14 @@ export function MachineToolLinkModal({
             <input
               className="w-full rounded-md border border-line bg-slate-950/70 py-2.5 pl-10 pr-3 text-sm text-white outline-none focus:border-accent"
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search product, article, manufacturer..."
+              placeholder={t("linkModal.searchPlaceholder")}
               value={query}
             />
           </label>
 
           <div className="grid gap-4 md:grid-cols-[1fr_130px]">
             <label className="block">
-              <span className="mb-2 block text-sm font-medium text-slate-300">Existing tool</span>
+              <span className="mb-2 block text-sm font-medium text-slate-300">{t("linkModal.existingTool")}</span>
               <select
                 className="w-full rounded-md border border-line bg-slate-950/70 px-3 py-2.5 text-sm text-white outline-none focus:border-accent"
                 onChange={(event) => setSelectedToolId(event.target.value)}
@@ -126,7 +128,7 @@ export function MachineToolLinkModal({
               </select>
             </label>
             <label className="block">
-              <span className="mb-2 block text-sm font-medium text-slate-300">Quantity</span>
+              <span className="mb-2 block text-sm font-medium text-slate-300">{t("linkModal.quantity")}</span>
               <input
                 className="w-full rounded-md border border-line bg-slate-950/70 px-3 py-2.5 text-sm text-white outline-none focus:border-accent"
                 min={1}
@@ -139,18 +141,18 @@ export function MachineToolLinkModal({
 
           {selectedTool ? <SelectedTool tool={selectedTool} /> : null}
           {lookup.error || error ? <p className="text-sm text-red-300">{error ?? lookup.error}</p> : null}
-          {lookup.isLoading ? <p className="text-sm text-slate-400">Searching...</p> : null}
+          {lookup.isLoading ? <p className="text-sm text-slate-400">{t("linkModal.searching")}</p> : null}
 
           <footer className="flex justify-end gap-2">
             <button className="rounded-md border border-line px-4 py-2 text-sm text-slate-200" onClick={onClose} type="button">
-              Cancel
+              {t("linkModal.cancel")}
             </button>
             <button
               className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-slate-950 disabled:opacity-60"
               disabled={isSaving || !selectedTool}
               type="submit"
             >
-              {isSaving ? "Adding..." : "Add to machine"}
+              {isSaving ? t("linkModal.adding") : t("linkModal.addToMachine")}
             </button>
           </footer>
         </form>
@@ -160,13 +162,15 @@ export function MachineToolLinkModal({
 }
 
 function SelectedTool({ tool }: { tool: Tool }) {
+  const { t } = useTranslation("machines");
+
   return (
     <div className="rounded-lg border border-line bg-white/[0.03] p-4 text-sm text-slate-300">
       <div className="font-medium text-white">{tool.productName}</div>
       <div className="mt-2 grid gap-2 md:grid-cols-3">
-        <span>Article: {formatNullable(tool.articleNumber)}</span>
-        <span>Available: {formatNullable(tool.quantity)}</span>
-        <span>Location: {formatLocation(tool.location)}</span>
+        <span>{t("linkModal.article")}: {formatNullable(tool.articleNumber)}</span>
+        <span>{t("linkModal.available")}: {formatNullable(tool.quantity)}</span>
+        <span>{t("linkModal.locationLabel")}: {formatLocation(tool.location)}</span>
       </div>
     </div>
   );

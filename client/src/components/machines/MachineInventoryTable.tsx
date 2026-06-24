@@ -1,4 +1,5 @@
 import { Eye } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { formatToolStatus } from "../../constants/tool-statuses";
 import type { MachineInventoryTool } from "../../types/machines";
 import {
@@ -19,12 +20,14 @@ export function MachineInventoryTable({
   onView,
   tools,
 }: MachineInventoryTableProps) {
+  const { t } = useTranslation("machines");
+
   return (
     <section className="space-y-4">
       <div>
-        <h2 className="text-lg font-semibold text-white">Items in this machine</h2>
+        <h2 className="text-lg font-semibold text-white">{t("details.itemsInMachine")}</h2>
         <p className="mt-1 text-sm text-slate-400">
-          Real database inventory assigned to this machine.
+          {t("details.realInventoryAssigned")}
         </p>
       </div>
       <ToolRows isLoading={isLoading} onView={onView} tools={tools} />
@@ -41,6 +44,8 @@ function ToolRows({
   onView?: (tool: MachineInventoryTool) => void;
   tools: MachineInventoryTool[];
 }) {
+  const { t } = useTranslation("machines");
+
   return (
     <div>
       {/* Mobile: card list */}
@@ -50,7 +55,7 @@ function ToolRows({
         ) : null}
         {!isLoading && tools.length === 0 ? (
           <p className="rounded-lg border border-line bg-panel p-6 text-sm text-slate-400">
-            No database tools are assigned to this machine.
+            {t("details.noToolsAssigned")}
           </p>
         ) : null}
         {!isLoading
@@ -72,7 +77,7 @@ function ToolRows({
                       onClick={() => onView(tool)}
                       type="button"
                     >
-                      Open
+                      {t("table.open")}
                     </button>
                   ) : null}
                 </div>
@@ -87,17 +92,17 @@ function ToolRows({
           <table className="min-w-[1220px] table-fixed divide-y divide-line text-left text-sm">
             <thead className="bg-white/[0.03] text-xs uppercase tracking-wide text-slate-400">
               <tr>
-                <th className="px-4 py-3 font-medium">Product</th>
-                <th className="px-4 py-3 font-medium">Article</th>
-                <th className="px-4 py-3 font-medium">Manufacturer</th>
-                <th className="px-4 py-3 font-medium">Type</th>
-                <th className="px-4 py-3 font-medium">Location</th>
-                <th className="px-4 py-3 font-medium">FACK</th>
-                <th className="w-40 px-4 py-3 font-medium">Placement</th>
-                <th className="px-4 py-3 text-center font-medium" title="Diameter">Ø</th>
-                <th className="px-4 py-3 font-medium">Quantity</th>
-                <th className="px-4 py-3 font-medium">Status</th>
-                {onView ? <th className="px-4 py-3 font-medium">Action</th> : null}
+                <th className="px-4 py-3 font-medium">{t("table.product")}</th>
+                <th className="px-4 py-3 font-medium">{t("table.article")}</th>
+                <th className="px-4 py-3 font-medium">{t("table.manufacturer")}</th>
+                <th className="px-4 py-3 font-medium">{t("table.type")}</th>
+                <th className="px-4 py-3 font-medium">{t("table.location")}</th>
+                <th className="px-4 py-3 font-medium">{t("table.fack")}</th>
+                <th className="w-40 px-4 py-3 font-medium">{t("table.placement")}</th>
+                <th className="px-4 py-3 text-center font-medium" title={t("table.diameter")}>{t("table.diameter")}</th>
+                <th className="px-4 py-3 font-medium">{t("table.quantity")}</th>
+                <th className="px-4 py-3 font-medium">{t("table.status")}</th>
+                {onView ? <th className="px-4 py-3 font-medium">{t("table.action")}</th> : null}
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
@@ -121,6 +126,8 @@ function ToolRow({
   onView?: (tool: MachineInventoryTool) => void;
   tool: MachineInventoryTool;
 }) {
+  const { t } = useTranslation("machines");
+
   return (
     <tr className="text-slate-200 hover:bg-white/[0.03]">
       <td className="px-4 py-3">
@@ -148,7 +155,7 @@ function ToolRow({
             onClick={() => onView(tool)}
             type="button"
           >
-            <Eye size={15} /> Open
+            <Eye size={15} /> {t("table.open")}
           </button>
         </td>
       ) : null}
@@ -167,10 +174,12 @@ function LoadingRow() {
 }
 
 function EmptyRow() {
+  const { t } = useTranslation("machines");
+
   return (
     <tr>
       <td className="px-4 py-10 text-center text-slate-400" colSpan={11}>
-        No database tools are assigned to this machine.
+        {t("details.noToolsAssigned")}
       </td>
     </tr>
   );

@@ -1,4 +1,5 @@
 import { ArrowRight, Cpu, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import type { MachineWithSlotCount } from "../../types/machines";
 
@@ -10,6 +11,8 @@ type MachineCardsProps = {
 };
 
 export function MachineCards({ canManage, isLoading, machines, onDelete }: MachineCardsProps) {
+  const { t } = useTranslation("machines");
+
   if (isLoading) {
     return (
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -36,7 +39,7 @@ export function MachineCards({ canManage, isLoading, machines, onDelete }: Machi
                 <button
                   className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-line bg-white/5 text-slate-300 hover:border-red-400 hover:text-red-300"
                   onClick={() => onDelete(machine)}
-                  title="Remove machine"
+                  title={t("cards.delete")}
                   type="button"
                 >
                   <Trash2 size={15} />
@@ -44,7 +47,7 @@ export function MachineCards({ canManage, isLoading, machines, onDelete }: Machi
               ) : null}
               <Link
                 className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-line bg-white/5 text-slate-300 hover:border-accent hover:text-accent"
-                title="View machine"
+                title={t("cards.viewDetails")}
                 to={`/machines/${machine.id}`}
               >
                 <ArrowRight size={17} />
@@ -53,7 +56,7 @@ export function MachineCards({ canManage, isLoading, machines, onDelete }: Machi
           </div>
           <h2 className="mt-5 text-xl font-semibold text-white">{machine.name}</h2>
           <div className="mt-3 grid gap-2 text-sm">
-            <Count label="Items in machine" value={machine.inventoryCount} />
+            <Count label={t("details.itemsInMachine")} value={machine.inventoryCount} />
           </div>
         </article>
       ))}

@@ -1,5 +1,6 @@
 import { ArrowLeft, Plus } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import { MachineInventoryTable } from "../components/machines/MachineInventoryTable";
 import { MachineToolLinkModal } from "../components/machines/MachineToolLinkModal";
@@ -10,6 +11,7 @@ import { useToolMetadata } from "../hooks/useToolMetadata";
 import type { Tool, ToolPlacementPayload } from "../types/tools";
 
 export function MachineDetailsPage() {
+  const { t } = useTranslation("machines");
   const { id } = useParams();
   const { user } = useAuth();
   const metadata = useToolMetadata();
@@ -32,7 +34,7 @@ export function MachineDetailsPage() {
     try {
       await linkTool(toolId, quantity);
     } catch (linkError) {
-      setActionError(linkError instanceof Error ? linkError.message : "Could not add tool");
+      setActionError(linkError instanceof Error ? linkError.message : t("details.addTool"));
       throw linkError;
     }
   }
@@ -50,15 +52,15 @@ export function MachineDetailsPage() {
           className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-accent"
           to="/machines"
         >
-          <ArrowLeft size={16} /> Machines
+          <ArrowLeft size={16} /> {t("details.backToMachines")}
         </Link>
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">
-              Machine detail
+              {t("details.machineDetail")}
             </p>
             <h1 className="mt-3 text-3xl font-semibold text-white md:text-4xl">
-              {machine?.name ?? "Machine"}
+              {machine?.name ?? t("sectionLabel")}
             </h1>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -68,11 +70,11 @@ export function MachineDetailsPage() {
                 onClick={() => setIsLinkOpen(true)}
                 type="button"
               >
-                <Plus size={17} /> Add item
+                <Plus size={17} /> {t("details.addItem")}
               </button>
             ) : null}
             <div className="rounded-lg border border-line bg-white/5 px-4 py-3 text-sm text-slate-300">
-              {tools.length} database items
+              {tools.length} {t("details.databaseItems")}
             </div>
           </div>
         </div>

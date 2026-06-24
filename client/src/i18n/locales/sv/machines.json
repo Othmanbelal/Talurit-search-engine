@@ -1,0 +1,65 @@
+{
+  "sectionLabel": "Maskiner",
+  "title": "Maskiner",
+  "count": "{{count}} maskiner",
+  "form": {
+    "namePlaceholder": "Maskinnamn",
+    "descriptionPlaceholder": "Beskrivning valfritt",
+    "submit": "Lägg till maskin"
+  },
+  "error": {
+    "createFailed": "Maskinen kunde inte läggas till",
+    "deleteFailed": "Maskinen kunde inte tas bort"
+  },
+  "confirmDelete": "Ta bort {{name}}? Inventarieverktyg stannar i databasen men tas bort från den här maskinen.",
+  "cards": {
+    "viewDetails": "Visa detaljer",
+    "delete": "Ta bort",
+    "noMachines": "Inga maskiner hittades.",
+    "loading": "Laddar maskiner..."
+  },
+  "details": {
+    "sectionLabel": "Maskiner",
+    "backToMachines": "Tillbaka till maskiner",
+    "tools": "Verktyg",
+    "addTool": "Lägg till verktyg",
+    "noTools": "Inga verktyg tilldelade.",
+    "itemsInMachine": "Föremål i den här maskinen",
+    "realInventoryAssigned": "Verklig databasinventering tilldelad den här maskinen.",
+    "databaseItems": "databasposter",
+    "addItem": "Lägg till föremål",
+    "noToolsAssigned": "Inga databasverktyg är tilldelade den här maskinen.",
+    "machineDetail": "Maskindetalj"
+  },
+  "table": {
+    "product": "Produkt",
+    "article": "Artikel",
+    "manufacturer": "Tillverkare",
+    "type": "Typ",
+    "location": "Plats",
+    "fack": "FACK",
+    "placement": "Placering",
+    "diameter": "Ø",
+    "quantity": "Antal",
+    "status": "Status",
+    "action": "Åtgärd",
+    "open": "Öppna"
+  },
+  "linkModal": {
+    "title": "Lägg till verktyg i maskin",
+    "addItemTo": "Lägg till föremål i {{machineName}}",
+    "linkExistingInventory": "Länka ett befintligt inventarieföremål och flytta antal till den här maskinen.",
+    "search": "Sök verktyg...",
+    "searchPlaceholder": "Sök produkt, artikel, tillverkare...",
+    "existingTool": "Befintligt verktyg",
+    "quantity": "Antal",
+    "submit": "Lägg till",
+    "adding": "Lägger till...",
+    "addToMachine": "Lägg till i maskin",
+    "cancel": "Avbryt",
+    "searching": "Söker...",
+    "article": "Artikel",
+    "available": "Tillgänglig",
+    "locationLabel": "Plats"
+  }
+}

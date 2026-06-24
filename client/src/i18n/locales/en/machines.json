@@ -1,0 +1,65 @@
+{
+  "sectionLabel": "Machines",
+  "title": "Machines",
+  "count": "{{count}} machines",
+  "form": {
+    "namePlaceholder": "Machine name",
+    "descriptionPlaceholder": "Description optional",
+    "submit": "Add machine"
+  },
+  "error": {
+    "createFailed": "Machine could not be added",
+    "deleteFailed": "Machine could not be removed"
+  },
+  "confirmDelete": "Remove {{name}}? Inventory tools will stay in the database but will be unassigned from this machine.",
+  "cards": {
+    "viewDetails": "View details",
+    "delete": "Delete",
+    "noMachines": "No machines found.",
+    "loading": "Loading machines..."
+  },
+  "details": {
+    "sectionLabel": "Machines",
+    "backToMachines": "Back to machines",
+    "tools": "Tools",
+    "addTool": "Add tool",
+    "noTools": "No tools assigned.",
+    "itemsInMachine": "Items in this machine",
+    "realInventoryAssigned": "Real database inventory assigned to this machine.",
+    "databaseItems": "database items",
+    "addItem": "Add item",
+    "noToolsAssigned": "No database tools are assigned to this machine.",
+    "machineDetail": "Machine detail"
+  },
+  "table": {
+    "product": "Product",
+    "article": "Article",
+    "manufacturer": "Manufacturer",
+    "type": "Type",
+    "location": "Location",
+    "fack": "FACK",
+    "placement": "Placement",
+    "diameter": "Ø",
+    "quantity": "Quantity",
+    "status": "Status",
+    "action": "Action",
+    "open": "Open"
+  },
+  "linkModal": {
+    "title": "Add tool to machine",
+    "addItemTo": "Add item to {{machineName}}",
+    "linkExistingInventory": "Link an existing inventory item and move quantity into this machine.",
+    "search": "Search tools...",
+    "searchPlaceholder": "Search product, article, manufacturer...",
+    "existingTool": "Existing tool",
+    "quantity": "Quantity",
+    "submit": "Add",
+    "adding": "Adding...",
+    "addToMachine": "Add to machine",
+    "cancel": "Cancel",
+    "searching": "Searching...",
+    "article": "Article",
+    "available": "Available",
+    "locationLabel": "Location"
+  }
+}
