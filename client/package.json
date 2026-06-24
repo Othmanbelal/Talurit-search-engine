@@ -13,10 +13,12 @@
     "@babylonjs/core": "^9.9.1",
     "@zxing/browser": "^0.2.0",
     "@zxing/library": "^0.22.0",
+    "i18next": "^26.3.2",
     "lucide-react": "^0.511.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-easy-crop": "^6.0.2",
+    "react-i18next": "^17.0.8",
     "react-router-dom": "^7.6.2",
     "zustand": "^5.0.13"
   },
