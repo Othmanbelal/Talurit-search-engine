@@ -34,7 +34,7 @@ export function MachineDetailsPage() {
     try {
       await linkTool(toolId, quantity);
     } catch (linkError) {
-      setActionError(linkError instanceof Error ? linkError.message : t("details.addTool"));
+      setActionError(linkError instanceof Error ? linkError.message : t("error.linkFailed"));
       throw linkError;
     }
   }

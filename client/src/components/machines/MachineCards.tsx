@@ -23,6 +23,12 @@ export function MachineCards({ canManage, isLoading, machines, onDelete }: Machi
     );
   }
 
+  if (machines.length === 0) {
+    return (
+      <p className="text-sm text-slate-400">{t("cards.noMachines")}</p>
+    );
+  }
+
   return (
     <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       {machines.map((machine) => (

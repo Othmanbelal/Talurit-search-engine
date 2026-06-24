@@ -9,7 +9,8 @@
   },
   "error": {
     "createFailed": "Machine could not be added",
-    "deleteFailed": "Machine could not be removed"
+    "deleteFailed": "Machine could not be removed",
+    "linkFailed": "Could not link tool"
   },
   "confirmDelete": "Remove {{name}}? Inventory tools will stay in the database but will be unassigned from this machine.",
   "cards": {
@@ -60,6 +61,7 @@
     "searching": "Searching...",
     "article": "Article",
     "available": "Available",
-    "locationLabel": "Location"
+    "locationLabel": "Location",
+    "qtyLabel": "qty"
   }
 }

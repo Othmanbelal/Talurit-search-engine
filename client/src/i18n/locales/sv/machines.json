@@ -9,7 +9,8 @@
   },
   "error": {
     "createFailed": "Maskinen kunde inte läggas till",
-    "deleteFailed": "Maskinen kunde inte tas bort"
+    "deleteFailed": "Maskinen kunde inte tas bort",
+    "linkFailed": "Kunde inte länka verktyget"
   },
   "confirmDelete": "Ta bort {{name}}? Inventarieverktyg stannar i databasen men tas bort från den här maskinen.",
   "cards": {
@@ -60,6 +61,7 @@
     "searching": "Söker...",
     "article": "Artikel",
     "available": "Tillgänglig",
-    "locationLabel": "Plats"
+    "locationLabel": "Plats",
+    "qtyLabel": "qty"
   }
 }

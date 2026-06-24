@@ -122,7 +122,7 @@ export function MachineToolLinkModal({
               >
                 {availableTools.map((tool) => (
                   <option key={tool.id} value={tool.id}>
-                    {toolOptionLabel(tool)}
+                    {toolOptionLabel(tool, t)}
                   </option>
                 ))}
               </select>
@@ -176,6 +176,6 @@ function SelectedTool({ tool }: { tool: Tool }) {
   );
 }
 
-function toolOptionLabel(tool: Tool) {
-  return `${tool.productName} / ${formatNullable(tool.articleNumber)} / qty ${formatNullable(tool.quantity)}`;
+function toolOptionLabel(tool: Tool, t: (key: string) => string) {
+  return `${tool.productName} / ${formatNullable(tool.articleNumber)} / ${t("linkModal.qtyLabel")} ${formatNullable(tool.quantity)}`;
 }
