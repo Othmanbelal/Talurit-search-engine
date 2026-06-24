@@ -1,4 +1,5 @@
 import { Eye } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { Tool } from "../../types/tools";
 import { formatNullable } from "../../utils/tool-format";
 import { getToolPlacement } from "../../utils/tool-placement";
@@ -14,10 +15,11 @@ export function UnassignedToolsPanel({
   onView,
   tools,
 }: UnassignedToolsPanelProps) {
+  const { t } = useTranslation("locations");
   return (
     <section className="overflow-hidden rounded-lg border border-line bg-panel shadow-industrial">
       <div className="border-b border-line px-4 py-4">
-        <h2 className="text-lg font-semibold text-white">Items with no assigned location</h2>
+        <h2 className="text-lg font-semibold text-white">{t("unassigned.title")}</h2>
         <p className="mt-1 text-sm text-slate-400">
           These tools are not in a valid shelf position or machine yet.
         </p>
@@ -81,10 +83,11 @@ function LoadingRow() {
 }
 
 function EmptyRow() {
+  const { t } = useTranslation("locations");
   return (
     <tr>
       <td className="px-4 py-10 text-center text-slate-400" colSpan={5}>
-        All active tools have a storage location or machine assignment.
+        {t("unassigned.empty")}
       </td>
     </tr>
   );

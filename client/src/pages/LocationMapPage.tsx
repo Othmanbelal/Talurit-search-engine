@@ -1,11 +1,13 @@
 import { ArrowLeft, Map } from "lucide-react";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { LocationMapGrid } from "../components/locations/LocationMapGrid";
 import { useLocations } from "../hooks/useLocations";
 import { groupLocationsByShelf } from "../utils/location-groups";
 
 export function LocationMapPage() {
+  const { t } = useTranslation("locations");
   const { error, isLoading, locations } = useLocations();
   const groups = useMemo(() => groupLocationsByShelf(locations), [locations]);
   const mappedCount = groups.filter((group) => group.mapLocation).length;
@@ -17,15 +19,15 @@ export function LocationMapPage() {
           className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-accent"
           to="/locations"
         >
-          <ArrowLeft size={16} /> Locations
+          <ArrowLeft size={16} /> {t("map.backToList")}
         </Link>
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">
-              Location map
+              {t("sectionLabel")}
             </p>
             <h1 className="mt-3 text-3xl font-semibold text-white md:text-4xl">
-              Shelf occupancy
+              {t("map.title")}
             </h1>
           </div>
           <div className="flex items-center gap-2 rounded-lg border border-line bg-white/5 px-4 py-3 text-sm text-slate-300">

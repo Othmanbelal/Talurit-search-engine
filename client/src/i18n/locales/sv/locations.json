@@ -1,0 +1,23 @@
+{
+  "sectionLabel": "Platser",
+  "title": "Hylla och FACK",
+  "mapView": "Kartvy",
+  "search": "Sök hylla, FACK eller källblad...",
+  "table": {
+    "shelf": "Hylla",
+    "compartment": "FACK",
+    "sourceSheet": "Källblad",
+    "toolCount": "Verktyg",
+    "noLocations": "Inga platser hittades.",
+    "loading": "Laddar platser..."
+  },
+  "unassigned": {
+    "title": "Ej tilldelade verktyg",
+    "empty": "Inga ej tilldelade verktyg.",
+    "loading": "Laddar..."
+  },
+  "map": {
+    "title": "Platsöversikt",
+    "backToList": "Tillbaka till listan"
+  }
+}

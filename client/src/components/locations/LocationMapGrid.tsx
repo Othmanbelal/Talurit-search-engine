@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { LocationGroup } from "../../utils/location-groups";
 import { sortCompartments } from "../../utils/location-groups";
 
@@ -6,6 +7,7 @@ type LocationMapGridProps = {
 };
 
 export function LocationMapGrid({ groups }: LocationMapGridProps) {
+  const { t } = useTranslation("locations");
   const mappedGroups = groups.filter((group) => group.mapLocation);
 
   return (

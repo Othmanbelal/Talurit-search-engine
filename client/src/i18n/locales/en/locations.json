@@ -1,0 +1,23 @@
+{
+  "sectionLabel": "Locations",
+  "title": "Shelf and FACK",
+  "mapView": "Map view",
+  "search": "Search shelf, FACK, or source sheet...",
+  "table": {
+    "shelf": "Shelf",
+    "compartment": "FACK",
+    "sourceSheet": "Source sheet",
+    "toolCount": "Tools",
+    "noLocations": "No locations found.",
+    "loading": "Loading locations..."
+  },
+  "unassigned": {
+    "title": "Unassigned tools",
+    "empty": "No unassigned tools.",
+    "loading": "Loading..."
+  },
+  "map": {
+    "title": "Location overview",
+    "backToList": "Back to list"
+  }
+}

@@ -1,5 +1,6 @@
 import { Map, Search } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { LocationsTable } from "../components/locations/LocationsTable";
 import { UnassignedToolsPanel } from "../components/locations/UnassignedToolsPanel";
@@ -26,6 +27,7 @@ const unassignedFilters: ToolFilters = {
 };
 
 export function LocationsPage() {
+  const { t } = useTranslation("locations");
   const { user } = useAuth();
   const { error, isLoading, locations, refresh } = useLocations();
   const metadata = useToolMetadata();
@@ -57,17 +59,17 @@ export function LocationsPage() {
       <header className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">
-            Locations
+            {t("sectionLabel")}
           </p>
           <h1 className="mt-3 text-3xl font-semibold text-white md:text-4xl">
-            Shelf and FACK
+            {t("title")}
           </h1>
         </div>
         <Link
           className="inline-flex items-center gap-2 rounded-md border border-line bg-white/5 px-4 py-3 text-sm text-slate-200 hover:border-accent"
           to="/locations/map"
         >
-          <Map size={17} /> Map view
+          <Map size={17} /> {t("mapView")}
         </Link>
       </header>
 
@@ -76,7 +78,7 @@ export function LocationsPage() {
         <input
           className="w-full rounded-lg border border-line bg-panel py-3 pl-10 pr-3 text-sm text-white outline-none focus:border-accent"
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="Search shelf, FACK, or source sheet..."
+          placeholder={t("search")}
           value={query}
         />
       </label>

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { Location } from "../../types/tools";
 import { formatNullable } from "../../utils/tool-format";
 import { isValidStorageLocation } from "../../utils/tool-placement";
@@ -8,6 +9,7 @@ type LocationsTableProps = {
 };
 
 export function LocationsTable({ isLoading, locations }: LocationsTableProps) {
+  const { t } = useTranslation("locations");
   return (
     <div>
       {/* Mobile: card list */}
@@ -16,7 +18,7 @@ export function LocationsTable({ isLoading, locations }: LocationsTableProps) {
           <div className="h-24 animate-pulse rounded-lg border border-line bg-white/5" />
         ) : null}
         {!isLoading && locations.length === 0 ? (
-          <p className="rounded-lg border border-line bg-panel p-6 text-sm text-slate-400">No locations match this view.</p>
+          <p className="rounded-lg border border-line bg-panel p-6 text-sm text-slate-400">{t("table.noLocations")}</p>
         ) : null}
         {!isLoading
           ? locations.map((location) => (
@@ -46,12 +48,12 @@ export function LocationsTable({ isLoading, locations }: LocationsTableProps) {
           <table className="min-w-full divide-y divide-line text-left text-sm">
             <thead className="bg-white/[0.03] text-xs uppercase tracking-wide text-slate-400">
               <tr>
-                <th className="px-4 py-3 font-medium">PLAN/HYLLA/BACK</th>
-                <th className="px-4 py-3 font-medium">FACK</th>
+                <th className="px-4 py-3 font-medium">{t("table.shelf")}</th>
+                <th className="px-4 py-3 font-medium">{t("table.compartment")}</th>
                 <th className="px-4 py-3 font-medium">Map row</th>
                 <th className="px-4 py-3 font-medium">Map column</th>
-                <th className="px-4 py-3 font-medium">Occupancy</th>
-                <th className="px-4 py-3 font-medium">Source</th>
+                <th className="px-4 py-3 font-medium">{t("table.toolCount")}</th>
+                <th className="px-4 py-3 font-medium">{t("table.sourceSheet")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
@@ -96,10 +98,11 @@ function LoadingRows() {
 }
 
 function EmptyRow() {
+  const { t } = useTranslation("locations");
   return (
     <tr>
       <td className="px-4 py-10 text-center text-slate-400" colSpan={6}>
-        No locations match this view.
+        {t("table.noLocations")}
       </td>
     </tr>
   );
