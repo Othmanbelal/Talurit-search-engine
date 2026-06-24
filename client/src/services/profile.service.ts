@@ -16,6 +16,7 @@ export type ProfileData = {
     landingType: LandingType | null;
     landingPath: string | null;
     landingTargetId: string | null;
+    language: string;
   } | null;
 };
 
@@ -31,6 +32,7 @@ export type ProfileUpdateInput = {
   landingType?: LandingType | null;
   landingPath?: string | null;
   landingTargetId?: string | null;
+  language?: "sv" | "en";
 };
 
 export function updateProfileRequest(input: ProfileUpdateInput) {

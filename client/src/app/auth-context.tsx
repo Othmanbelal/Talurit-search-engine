@@ -1,4 +1,5 @@
 import { createContext, useCallback, useEffect, useMemo, useState } from "react";
+import i18n from "../i18n/i18n";
 import {
   currentUserRequest,
   loginRequest,
@@ -20,16 +21,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const applyLanguage = useCallback((loadedUser: AuthUser | null) => {
+    const lang = loadedUser?.profile?.language ?? "sv";
+    void i18n.changeLanguage(lang);
+  }, []);
+
   const refreshUser = useCallback(async () => {
     try {
       const result = await currentUserRequest();
       setUser(result.user);
+      applyLanguage(result.user);
     } catch {
       setUser(null);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [applyLanguage]);
 
   useEffect(() => {
     void refreshUser();
@@ -38,11 +45,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = useCallback(async (email: string, password: string) => {
     const result = await loginRequest(email, password);
     setUser(result.user);
-  }, []);
+    applyLanguage(result.user);
+  }, [applyLanguage]);
 
   const logout = useCallback(async () => {
     await logoutRequest();
     setUser(null);
+    void i18n.changeLanguage("sv");
   }, []);
 
   const value = useMemo(
