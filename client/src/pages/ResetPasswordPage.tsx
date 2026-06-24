@@ -1,9 +1,11 @@
 import { FormEvent, useState } from "react";
 import { ShieldCheck } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { resetPasswordRequest } from "../services/auth.service";
 
 export function ResetPasswordPage() {
+  const { t } = useTranslation("auth");
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token") ?? "";
   const [password, setPassword] = useState("");
@@ -16,9 +18,8 @@ export function ResetPasswordPage() {
     event.preventDefault();
     setMessage(null);
     setError(null);
-    if (!token) return setError("Password reset token is missing.");
-    if (password !== confirmPassword) return setError("Passwords do not match.");
-
+    if (!token) return setError(t("resetPassword.error.tokenMissing"));
+    if (password !== confirmPassword) return setError(t("resetPassword.error.passwordMismatch"));
     setIsSubmitting(true);
     try {
       const result = await resetPasswordRequest(token, password);
@@ -26,7 +27,7 @@ export function ResetPasswordPage() {
       setPassword("");
       setConfirmPassword("");
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Password reset failed");
+      setError(requestError instanceof Error ? requestError.message : t("resetPassword.error.resetFailed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -40,40 +41,34 @@ export function ResetPasswordPage() {
             <ShieldCheck aria-hidden="true" size={22} />
           </div>
           <div>
-            <h1 className="text-xl font-semibold text-white">Choose a new password</h1>
-            <p className="text-sm text-slate-400">The reset link can only be used once.</p>
+            <h1 className="text-xl font-semibold text-white">{t("resetPassword.title")}</h1>
+            <p className="text-sm text-slate-400">{t("resetPassword.subtitle")}</p>
           </div>
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
-          <PasswordField label="New password" onChange={setPassword} value={password} />
-          <PasswordField label="Confirm password" onChange={setConfirmPassword} value={confirmPassword} />
-
+          <PasswordField label={t("resetPassword.newPassword")} onChange={setPassword} value={password} />
+          <PasswordField label={t("resetPassword.confirmPassword")} onChange={setConfirmPassword} value={confirmPassword} />
           {message ? <p className="rounded-md border border-emerald-400/30 bg-emerald-500/10 p-3 text-sm text-emerald-100">{message}</p> : null}
           {error ? <p className="text-sm text-red-300">{error}</p> : null}
-
           <button
             className="w-full rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-slate-950 disabled:cursor-not-allowed disabled:opacity-60"
             disabled={isSubmitting || !token || Boolean(message)}
             type="submit"
           >
-            {isSubmitting ? "Updating..." : "Update password"}
+            {isSubmitting ? t("resetPassword.submitting") : t("resetPassword.submit")}
           </button>
         </form>
 
         <Link className="mt-5 block text-center text-sm text-slate-300 hover:text-white" to="/login">
-          Back to sign in
+          {t("resetPassword.backToSignIn")}
         </Link>
       </section>
     </main>
   );
 }
 
-function PasswordField(props: {
-  label: string;
-  onChange: (value: string) => void;
-  value: string;
-}) {
+function PasswordField(props: { label: string; onChange: (value: string) => void; value: string }) {
   return (
     <label className="block">
       <span className="mb-2 block text-sm font-medium text-slate-300">{props.label}</span>

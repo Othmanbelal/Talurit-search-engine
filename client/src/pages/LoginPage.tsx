@@ -1,10 +1,12 @@
 import { FormEvent, useState } from "react";
 import { LockKeyhole } from "lucide-react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../hooks/useAuth";
 
 export function LoginPage() {
   const { login, user } = useAuth();
+  const { t } = useTranslation("auth");
   const location = useLocation();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -13,23 +15,19 @@ export function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const state = location.state as { from?: { pathname?: string } } | null;
-  // Fall back to the index route ("/"), which resolves each user's landing preference.
   const redirectTo = state?.from?.pathname ?? "/";
 
-  if (user) {
-    return <Navigate replace to={redirectTo} />;
-  }
+  if (user) return <Navigate replace to={redirectTo} />;
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
     setIsSubmitting(true);
-
     try {
       await login(email, password);
       navigate(redirectTo, { replace: true });
     } catch (loginError) {
-      setError(loginError instanceof Error ? loginError.message : "Login failed");
+      setError(loginError instanceof Error ? loginError.message : t("signIn.error.loginFailed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -43,14 +41,14 @@ export function LoginPage() {
             <LockKeyhole aria-hidden="true" size={22} />
           </div>
           <div>
-            <h1 className="text-xl font-semibold text-white">Sign in</h1>
-            <p className="text-sm text-slate-400">Tool Inventory System</p>
+            <h1 className="text-xl font-semibold text-white">{t("signIn.title")}</h1>
+            <p className="text-sm text-slate-400">{t("signIn.subtitle")}</p>
           </div>
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <label className="block">
-            <span className="mb-2 block text-sm font-medium text-slate-300">Email</span>
+            <span className="mb-2 block text-sm font-medium text-slate-300">{t("signIn.email")}</span>
             <input
               className="w-full rounded-md border border-line bg-slate-950/70 px-3 py-2.5 text-sm text-white outline-none focus:border-accent"
               onChange={(event) => setEmail(event.target.value)}
@@ -61,9 +59,9 @@ export function LoginPage() {
 
           <label className="block">
             <span className="mb-2 flex items-center justify-between text-sm font-medium text-slate-300">
-              Password
+              {t("signIn.password")}
               <Link className="text-xs text-accent hover:underline" to="/forgot-password">
-                Forgot password?
+                {t("signIn.forgotPassword")}
               </Link>
             </span>
             <input
@@ -81,7 +79,7 @@ export function LoginPage() {
             disabled={isSubmitting}
             type="submit"
           >
-            {isSubmitting ? "Signing in..." : "Sign in"}
+            {isSubmitting ? t("signIn.submitting") : t("signIn.submit")}
           </button>
         </form>
       </section>

@@ -1,6 +1,7 @@
 import { FormEvent, useRef, useState } from "react";
 import { Camera, KeyRound, User } from "lucide-react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../hooks/useAuth";
 import { acceptInviteRequest } from "../services/auth.service";
 import { uploadProfilePictureRequest } from "../services/profile.service";
@@ -10,6 +11,7 @@ const MAX_BYTES = 3 * 1024 * 1024;
 
 export function AcceptInvitePage() {
   const { refreshUser, user } = useAuth();
+  const { t } = useTranslation("auth");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token") ?? "";
@@ -31,8 +33,8 @@ export function AcceptInvitePage() {
 
   function openFile(file: File | undefined) {
     if (!file) return;
-    if (!file.type.startsWith("image/")) { setError("Please choose an image file."); return; }
-    if (file.size > MAX_BYTES) { setError("Image must be 3 MB or smaller."); return; }
+    if (!file.type.startsWith("image/")) { setError(t("acceptInvite.error.invalidImage")); return; }
+    if (file.size > MAX_BYTES) { setError(t("acceptInvite.error.imageTooLarge")); return; }
     setError(null);
     const reader = new FileReader();
     reader.onload = () => setCropSrc(reader.result as string);
@@ -49,8 +51,8 @@ export function AcceptInvitePage() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
-    if (!token) { setError("Invitation token is missing."); return; }
-    if (password !== confirmPassword) { setError("Passwords do not match."); return; }
+    if (!token) { setError(t("acceptInvite.error.tokenMissing")); return; }
+    if (password !== confirmPassword) { setError(t("acceptInvite.error.passwordMismatch")); return; }
 
     setIsSubmitting(true);
     try {
@@ -67,7 +69,7 @@ export function AcceptInvitePage() {
       await refreshUser();
       navigate("/dashboard", { replace: true });
     } catch (acceptError) {
-      setError(acceptError instanceof Error ? acceptError.message : "Invitation failed");
+      setError(acceptError instanceof Error ? acceptError.message : t("acceptInvite.error.invitationFailed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -81,27 +83,33 @@ export function AcceptInvitePage() {
             <KeyRound aria-hidden="true" size={22} />
           </div>
           <div>
-            <h1 className="text-xl font-semibold text-white">Accept invitation</h1>
-            <p className="text-sm text-slate-400">Set your password to continue.</p>
+            <h1 className="text-xl font-semibold text-white">{t("acceptInvite.title")}</h1>
+            <p className="text-sm text-slate-400">{t("acceptInvite.subtitle")}</p>
           </div>
         </div>
 
         {!token ? (
           <p className="rounded-md border border-red-400/30 bg-red-500/10 p-3 text-sm text-red-100">
-            Invitation token is missing.
+            {t("acceptInvite.error.tokenMissing")}
           </p>
         ) : (
           <form className="space-y-4" onSubmit={handleSubmit}>
-            <AvatarChooser onPick={() => fileRef.current?.click()} preview={photoPreview} />
+            <AvatarChooser
+              addPhotoLabel={t("acceptInvite.addPhoto")}
+              changePhotoLabel={t("acceptInvite.changePhoto")}
+              onPick={() => fileRef.current?.click()}
+              photoHint={t("acceptInvite.photoHint")}
+              preview={photoPreview}
+            />
             <input accept="image/*" className="hidden" onChange={(e) => { openFile(e.target.files?.[0]); e.target.value = ""; }} ref={fileRef} type="file" />
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <TextInput label="First name" onChange={setFirstName} required value={firstName} />
-              <TextInput label="Last name" onChange={setLastName} required value={lastName} />
+              <TextInput label={t("acceptInvite.firstName")} onChange={setFirstName} required value={firstName} />
+              <TextInput label={t("acceptInvite.lastName")} onChange={setLastName} required value={lastName} />
             </div>
-            <TextInput label="Phone number" onChange={setPhoneNumber} value={phoneNumber} />
-            <PasswordInput label="Password" onChange={setPassword} value={password} />
-            <PasswordInput label="Confirm password" onChange={setConfirmPassword} value={confirmPassword} />
+            <TextInput label={t("acceptInvite.phoneNumber")} onChange={setPhoneNumber} value={phoneNumber} />
+            <PasswordInput label={t("acceptInvite.password")} onChange={setPassword} value={password} />
+            <PasswordInput label={t("acceptInvite.confirmPassword")} onChange={setConfirmPassword} value={confirmPassword} />
 
             {error ? <p className="text-sm text-red-300">{error}</p> : null}
 
@@ -110,7 +118,7 @@ export function AcceptInvitePage() {
               disabled={isSubmitting}
               type="submit"
             >
-              {isSubmitting ? "Creating account..." : "Create account"}
+              {isSubmitting ? t("acceptInvite.submitting") : t("acceptInvite.submit")}
             </button>
           </form>
         )}
@@ -121,7 +129,13 @@ export function AcceptInvitePage() {
   );
 }
 
-function AvatarChooser({ onPick, preview }: { onPick: () => void; preview: string | null }) {
+function AvatarChooser({ addPhotoLabel, changePhotoLabel, onPick, photoHint, preview }: {
+  addPhotoLabel: string;
+  changePhotoLabel: string;
+  onPick: () => void;
+  photoHint: string;
+  preview: string | null;
+}) {
   return (
     <div className="flex items-center gap-4">
       <div className="relative">
@@ -139,9 +153,9 @@ function AvatarChooser({ onPick, preview }: { onPick: () => void; preview: strin
           onClick={onPick}
           type="button"
         >
-          <Camera size={15} /> {preview ? "Change photo" : "Add photo"}
+          <Camera size={15} /> {preview ? changePhotoLabel : addPhotoLabel}
         </button>
-        <p className="mt-1 text-xs text-slate-500">Optional · PNG, JPG, max 3 MB</p>
+        <p className="mt-1 text-xs text-slate-500">{photoHint}</p>
       </div>
     </div>
   );

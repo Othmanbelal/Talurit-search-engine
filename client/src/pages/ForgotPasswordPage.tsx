@@ -1,9 +1,11 @@
 import { FormEvent, useState } from "react";
 import { KeyRound } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { forgotPasswordRequest } from "../services/auth.service";
 
 export function ForgotPasswordPage() {
+  const { t } = useTranslation("auth");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -18,7 +20,7 @@ export function ForgotPasswordPage() {
       const result = await forgotPasswordRequest(email);
       setMessage(result.message);
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Request failed");
+      setError(requestError instanceof Error ? requestError.message : t("forgotPassword.error.requestFailed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -32,14 +34,14 @@ export function ForgotPasswordPage() {
             <KeyRound aria-hidden="true" size={22} />
           </div>
           <div>
-            <h1 className="text-xl font-semibold text-white">Reset password</h1>
-            <p className="text-sm text-slate-400">Request a secure reset link by email.</p>
+            <h1 className="text-xl font-semibold text-white">{t("forgotPassword.title")}</h1>
+            <p className="text-sm text-slate-400">{t("forgotPassword.subtitle")}</p>
           </div>
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
           <label className="block">
-            <span className="mb-2 block text-sm font-medium text-slate-300">Email</span>
+            <span className="mb-2 block text-sm font-medium text-slate-300">{t("forgotPassword.email")}</span>
             <input
               autoComplete="email"
               className="w-full rounded-md border border-line bg-slate-950/70 px-3 py-2.5 text-sm text-white outline-none focus:border-accent"
@@ -58,12 +60,12 @@ export function ForgotPasswordPage() {
             disabled={isSubmitting}
             type="submit"
           >
-            {isSubmitting ? "Sending..." : "Send reset link"}
+            {isSubmitting ? t("forgotPassword.submitting") : t("forgotPassword.submit")}
           </button>
         </form>
 
         <Link className="mt-5 block text-center text-sm text-slate-300 hover:text-white" to="/login">
-          Back to sign in
+          {t("forgotPassword.backToSignIn")}
         </Link>
       </section>
     </main>
