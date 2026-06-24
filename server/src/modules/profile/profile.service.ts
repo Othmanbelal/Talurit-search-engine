@@ -59,6 +59,7 @@ type ProfileRecord = {
     landingType: string | null;
     landingPath: string | null;
     landingTargetId: string | null;
+    language: string;
   } | null;
 };
 

@@ -9,6 +9,7 @@ const profileFieldSelect = {
   landingType: true,
   landingPath: true,
   landingTargetId: true,
+  language: true,
 } as const;
 
 export function findUserWithProfile(userId: string) {
@@ -33,6 +34,7 @@ export type ProfileWriteData = {
   landingType?: string | null;
   landingPath?: string | null;
   landingTargetId?: string | null;
+  language?: string;
 };
 
 export function upsertUserProfile(userId: string, data: ProfileWriteData) {
@@ -56,6 +58,7 @@ export function upsertUserProfile(userId: string, data: ProfileWriteData) {
             landingType: profileFields.landingType ?? null,
             landingPath: profileFields.landingPath ?? null,
             landingTargetId: profileFields.landingTargetId ?? null,
+            language: profileFields.language ?? "sv",
           },
         });
       }

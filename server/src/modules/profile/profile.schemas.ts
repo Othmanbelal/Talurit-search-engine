@@ -11,6 +11,7 @@ export const updateProfileSchema = z
     landingType: z.enum(["page", "group", "table"]).nullable().optional(),
     landingPath: z.enum(LANDING_PAGE_ROUTES).nullable().optional(),
     landingTargetId: z.string().cuid().nullable().optional(),
+    language: z.enum(["sv", "en"]).optional(),
   })
   .refine(
     (data) => data.landingType !== "page" || isNonNull(data.landingPath),

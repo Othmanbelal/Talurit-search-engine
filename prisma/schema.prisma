@@ -283,6 +283,7 @@ model UserProfile {
   landingType       String?
   landingPath       String?
   landingTargetId   String?
+  language          String   @default("sv")
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
