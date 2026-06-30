@@ -1,4 +1,5 @@
 import { Settings } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { EmailSettingsPanel } from "../components/admin/EmailSettingsPanel";
 import { BackupManagementPanel } from "../components/admin/BackupManagementPanel";
 import { StatusPanel } from "../components/dashboard/StatusPanel";
@@ -7,6 +8,7 @@ import { useAdminSettings } from "../hooks/useAdminSettings";
 import { useAdminBackups } from "../hooks/useAdminBackups";
 
 export function AdminSettingsPage() {
+  const { t } = useTranslation("admin");
   const adminSettings = useAdminSettings();
   const adminBackups = useAdminBackups();
   const { data: dashboardData } = useAdminDashboard();
@@ -15,10 +17,10 @@ export function AdminSettingsPage() {
     <div className="mx-auto max-w-4xl space-y-5">
       <header>
         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">
-          Administration
+          {t("sectionLabel")}
         </p>
         <h1 className="mt-3 flex items-center gap-3 text-3xl font-semibold text-white md:text-4xl">
-          <Settings aria-hidden="true" size={32} /> Settings
+          <Settings aria-hidden="true" size={32} /> {t("settings.title")}
         </h1>
       </header>
 

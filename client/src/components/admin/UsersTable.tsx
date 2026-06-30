@@ -1,5 +1,6 @@
 import { Power, PowerOff, UserCircle } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { resourceManagerService } from "../../services/resourceManagerService";
 import { buildApiUrl } from "../../services/http";
 import { formatDateTime } from "../../utils/format";
@@ -15,11 +16,13 @@ type UsersTableProps = {
 };
 
 export function UsersTable({ currentUserId, isLoading, onUpdate, users }: UsersTableProps) {
+  const { t } = useTranslation("admin");
+
   return (
     <section className="overflow-hidden rounded-lg border border-line bg-panel shadow-industrial">
       <div className="border-b border-line px-5 py-4">
-        <h2 className="text-lg font-semibold text-white">Users</h2>
-        <p className="mt-1 text-sm text-slate-400">Manage access, roles, and account state.</p>
+        <h2 className="text-lg font-semibold text-white">{t("users.title")}</h2>
+        <p className="mt-1 text-sm text-slate-400">{t("users.description")}</p>
       </div>
       {/* Mobile: card list */}
       <div className="space-y-2 p-4 md:hidden">
@@ -27,7 +30,7 @@ export function UsersTable({ currentUserId, isLoading, onUpdate, users }: UsersT
           <div className="h-24 animate-pulse rounded-lg border border-line bg-white/5" />
         ) : null}
         {!isLoading && users.length === 0 ? (
-          <p className="text-sm text-slate-400">No users found.</p>
+          <p className="text-sm text-slate-400">{t("users.table.noUsers")}</p>
         ) : null}
         {!isLoading
           ? users.map((user) => {
@@ -54,7 +57,7 @@ export function UsersTable({ currentUserId, isLoading, onUpdate, users }: UsersT
                       className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-line bg-white/5 text-slate-200 hover:border-accent disabled:cursor-not-allowed disabled:opacity-40"
                       disabled={user.id === currentUserId}
                       onClick={() => onUpdate(user.id, { isActive: !user.isActive })}
-                      title={user.isActive ? "Deactivate" : "Reactivate"}
+                      title={user.isActive ? t("users.deactivate") : t("users.reactivate")}
                       type="button"
                     >
                       {user.isActive ? <PowerOff size={16} /> : <Power size={16} />}
@@ -69,14 +72,14 @@ export function UsersTable({ currentUserId, isLoading, onUpdate, users }: UsersT
         <table className="min-w-full divide-y divide-line text-left text-sm">
           <thead className="bg-white/[0.03] text-xs uppercase tracking-wide text-slate-400">
             <tr>
-              <th className="px-4 py-3 font-medium">Profile</th>
-              <th className="px-4 py-3 font-medium">Email</th>
-              <th className="px-4 py-3 font-medium">Phone</th>
-              <th className="px-4 py-3 font-medium">Role</th>
-              <th className="px-4 py-3 font-medium">Manages</th>
-              <th className="px-4 py-3 font-medium">Status</th>
-              <th className="px-4 py-3 font-medium">Last login</th>
-              <th className="px-4 py-3 font-medium">Actions</th>
+              <th className="px-4 py-3 font-medium">{t("users.table.profile")}</th>
+              <th className="px-4 py-3 font-medium">{t("users.table.email")}</th>
+              <th className="px-4 py-3 font-medium">{t("users.table.phone")}</th>
+              <th className="px-4 py-3 font-medium">{t("users.table.role")}</th>
+              <th className="px-4 py-3 font-medium">{t("users.table.manages")}</th>
+              <th className="px-4 py-3 font-medium">{t("users.table.status")}</th>
+              <th className="px-4 py-3 font-medium">{t("users.table.lastLogin")}</th>
+              <th className="px-4 py-3 font-medium">{t("users.table.actions")}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-line">
@@ -109,7 +112,7 @@ export function UsersTable({ currentUserId, isLoading, onUpdate, users }: UsersT
                         className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-line bg-white/5 text-slate-200 hover:border-accent disabled:cursor-not-allowed disabled:opacity-40"
                         disabled={user.id === currentUserId}
                         onClick={() => onUpdate(user.id, { isActive: !user.isActive })}
-                        title={user.isActive ? "Deactivate" : "Reactivate"}
+                        title={user.isActive ? t("users.deactivate") : t("users.reactivate")}
                         type="button"
                       >
                         {user.isActive ? <PowerOff size={16} /> : <Power size={16} />}
@@ -152,6 +155,8 @@ function RoleSelect({
 }
 
 function StatusPill({ active }: { active: boolean }) {
+  const { t } = useTranslation("admin");
+
   return (
     <span
       className={[
@@ -161,7 +166,7 @@ function StatusPill({ active }: { active: boolean }) {
           : "border-red-400/30 bg-red-500/10 text-red-200",
       ].join(" ")}
     >
-      {active ? "Active" : "Inactive"}
+      {active ? t("users.active") : t("users.inactive")}
     </span>
   );
 }
@@ -177,16 +182,19 @@ function LoadingRows() {
 }
 
 function EmptyRow() {
+  const { t } = useTranslation("admin");
+
   return (
     <tr>
       <td className="px-4 py-8 text-center text-slate-400" colSpan={8}>
-        No users found.
+        {t("users.table.noUsers")}
       </td>
     </tr>
   );
 }
 
 function ManagedResourcesCell({ userId }: { userId: string }) {
+  const { t } = useTranslation("admin");
   const [count, setCount] = useState<number | null>(null);
   useEffect(() => {
     resourceManagerService.listByUser(userId)
@@ -197,12 +205,13 @@ function ManagedResourcesCell({ userId }: { userId: string }) {
   if (count === 0) return <span className="text-slate-500 text-xs">—</span>;
   return (
     <span className="rounded-full bg-accent/20 px-2 py-0.5 text-xs font-medium text-accent">
-      {count} resource{count !== 1 ? "s" : ""}
+      {t("users.resources", { count })}
     </span>
   );
 }
 
 function ProfileCell({ user }: { user: AdminUser }) {
+  const { t } = useTranslation("admin");
   const profile = user.profile;
   const fullName = profile ? `${profile.firstName} ${profile.lastName}` : user.name;
 
@@ -221,7 +230,7 @@ function ProfileCell({ user }: { user: AdminUser }) {
       )}
       <div>
         <div className="font-medium text-white">{fullName}</div>
-        <div className="text-xs text-slate-500">Profile</div>
+        <div className="text-xs text-slate-500">{t("users.table.profile")}</div>
       </div>
     </div>
   );

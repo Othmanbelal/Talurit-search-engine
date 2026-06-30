@@ -1,0 +1,125 @@
+{
+  "sectionLabel": "Administration",
+  "settings": {
+    "title": "Inställningar"
+  },
+  "users": {
+    "sectionLabel": "Administration",
+    "title": "Användare",
+    "description": "Hantera åtkomst, roller och kontostatus.",
+    "actionFailed": "Administrationsåtgärden misslyckades",
+    "deactivate": "Inaktivera",
+    "reactivate": "Återaktivera",
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "resources_one": "{{count}} resurs",
+    "resources_other": "{{count}} resurser",
+    "table": {
+      "profile": "Profil",
+      "email": "E-post",
+      "phone": "Telefon",
+      "role": "Roll",
+      "manages": "Hanterar",
+      "status": "Status",
+      "lastLogin": "Senaste inloggning",
+      "actions": "Åtgärder",
+      "noUsers": "Inga användare hittades."
+    },
+    "invitations": {
+      "titlePending": "Väntande inbjudningar",
+      "titleExpired": "Utgångna inbjudningar",
+      "emptyPending": "Inga väntande inbjudningar.",
+      "emptyExpired": "Inga utgångna inbjudningar.",
+      "noName": "Inget namn",
+      "expires": "Går ut {{date}}",
+      "resend": "Skicka om",
+      "cancel": "Avbryt"
+    }
+  },
+  "invite": {
+    "title": "Bjud in användare",
+    "description": "Den inbjudna användaren väljer sitt eget lösenord.",
+    "emailPlaceholder": "epost@foretag.se",
+    "namePlaceholder": "Namn (valfritt)",
+    "submit": "Bjud in",
+    "submitting": "Skickar...",
+    "success": "Inbjudan skapad och e-post skickad.",
+    "error": "Inbjudan misslyckades"
+  },
+  "email": {
+    "title": "E-postinställningar",
+    "description": "SMTP-värden sparas i databasen.",
+    "host": "SMTP-värd",
+    "port": "SMTP-port",
+    "user": "SMTP-användare",
+    "from": "SMTP-avsändare",
+    "password": "SMTP-lösenord",
+    "passwordConfigured": "SMTP-lösenord (konfigurerat)",
+    "passwordPlaceholder": "Lämna tomt för att behålla nuvarande lösenord",
+    "passwordLabel": "Lösenord",
+    "secure": "SMTP-kryptering",
+    "secureOff": "false / STARTTLS på 587",
+    "secureOn": "true / SSL på 465",
+    "summaryRecipient": "Veckomottagare",
+    "save": "Spara SMTP-inställningar",
+    "testRecipient": "Testmottagare",
+    "testPlaceholder": "Använder konfigurerad adminadress om tomt",
+    "sendTest": "Skicka testmail",
+    "notConfigured": "Inte konfigurerat",
+    "configured": "Konfigurerat",
+    "settingsSaved": "Inställningarna sparades i databasen.",
+    "testSent": "Testmail skickat till {{sentTo}}.",
+    "actionFailed": "E-poståtgärden misslyckades"
+  },
+  "backup": {
+    "title": "Fullständiga applikationssäkerhetskopior",
+    "description": "Säkerhetskopierar databasen, bilder, QR-filer och lokala uppladdningar.",
+    "runNow": "Fullständig säkerhetskopiering nu",
+    "backingUp": "Säkerhetskopierar…",
+    "backupCompleted": "Fullständig applikationssäkerhetskopiering klar.",
+    "settingsSaved": "Inställningar för automatisk säkerhetskopiering sparade.",
+    "directoryOk": "Servern kan skriva till den här säkerhetskopieringsmappen.",
+    "restoreCompleted": "Fullständig återställning klar. Du skickas till inloggningssidan.",
+    "operationInProgress": "En databas-{{kind}} startade {{time}}.",
+    "settingsTitle": "Inställningar för automatisk säkerhetskopiering",
+    "settingsHint": "Destinationen måste vara under den beständiga lagringsroten nedan.",
+    "enableLabel": "Aktivera automatisk säkerhetskopiering",
+    "enableHint": "Servern kontrollerar schemat en gång per minut.",
+    "frequencyLabel": "Frekvens i timmar",
+    "directoryLabel": "Serverns säkerhetskopieringskatalog",
+    "persistentRoot": "Beständig rot:",
+    "saveSchedule": "Spara schema",
+    "testFolder": "Testa mapp",
+    "filesTitle": "Tillgängliga säkerhetskopior",
+    "restore": "Återställ",
+    "noFiles": "Inga applikationssäkerhetskopior finns i den här mappen ännu.",
+    "kindFull": "Fullständig applikation",
+    "kindLegacy": "Äldre databas enbart",
+    "recentActivity": "Senaste säkerhetskopieringsaktivitet",
+    "noFile": "Ingen fil",
+    "noActivity": "Ingen säkerhetskopieringsaktivitet registrerad.",
+    "columns": {
+      "file": "Säkerhetskopieringsfil",
+      "created": "Skapad",
+      "contents": "Innehåll",
+      "size": "Storlek",
+      "action": "Åtgärd"
+    },
+    "cards": {
+      "lastBackup": "Senaste säkerhetskopiering",
+      "lastRestore": "Senaste återställning",
+      "nextAutoBackup": "Nästa automatiska säkerhetskopiering",
+      "noRecord": "Ingen post",
+      "enabled": "Aktiverad",
+      "disabled": "Inaktiverad"
+    },
+    "confirm": {
+      "title": "Bekräfta databasåterställning",
+      "warning": "En säkerhetskopia skapas först. Nuvarande databasinnehåll ersätts sedan med denna säkerhetskopia.",
+      "typeFilename": "Skriv det fullständiga filnamnet för att fortsätta:",
+      "restoreButton": "Återställ databas",
+      "restoring": "Återställer…",
+      "cancel": "Avbryt"
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import { RotateCcw } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { BackupFile } from "../../types/admin";
 import { formatDateTime } from "../../utils/format";
 
@@ -9,10 +10,12 @@ type Props = {
 };
 
 export function BackupFilesTable({ files, isBusy, onSelectRestore }: Props) {
+  const { t } = useTranslation("admin");
+
   if (files.length === 0) {
     return (
       <p className="rounded-md border border-dashed border-line p-5 text-center text-sm text-slate-400">
-        No application backup files exist in this folder yet.
+        {t("backup.noFiles")}
       </p>
     );
   }
@@ -22,11 +25,11 @@ export function BackupFilesTable({ files, isBusy, onSelectRestore }: Props) {
       <table className="min-w-full divide-y divide-line text-sm">
         <thead className="bg-slate-950/60 text-left text-xs uppercase tracking-wide text-slate-500">
           <tr>
-            <th className="px-3 py-2">Backup file</th>
-            <th className="px-3 py-2">Created</th>
-            <th className="px-3 py-2">Contents</th>
-            <th className="px-3 py-2">Size</th>
-            <th className="px-3 py-2 text-right">Action</th>
+            <th className="px-3 py-2">{t("backup.columns.file")}</th>
+            <th className="px-3 py-2">{t("backup.columns.created")}</th>
+            <th className="px-3 py-2">{t("backup.columns.contents")}</th>
+            <th className="px-3 py-2">{t("backup.columns.size")}</th>
+            <th className="px-3 py-2 text-right">{t("backup.columns.action")}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-line">
@@ -39,7 +42,7 @@ export function BackupFilesTable({ files, isBusy, onSelectRestore }: Props) {
                   ? "rounded-full border border-emerald-400/30 px-2 py-1 text-xs text-emerald-200"
                   : "rounded-full border border-amber-400/30 px-2 py-1 text-xs text-amber-200"}
                 >
-                  {file.kind === "full" ? "Full application" : "Legacy database only"}
+                  {file.kind === "full" ? t("backup.kindFull") : t("backup.kindLegacy")}
                 </span>
               </td>
               <td className="px-3 py-3 text-slate-400">{formatBytes(file.sizeBytes)}</td>
@@ -50,7 +53,7 @@ export function BackupFilesTable({ files, isBusy, onSelectRestore }: Props) {
                   onClick={() => onSelectRestore(file.fileName)}
                   type="button"
                 >
-                  <RotateCcw size={13} /> Restore
+                  <RotateCcw size={13} /> {t("backup.restore")}
                 </button>
               </td>
             </tr>

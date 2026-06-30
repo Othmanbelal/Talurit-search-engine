@@ -1,5 +1,6 @@
 import { AlertTriangle, DatabaseBackup, FolderCheck, Play, Save, X } from "lucide-react";
 import { FormEvent, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { useAdminBackups } from "../../hooks/useAdminBackups";
 import type { BackupLogRecord, BackupSettings } from "../../types/admin";
 import { formatDateTime } from "../../utils/format";
@@ -11,6 +12,7 @@ type Props = {
 };
 
 export function BackupManagementPanel({ backups }: Props) {
+  const { t } = useTranslation("admin");
   const [form, setForm] = useState<Omit<BackupSettings, "storageRoot">>({
     enabled: false,
     intervalHours: 24,
@@ -36,7 +38,7 @@ export function BackupManagementPanel({ backups }: Props) {
     setMessage(null);
     try {
       await backups.updateSettings(form);
-      setMessage("Automatic backup settings saved.");
+      setMessage(t("backup.settingsSaved"));
     } catch {
       // The hook exposes the API error in the panel.
     }
@@ -47,7 +49,7 @@ export function BackupManagementPanel({ backups }: Props) {
     try {
       const result = await backups.testDirectory(form.directory);
       setForm((current) => ({ ...current, directory: result.directory }));
-      setMessage("The backend can write to this backup folder.");
+      setMessage(t("backup.directoryOk"));
     } catch {
       // The hook exposes the API error in the panel.
     }
@@ -57,7 +59,7 @@ export function BackupManagementPanel({ backups }: Props) {
     setMessage(null);
     try {
       await backups.runBackup();
-      setMessage("Full application backup completed.");
+      setMessage(t("backup.backupCompleted"));
     } catch {
       // The hook exposes the API error in the panel.
     }
@@ -70,7 +72,7 @@ export function BackupManagementPanel({ backups }: Props) {
       await backups.restore(restoreFile, confirmation);
       setRestoreFile(null);
       setConfirmation("");
-      setMessage("Full restore completed. You will be sent to the login page.");
+      setMessage(t("backup.restoreCompleted"));
       window.setTimeout(() => window.location.assign("/login"), 1500);
     } catch {
       // The hook exposes the API error in the panel.
@@ -85,8 +87,8 @@ export function BackupManagementPanel({ backups }: Props) {
             <DatabaseBackup size={20} />
           </span>
           <div>
-            <h2 className="text-lg font-semibold text-white">Full application backups</h2>
-            <p className="mt-1 text-sm text-slate-400">Back up the database, managed images, QR files, and local uploads together.</p>
+            <h2 className="text-lg font-semibold text-white">{t("backup.title")}</h2>
+            <p className="mt-1 text-sm text-slate-400">{t("backup.description")}</p>
           </div>
         </div>
         <button
@@ -95,7 +97,7 @@ export function BackupManagementPanel({ backups }: Props) {
           onClick={() => void runBackup()}
           type="button"
         >
-          <Play size={15} /> {backups.activeAction === "backup" ? "Backing up…" : "Full backup now"}
+          <Play size={15} /> {backups.activeAction === "backup" ? t("backup.backingUp") : t("backup.runNow")}
         </button>
       </header>
 
@@ -103,7 +105,10 @@ export function BackupManagementPanel({ backups }: Props) {
       {message ? <p className="rounded-md border border-emerald-400/30 bg-emerald-500/10 p-3 text-sm text-emerald-100">{message}</p> : null}
       {backups.data?.activeOperation ? (
         <p className="rounded-md border border-amber-400/30 bg-amber-500/10 p-3 text-sm text-amber-100">
-          A database {backups.data.activeOperation.kind} started at {formatDateTime(backups.data.activeOperation.startedAt)}.
+          {t("backup.operationInProgress", {
+            kind: backups.data.activeOperation.kind,
+            time: formatDateTime(backups.data.activeOperation.startedAt),
+          })}
         </p>
       ) : null}
 
@@ -111,9 +116,9 @@ export function BackupManagementPanel({ backups }: Props) {
 
       <form className="space-y-4 rounded-md border border-line bg-slate-950/30 p-4" onSubmit={(event) => void saveSettings(event)}>
         <div>
-          <h3 className="font-semibold text-white">Automatic backup settings</h3>
+          <h3 className="font-semibold text-white">{t("backup.settingsTitle")}</h3>
           <p className="mt-1 text-xs text-slate-500">
-            The destination must be inside the persistent storage root shown below.
+            {t("backup.settingsHint")}
           </p>
         </div>
 
@@ -125,14 +130,14 @@ export function BackupManagementPanel({ backups }: Props) {
             type="checkbox"
           />
           <span>
-            <span className="block text-sm font-medium text-slate-200">Enable automatic backups</span>
-            <span className="block text-xs text-slate-500">The backend checks the schedule once per minute.</span>
+            <span className="block text-sm font-medium text-slate-200">{t("backup.enableLabel")}</span>
+            <span className="block text-xs text-slate-500">{t("backup.enableHint")}</span>
           </span>
         </label>
 
         <div className="grid gap-4 md:grid-cols-[180px_1fr]">
           <label>
-            <span className="mb-2 block text-sm font-medium text-slate-300">Frequency in hours</span>
+            <span className="mb-2 block text-sm font-medium text-slate-300">{t("backup.frequencyLabel")}</span>
             <input
               className="w-full rounded-md border border-line bg-slate-950 px-3 py-2.5 text-sm text-white outline-none focus:border-accent"
               max={744}
@@ -143,7 +148,7 @@ export function BackupManagementPanel({ backups }: Props) {
             />
           </label>
           <label>
-            <span className="mb-2 block text-sm font-medium text-slate-300">Server backup directory</span>
+            <span className="mb-2 block text-sm font-medium text-slate-300">{t("backup.directoryLabel")}</span>
             <input
               className="w-full rounded-md border border-line bg-slate-950 px-3 py-2.5 text-sm text-white outline-none focus:border-accent"
               onChange={(event) => setForm((current) => ({ ...current, directory: event.target.value }))}
@@ -155,7 +160,7 @@ export function BackupManagementPanel({ backups }: Props) {
         </div>
 
         <div className="rounded-md border border-line bg-white/[0.02] p-3 text-xs text-slate-400">
-          Persistent root: <span className="break-all font-mono text-slate-300">{backups.data?.settings.storageRoot ?? "Loading…"}</span>
+          {t("backup.persistentRoot")} <span className="break-all font-mono text-slate-300">{backups.data?.settings.storageRoot ?? "…"}</span>
         </div>
 
         <div className="flex flex-wrap gap-2">
@@ -164,7 +169,7 @@ export function BackupManagementPanel({ backups }: Props) {
             disabled={isBusy}
             type="submit"
           >
-            <Save size={15} /> Save schedule
+            <Save size={15} /> {t("backup.saveSchedule")}
           </button>
           <button
             className="inline-flex items-center gap-2 rounded-md border border-line px-3 py-2 text-sm font-semibold text-slate-200 hover:border-accent disabled:opacity-50"
@@ -172,13 +177,13 @@ export function BackupManagementPanel({ backups }: Props) {
             onClick={() => void testDirectory()}
             type="button"
           >
-            <FolderCheck size={15} /> Test folder
+            <FolderCheck size={15} /> {t("backup.testFolder")}
           </button>
         </div>
       </form>
 
       <div>
-        <h3 className="mb-3 font-semibold text-white">Available backups</h3>
+        <h3 className="mb-3 font-semibold text-white">{t("backup.filesTitle")}</h3>
         <BackupFilesTable
           files={backups.data?.files ?? []}
           isBusy={isBusy}
@@ -216,16 +221,18 @@ function RestoreConfirmation(props: {
   onChange: (value: string) => void;
   onRestore: () => void;
 }) {
+  const { t } = useTranslation("admin");
+
   return (
     <div className="rounded-md border border-red-400/30 bg-red-500/10 p-4">
       <div className="flex items-start gap-3">
         <AlertTriangle className="mt-0.5 shrink-0 text-red-300" size={18} />
         <div className="flex-1">
-          <h3 className="font-semibold text-red-100">Confirm database restore</h3>
+          <h3 className="font-semibold text-red-100">{t("backup.confirm.title")}</h3>
           <p className="mt-1 text-sm text-red-100/80">
-            A safety backup is created first. Current database content will then be replaced by this backup.
+            {t("backup.confirm.warning")}
           </p>
-          <p className="mt-3 text-xs text-red-200">Type the complete filename to continue:</p>
+          <p className="mt-3 text-xs text-red-200">{t("backup.confirm.typeFilename")}</p>
           <p className="mt-1 break-all font-mono text-xs text-white">{props.fileName}</p>
           <input
             className="mt-2 w-full rounded-md border border-red-400/30 bg-slate-950 px-3 py-2 text-sm text-white"
@@ -239,10 +246,10 @@ function RestoreConfirmation(props: {
               onClick={props.onRestore}
               type="button"
             >
-              {props.isRestoring ? "Restoring…" : "Restore database"}
+              {props.isRestoring ? t("backup.confirm.restoring") : t("backup.confirm.restoreButton")}
             </button>
             <button className="inline-flex items-center gap-1 rounded-md border border-line px-3 py-2 text-sm text-slate-300" onClick={props.onCancel} type="button">
-              <X size={14} /> Cancel
+              <X size={14} /> {t("backup.confirm.cancel")}
             </button>
           </div>
         </div>
@@ -252,15 +259,17 @@ function RestoreConfirmation(props: {
 }
 
 function RecentOperations({ logs }: { logs: BackupLogRecord[] }) {
+  const { t } = useTranslation("admin");
+
   return (
     <div>
-      <h3 className="mb-3 font-semibold text-white">Recent backup activity</h3>
+      <h3 className="mb-3 font-semibold text-white">{t("backup.recentActivity")}</h3>
       <div className="divide-y divide-line rounded-md border border-line">
         {logs.slice(0, 8).map((log) => (
           <div className="grid gap-2 bg-white/[0.02] p-3 sm:grid-cols-[1fr_auto]" key={log.id}>
             <div>
               <p className="text-sm font-medium capitalize text-slate-200">{log.operation} · {log.trigger.replace("_", " ")}</p>
-              <p className="mt-1 break-all text-xs text-slate-500">{log.fileName ?? log.message ?? "No file"}</p>
+              <p className="mt-1 break-all text-xs text-slate-500">{log.fileName ?? log.message ?? t("backup.noFile")}</p>
             </div>
             <div className="sm:text-right">
               <p className={log.status === "SUCCESS" ? "text-sm text-emerald-300" : "text-sm text-red-300"}>{log.status}</p>
@@ -268,7 +277,7 @@ function RecentOperations({ logs }: { logs: BackupLogRecord[] }) {
             </div>
           </div>
         ))}
-        {logs.length === 0 ? <p className="p-4 text-center text-sm text-slate-500">No backup activity recorded.</p> : null}
+        {logs.length === 0 ? <p className="p-4 text-center text-sm text-slate-500">{t("backup.noActivity")}</p> : null}
       </div>
     </div>
   );

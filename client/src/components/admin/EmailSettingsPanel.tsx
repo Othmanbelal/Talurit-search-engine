@@ -1,5 +1,6 @@
 import { FormEvent, type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { MailCheck, Save, Send } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { AdminSettings, AdminSettingsPayload } from "../../types/admin";
 
 type EmailSettingsPanelProps = {
@@ -10,6 +11,7 @@ type EmailSettingsPanelProps = {
 };
 
 export function EmailSettingsPanel(props: EmailSettingsPanelProps) {
+  const { t } = useTranslation("admin");
   const { isLoading, onSave, onSendTest, settings } = props;
   const [form, setForm] = useState(defaultForm);
   const [testEmail, setTestEmail] = useState("");
@@ -33,14 +35,14 @@ export function EmailSettingsPanel(props: EmailSettingsPanelProps) {
     event.preventDefault();
     await runAction(async () => {
       await onSave(form);
-      return "Settings saved to the database.";
+      return t("email.settingsSaved");
     });
   }
 
   async function handleSendTest() {
     await runAction(async () => {
       const result = await onSendTest(testEmail || undefined);
-      return `Test email sent to ${result.sentTo}.`;
+      return t("email.testSent", { sentTo: result.sentTo });
     });
   }
 
@@ -51,7 +53,7 @@ export function EmailSettingsPanel(props: EmailSettingsPanelProps) {
     try {
       setMessage(await action());
     } catch (actionError) {
-      setError(actionError instanceof Error ? actionError.message : "Email action failed");
+      setError(actionError instanceof Error ? actionError.message : t("email.actionFailed"));
     }
   }
 
@@ -63,10 +65,10 @@ export function EmailSettingsPanel(props: EmailSettingsPanelProps) {
 
       <form className="space-y-4" onSubmit={handleSave}>
         <div className="grid gap-4 md:grid-cols-2">
-          <TextField label="SMTP host" name="smtpHost" onChange={setForm} value={form.smtpHost} />
-          <NumberField label="SMTP port" onChange={setForm} value={form.smtpPort} />
-          <TextField label="SMTP user" name="smtpUser" onChange={setForm} value={form.smtpUser} />
-          <TextField label="SMTP from" name="smtpFrom" onChange={setForm} value={form.smtpFrom} />
+          <TextField label={t("email.host")} name="smtpHost" onChange={setForm} value={form.smtpHost} />
+          <NumberField label={t("email.port")} onChange={setForm} value={form.smtpPort} />
+          <TextField label={t("email.user")} name="smtpUser" onChange={setForm} value={form.smtpUser} />
+          <TextField label={t("email.from")} name="smtpFrom" onChange={setForm} value={form.smtpFrom} />
           <PasswordField
             configured={settings?.smtp.smtpPasswordConfigured ?? false}
             onChange={setForm}
@@ -76,7 +78,7 @@ export function EmailSettingsPanel(props: EmailSettingsPanelProps) {
         </div>
 
         <TextField
-          label="Weekly summary recipient"
+          label={t("email.summaryRecipient")}
           name="weeklySummaryEmail"
           onChange={setForm}
           value={form.weeklySummaryEmail}
@@ -87,15 +89,15 @@ export function EmailSettingsPanel(props: EmailSettingsPanelProps) {
           disabled={isLoading}
           type="submit"
         >
-          <Save size={16} /> Save SMTP settings
+          <Save size={16} /> {t("email.save")}
         </button>
       </form>
 
       <div className="mt-6 border-t border-line pt-5">
         <TextInput
-          label="Test recipient"
+          label={t("email.testRecipient")}
           onChange={setTestEmail}
-          placeholder="Uses configured admin email if blank"
+          placeholder={t("email.testPlaceholder")}
           type="email"
           value={testEmail}
         />
@@ -105,7 +107,7 @@ export function EmailSettingsPanel(props: EmailSettingsPanelProps) {
           onClick={() => void handleSendTest()}
           type="button"
         >
-          <Send size={16} /> Send test email
+          <Send size={16} /> {t("email.sendTest")}
         </button>
       </div>
 
@@ -126,14 +128,16 @@ const defaultForm: AdminSettingsPayload = {
 };
 
 function Header() {
+  const { t } = useTranslation("admin");
+
   return (
     <div className="mb-5 flex items-start gap-3">
       <div className="flex h-10 w-10 items-center justify-center rounded-md border border-line bg-white/5 text-accent">
         <MailCheck aria-hidden="true" size={20} />
       </div>
       <div>
-        <h2 className="text-lg font-semibold text-white">Email settings</h2>
-        <p className="mt-1 text-sm text-slate-400">SMTP values are saved to the database.</p>
+        <h2 className="text-lg font-semibold text-white">{t("email.title")}</h2>
+        <p className="mt-1 text-sm text-slate-400">{t("email.description")}</p>
       </div>
     </div>
   );
@@ -148,11 +152,13 @@ function Warning({ message }: { message: string }) {
 }
 
 function Status({ settings }: { settings: AdminSettings | null }) {
+  const { t } = useTranslation("admin");
+
   return (
     <div className="mb-5 grid gap-3 text-sm text-slate-300 md:grid-cols-3">
-      <Info label="SMTP host" value={settings?.email.host ?? "Not configured"} />
-      <Info label="SMTP from" value={settings?.email.from ?? "Not configured"} />
-      <Info label="Password" value={settings?.email.passwordConfigured ? "Configured" : "Not configured"} />
+      <Info label={t("email.host")} value={settings?.email.host ?? t("email.notConfigured")} />
+      <Info label={t("email.from")} value={settings?.email.from ?? t("email.notConfigured")} />
+      <Info label={t("email.passwordLabel")} value={settings?.email.passwordConfigured ? t("email.configured") : t("email.notConfigured")} />
     </div>
   );
 }
@@ -206,11 +212,13 @@ function PasswordField({
   onChange: Dispatch<SetStateAction<AdminSettingsPayload>>;
   value: string;
 }) {
+  const { t } = useTranslation("admin");
+
   return (
     <TextInput
-      label={configured ? "SMTP password (configured)" : "SMTP password"}
+      label={configured ? t("email.passwordConfigured") : t("email.password")}
       onChange={(next) => onChange((current) => ({ ...current, smtpPass: next }))}
-      placeholder={configured ? "Leave blank to keep current password" : ""}
+      placeholder={configured ? t("email.passwordPlaceholder") : ""}
       type="password"
       value={value}
     />
@@ -224,16 +232,18 @@ function SecureSelect({
   onChange: Dispatch<SetStateAction<AdminSettingsPayload>>;
   value: boolean;
 }) {
+  const { t } = useTranslation("admin");
+
   return (
     <label className="block">
-      <span className="mb-2 block text-sm font-medium text-slate-300">SMTP secure</span>
+      <span className="mb-2 block text-sm font-medium text-slate-300">{t("email.secure")}</span>
       <select
         className="w-full rounded-md border border-line bg-slate-950/70 px-3 py-2.5 text-sm text-white outline-none focus:border-accent"
         onChange={(event) => onChange((current) => ({ ...current, smtpSecure: event.target.value === "true" }))}
         value={value.toString()}
       >
-        <option value="false">false / STARTTLS on 587</option>
-        <option value="true">true / SSL on 465</option>
+        <option value="false">{t("email.secureOff")}</option>
+        <option value="true">{t("email.secureOn")}</option>
       </select>
     </label>
   );

@@ -1,4 +1,5 @@
 import { RotateCcw, XCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { formatRole } from "../../constants/roles";
 import { formatDateTime } from "../../utils/format";
 import type { UserInvitation } from "../../types/admin";
@@ -16,26 +17,27 @@ export function InvitationsPanel({
   onCancel,
   onResend,
 }: InvitationsPanelProps) {
+  const { t } = useTranslation("admin");
   const pending = invitations.filter((invitation) => invitation.status === "pending");
   const expired = invitations.filter((invitation) => invitation.status === "expired");
 
   return (
     <section className="grid gap-4 xl:grid-cols-2">
       <InvitationList
-        emptyText="No pending invitations."
+        emptyText={t("users.invitations.emptyPending")}
         invitations={pending}
         isLoading={isLoading}
         onCancel={onCancel}
         onResend={onResend}
-        title="Pending invitations"
+        title={t("users.invitations.titlePending")}
       />
       <InvitationList
-        emptyText="No expired invitations."
+        emptyText={t("users.invitations.emptyExpired")}
         invitations={expired}
         isLoading={isLoading}
         onCancel={onCancel}
         onResend={onResend}
-        title="Expired invitations"
+        title={t("users.invitations.titleExpired")}
       />
     </section>
   );
@@ -61,32 +63,50 @@ function InvitationList({
         ) : null}
         {!isLoading
           ? invitations.map((invitation) => (
-              <article
-                className="rounded-md border border-line bg-white/[0.04] p-4"
+              <InvitationCard
+                invitation={invitation}
                 key={invitation.id}
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="truncate font-medium text-white">{invitation.email}</div>
-                    <div className="mt-1 text-sm text-slate-400">
-                      {invitation.name ?? "No name"} / {formatRole(invitation.role)}
-                    </div>
-                    <div className="mt-2 text-xs text-slate-500">
-                      Expires {formatDateTime(invitation.expiresAt)}
-                    </div>
-                  </div>
-                  <div className="flex gap-1.5">
-                    <IconButton label="Resend" onClick={() => onResend(invitation.id)} icon={RotateCcw} />
-                    {invitation.status === "pending" ? (
-                      <IconButton label="Cancel" onClick={() => onCancel(invitation.id)} icon={XCircle} />
-                    ) : null}
-                  </div>
-                </div>
-              </article>
+                onCancel={onCancel}
+                onResend={onResend}
+              />
             ))
           : null}
       </div>
     </div>
+  );
+}
+
+function InvitationCard({
+  invitation,
+  onCancel,
+  onResend,
+}: {
+  invitation: UserInvitation;
+  onCancel: (id: string) => void;
+  onResend: (id: string) => void;
+}) {
+  const { t } = useTranslation("admin");
+
+  return (
+    <article className="rounded-md border border-line bg-white/[0.04] p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="truncate font-medium text-white">{invitation.email}</div>
+          <div className="mt-1 text-sm text-slate-400">
+            {invitation.name ?? t("users.invitations.noName")} / {formatRole(invitation.role)}
+          </div>
+          <div className="mt-2 text-xs text-slate-500">
+            {t("users.invitations.expires", { date: formatDateTime(invitation.expiresAt) })}
+          </div>
+        </div>
+        <div className="flex gap-1.5">
+          <IconButton label={t("users.invitations.resend")} onClick={() => onResend(invitation.id)} icon={RotateCcw} />
+          {invitation.status === "pending" ? (
+            <IconButton label={t("users.invitations.cancel")} onClick={() => onCancel(invitation.id)} icon={XCircle} />
+          ) : null}
+        </div>
+      </div>
+    </article>
   );
 }
 

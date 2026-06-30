@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { AlertTriangle, Users } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { InvitationsPanel } from "../components/admin/InvitationsPanel";
 import { InviteUserForm } from "../components/admin/InviteUserForm";
 import { UsersTable } from "../components/admin/UsersTable";
@@ -8,6 +9,7 @@ import { useAdminUsers } from "../hooks/useAdminUsers";
 import { useAuth } from "../hooks/useAuth";
 
 export function AdminUsersPage() {
+  const { t } = useTranslation("admin");
   const { user } = useAuth();
   const adminUsers = useAdminUsers();
   const adminSettings = useAdminSettings();
@@ -20,7 +22,7 @@ export function AdminUsersPage() {
     try {
       await action();
     } catch (error) {
-      setActionError(error instanceof Error ? error.message : "Admin action failed");
+      setActionError(error instanceof Error ? error.message : t("users.actionFailed"));
     }
   }
 
@@ -28,10 +30,10 @@ export function AdminUsersPage() {
     <div className="mx-auto max-w-7xl space-y-5">
       <header>
         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">
-          Administration
+          {t("users.sectionLabel")}
         </p>
         <h1 className="mt-3 flex items-center gap-3 text-3xl font-semibold text-white md:text-4xl">
-          <Users aria-hidden="true" size={32} /> Users
+          <Users aria-hidden="true" size={32} /> {t("users.title")}
         </h1>
       </header>
 

@@ -1,5 +1,6 @@
 import { FormEvent, useState } from "react";
 import { Send } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { userRoleOptions } from "../../constants/roles";
 import type { InviteUserPayload } from "../../types/admin";
 import type { UserRole } from "../../types/auth";
@@ -10,6 +11,7 @@ type InviteUserFormProps = {
 };
 
 export function InviteUserForm({ disabled, onSubmit }: InviteUserFormProps) {
+  const { t } = useTranslation("admin");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [role, setRole] = useState<UserRole>("employee");
@@ -28,9 +30,9 @@ export function InviteUserForm({ disabled, onSubmit }: InviteUserFormProps) {
       setEmail("");
       setName("");
       setRole("employee");
-      setMessage("Invitation created and email sent.");
+      setMessage(t("invite.success"));
     } catch (submitError) {
-      setError(submitError instanceof Error ? submitError.message : "Invitation failed");
+      setError(submitError instanceof Error ? submitError.message : t("invite.error"));
     } finally {
       setIsSubmitting(false);
     }
@@ -39,15 +41,15 @@ export function InviteUserForm({ disabled, onSubmit }: InviteUserFormProps) {
   return (
     <section className="rounded-lg border border-line bg-panel p-5 shadow-industrial">
       <div className="mb-5">
-        <h2 className="text-lg font-semibold text-white">Invite user</h2>
-        <p className="mt-1 text-sm text-slate-400">The invited user sets their own password.</p>
+        <h2 className="text-lg font-semibold text-white">{t("invite.title")}</h2>
+        <p className="mt-1 text-sm text-slate-400">{t("invite.description")}</p>
       </div>
 
       <form className="grid gap-3 lg:grid-cols-[1fr_1fr_180px_auto]" onSubmit={handleSubmit}>
         <input
           className="rounded-md border border-line bg-slate-950/70 px-3 py-2.5 text-sm text-white outline-none focus:border-accent"
           onChange={(event) => setEmail(event.target.value)}
-          placeholder="email@company.com"
+          placeholder={t("invite.emailPlaceholder")}
           required
           type="email"
           value={email}
@@ -55,7 +57,7 @@ export function InviteUserForm({ disabled, onSubmit }: InviteUserFormProps) {
         <input
           className="rounded-md border border-line bg-slate-950/70 px-3 py-2.5 text-sm text-white outline-none focus:border-accent"
           onChange={(event) => setName(event.target.value)}
-          placeholder="Name optional"
+          placeholder={t("invite.namePlaceholder")}
           type="text"
           value={name}
         />
@@ -75,7 +77,7 @@ export function InviteUserForm({ disabled, onSubmit }: InviteUserFormProps) {
           disabled={disabled || isSubmitting}
           type="submit"
         >
-          <Send size={16} /> {isSubmitting ? "Sending..." : "Invite"}
+          <Send size={16} /> {isSubmitting ? t("invite.submitting") : t("invite.submit")}
         </button>
       </form>
 
