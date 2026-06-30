@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { UserPlus, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useResourceManagers } from "../hooks/useResourceManagers";
 import { resourceManagerService, type ResourceManagerEntry } from "../services/resourceManagerService";
 import { UserAvatar } from "./UserAvatar";
@@ -22,6 +23,7 @@ type Props = {
 };
 
 export function InlineManagerStrip({ resourceType, resourceId, canEdit = true, groupId }: Props) {
+  const { t } = useTranslation("common");
   const { managers, assign, unassign } = useResourceManagers(resourceType, resourceId);
   const [groupManagers, setGroupManagers] = useState<ResourceManagerEntry[]>([]);
   const [allUsers, setAllUsers] = useState<User[]>([]);
@@ -61,7 +63,7 @@ export function InlineManagerStrip({ resourceType, resourceId, canEdit = true, g
       setSelectedUserId("");
       setPickerOpen(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to assign");
+      setError(err instanceof Error ? err.message : t("failedToAssignManager"));
     } finally {
       setAssigning(false);
     }
@@ -70,13 +72,13 @@ export function InlineManagerStrip({ resourceType, resourceId, canEdit = true, g
   async function handleUnassign(assignmentId: string) {
     setError(null);
     try { await unassign(assignmentId); } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to remove");
+      setError(err instanceof Error ? err.message : t("failedToRemoveManager"));
     }
   }
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="text-xs font-semibold uppercase tracking-widest text-slate-500">Managers</span>
+      <span className="text-xs font-semibold uppercase tracking-widest text-slate-500">{t("managers")}</span>
 
       {!hasAny && (
         <span className="text-xs text-slate-600">—</span>
@@ -87,11 +89,11 @@ export function InlineManagerStrip({ resourceType, resourceId, canEdit = true, g
         <span
           key={m.id}
           className="flex items-center gap-2 rounded-full border border-slate-700 bg-slate-800/50 py-1 pl-1 pr-3 text-sm text-slate-300"
-          title={`${m.user.name} — inherited from group`}
+          title={t("inheritedFromGroup", { name: m.user.name })}
         >
           <UserAvatar name={m.user.name} pictureUrl={m.user.profile?.profilePictureUrl} size={32} />
           {m.user.name}
-          <span className="text-slate-500 text-xs">· group</span>
+          <span className="text-slate-500 text-xs">· {t("fromGroup")}</span>
         </span>
       ))}
 
@@ -105,7 +107,7 @@ export function InlineManagerStrip({ resourceType, resourceId, canEdit = true, g
           {m.user.name}
           {canEdit && (
             <button
-              aria-label={`Remove ${m.user.name}`}
+              aria-label={t("removeUser", { name: m.user.name })}
               className="ml-0.5 rounded-full p-0.5 hover:bg-red-500/20 hover:text-red-400"
               onClick={() => void handleUnassign(m.id)}
             >
@@ -121,7 +123,7 @@ export function InlineManagerStrip({ resourceType, resourceId, canEdit = true, g
           className="flex items-center gap-1 rounded-full border border-dashed border-slate-600 px-2.5 py-0.5 text-xs text-slate-500 hover:border-accent hover:text-accent"
           onClick={() => setPickerOpen(true)}
         >
-          <UserPlus size={10} /> Assign
+          <UserPlus size={10} /> {t("assign")}
         </button>
       )}
 
@@ -133,7 +135,7 @@ export function InlineManagerStrip({ resourceType, resourceId, canEdit = true, g
             value={selectedUserId}
             onChange={(e) => setSelectedUserId(e.target.value)}
           >
-            <option value="">Pick user…</option>
+            <option value="">{t("pickUser")}</option>
             {available.map((u) => (
               <option key={u.id} value={u.id}>{u.name}</option>
             ))}
@@ -143,13 +145,13 @@ export function InlineManagerStrip({ resourceType, resourceId, canEdit = true, g
             disabled={!selectedUserId || assigning}
             onClick={() => void handleAssign()}
           >
-            {assigning ? "…" : "Add"}
+            {assigning ? "…" : t("add")}
           </button>
           <button
             className="rounded-md border border-line px-2 py-1 text-xs text-slate-400 hover:text-white"
             onClick={() => { setPickerOpen(false); setSelectedUserId(""); }}
           >
-            Cancel
+            {t("cancel")}
           </button>
         </div>
       )}

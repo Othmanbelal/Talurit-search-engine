@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Loader2, UserPlus, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useResourceManagers } from "../hooks/useResourceManagers";
 import { UserAvatar } from "./UserAvatar";
 
@@ -19,6 +20,7 @@ type Props = {
 };
 
 export function ResourceManagerPicker({ resourceType, resourceId, canEdit = true }: Props) {
+  const { t } = useTranslation("common");
   const { managers, loading, error, assign, unassign } = useResourceManagers(resourceType, resourceId);
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [selectedUserId, setSelectedUserId] = useState("");
@@ -38,7 +40,7 @@ export function ResourceManagerPicker({ resourceType, resourceId, canEdit = true
       await assign(selectedUserId);
       setSelectedUserId("");
     } catch (err) {
-      setActionError(err instanceof Error ? err.message : "Failed to assign manager");
+      setActionError(err instanceof Error ? err.message : t("failedToAssignManager"));
     } finally {
       setAssigning(false);
     }
@@ -49,20 +51,20 @@ export function ResourceManagerPicker({ resourceType, resourceId, canEdit = true
     try {
       await unassign(assignmentId);
     } catch (err) {
-      setActionError(err instanceof Error ? err.message : "Failed to remove manager");
+      setActionError(err instanceof Error ? err.message : t("failedToRemoveManager"));
     }
   }
 
   return (
     <div className="space-y-3">
-      <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">Assigned managers</p>
+      <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">{t("assignedManagers")}</p>
 
-      {loading && <p className="text-xs text-slate-500">Loading…</p>}
+      {loading && <p className="text-xs text-slate-500">{t("loading")}</p>}
       {error && <p className="text-xs text-red-400">{error}</p>}
       {actionError && <p className="text-xs text-red-400">{actionError}</p>}
 
       {managers.length === 0 && !loading && (
-        <p className="text-xs text-slate-500">No managers assigned yet.</p>
+        <p className="text-xs text-slate-500">{t("noManagersAssigned")}</p>
       )}
 
       <ul className="space-y-1.5">
@@ -77,7 +79,7 @@ export function ResourceManagerPicker({ resourceType, resourceId, canEdit = true
             </div>
             {canEdit && (
               <button
-                aria-label={`Remove ${m.user.name}`}
+                aria-label={t("removeUser", { name: m.user.name })}
                 className="shrink-0 rounded p-1 text-slate-500 hover:bg-red-500/10 hover:text-red-400"
                 onClick={() => void handleUnassign(m.id)}
               >
@@ -95,7 +97,7 @@ export function ResourceManagerPicker({ resourceType, resourceId, canEdit = true
             value={selectedUserId}
             onChange={(e) => setSelectedUserId(e.target.value)}
           >
-            <option value="">Select user to add…</option>
+            <option value="">{t("selectUserToAdd")}</option>
             {available.map((u) => (
               <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
             ))}
@@ -106,7 +108,7 @@ export function ResourceManagerPicker({ resourceType, resourceId, canEdit = true
             onClick={() => void handleAssign()}
           >
             {assigning ? <Loader2 className="animate-spin" size={14} /> : <UserPlus size={14} />}
-            Add
+            {t("add")}
           </button>
         </div>
       )}

@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
 import { CheckCircle2, Info, X, XCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export type ToastVariant = "success" | "error" | "info";
 type Toast = { id: number; message: string; variant: ToastVariant };
@@ -63,6 +64,7 @@ const VARIANT_STYLES: Record<ToastVariant, { ring: string; icon: React.ReactNode
 };
 
 function ToastViewport({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id: number) => void }) {
+  const { t } = useTranslation("common");
   return (
     <div className="pointer-events-none fixed right-4 top-4 z-[9999] flex w-[min(92vw,22rem)] flex-col gap-2">
       {toasts.map((toast) => {
@@ -79,7 +81,7 @@ function ToastViewport({ toasts, onDismiss }: { toasts: Toast[]; onDismiss: (id:
               className="shrink-0 rounded-md p-1 text-slate-400 hover:bg-white/10 hover:text-white"
               onClick={() => onDismiss(toast.id)}
               type="button"
-              aria-label="Dismiss"
+              aria-label={t("dismiss")}
             >
               <X size={14} />
             </button>
