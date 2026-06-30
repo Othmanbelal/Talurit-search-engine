@@ -1,10 +1,14 @@
 import type React from "react";
 import { Archive, ChevronRight, Eye, PackageMinus, RotateCcw, TrendingDown, Trash2, Warehouse } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { StructuredInventoryTable, StructuredStockRow, TableColumnSettings } from "../../types/structured-inventory";
 import { isRowLow, isRowLowStockDefined } from "../../utils/lowStock";
 
 export type StockColumnKey = string;
 
+// Default English labels are used as fallback keys; translated labels are applied at render time
+// via labelForColumn → availableColumns → columnLabels or t(). Do not add useTranslation here
+// since this is a module-level constant (not a React component or hook context).
 export const stockTableColumns: { key: StockColumnKey; label: string }[] = [
   { key: "item", label: "Item" },
   { key: "article", label: "Article" },
@@ -43,10 +47,11 @@ export function StructuredStockRowsTable({
   rows: StructuredStockRow[];
   table: StructuredInventoryTable | null;
 }) {
+  const { t } = useTranslation("inventory");
   const visibleColumns = selectedColumns(table);
   const lowStockOn = table?.lowStockEnabled ?? false;
   if (rows.length === 0) {
-    return <div className="rounded-lg border border-line bg-panel p-6 text-sm text-slate-400">No stock rows found.</div>;
+    return <div className="rounded-lg border border-line bg-panel p-6 text-sm text-slate-400">{t("table.noRowsFound")}</div>;
   }
 
   return (
@@ -101,7 +106,7 @@ export function StructuredStockRowsTable({
             <thead className="bg-white/[0.04] text-left text-xs uppercase tracking-[0.16em] text-slate-400">
               <tr>
                 {visibleColumns.map((column) => <Header key={column}>{labelForColumn(column, table)}</Header>)}
-                <Header>Actions</Header>
+                <Header>{t("actions")}</Header>
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
@@ -135,16 +140,17 @@ function RowActions({ onArchive, onConfigureLowStock, onDelete, onMove, onOpen, 
   onView3d?: (row: StructuredStockRow) => void;
   row: StructuredStockRow;
 }) {
+  const { t } = useTranslation("inventory");
   return (
     <div className="flex gap-2">
-      <IconButton label="Open" onClick={() => onOpen(row)}><Eye size={15} /></IconButton>
-      {onMove ? <IconButton label="Take out / Use in" onClick={() => onMove(row)}><PackageMinus size={15} /></IconButton> : null}
+      <IconButton label={t("row.details")} onClick={() => onOpen(row)}><Eye size={15} /></IconButton>
+      {onMove ? <IconButton label={t("movement.sectionLabel")} onClick={() => onMove(row)}><PackageMinus size={15} /></IconButton> : null}
       {lowStockConfigurable && onConfigureLowStock ? <LowStockButton defined={isRowLowStockDefined(row)} onClick={() => onConfigureLowStock(row)} /> : null}
       {onView3d && row.warehousePlacement ? <TextIconButton label="3D" onClick={() => onView3d(row)}><Warehouse size={14} /></TextIconButton> : null}
       {row.status === "archived"
-        ? (onRestore ? <IconButton label="Restore" onClick={() => onRestore(row)}><RotateCcw size={15} /></IconButton> : null)
-        : (onArchive ? <IconButton label="Archive" onClick={() => onArchive(row)}><Archive size={15} /></IconButton> : null)}
-      {onDelete ? <IconButton danger label="Remove" onClick={() => onDelete(row)}><Trash2 size={15} /></IconButton> : null}
+        ? (onRestore ? <IconButton label={t("table.restore")} onClick={() => onRestore(row)}><RotateCcw size={15} /></IconButton> : null)
+        : (onArchive ? <IconButton label={t("table.archive")} onClick={() => onArchive(row)}><Archive size={15} /></IconButton> : null)}
+      {onDelete ? <IconButton danger label={t("table.delete")} onClick={() => onDelete(row)}><Trash2 size={15} /></IconButton> : null}
     </div>
   );
 }

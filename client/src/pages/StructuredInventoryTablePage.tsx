@@ -2,6 +2,7 @@ import { ArrowLeft, Plus, Settings2, Trash2, TrendingDown } from "lucide-react";
 import { InlineManagerStrip } from "../components/InlineManagerStrip";
 import { FormEvent, useEffect, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { DuplicateReviewPanel } from "../components/structured-inventory/DuplicateReviewPanel";
 import { attributeColumnKey } from "../components/structured-inventory/StructuredStockRowsTable";
 import { StockRowAddDrawer } from "../components/structured-inventory/StockRowAddDrawer";
@@ -22,6 +23,7 @@ import { setTableLowStockRequest } from "../services/low-stock.service";
 import type { AddStockRowInput, StructuredStockRow, StructuredTableFilters } from "../types/structured-inventory";
 
 export function StructuredInventoryTablePage() {
+  const { t } = useTranslation("inventory");
   const { id } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -102,7 +104,7 @@ export function StructuredInventoryTablePage() {
   }
 
   async function deleteTable() {
-    if (!window.confirm("Remove this table and its table rows?")) return;
+    if (!window.confirm(t("confirmRemoveTableRows"))) return;
     await inventory.deleteTable();
     navigate(inventory.table?.group ? `/inventory/groups/${inventory.table.group.id}` : "/inventory");
   }
@@ -110,14 +112,14 @@ export function StructuredInventoryTablePage() {
   return (
     <div className="mx-auto max-w-7xl space-y-5">
       <Link className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-accent" to={inventory.table?.group ? `/inventory/groups/${inventory.table.group.id}` : "/inventory"}>
-        <ArrowLeft size={16} /> {inventory.table?.group?.name ?? "Inventory"}
+        <ArrowLeft size={16} /> {inventory.table?.group?.name ?? t("sectionLabel")}
       </Link>
       {inventory.error ? <ErrorMessage message={inventory.error} /> : null}
       <header className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">Inventory table</p>
-          <h1 className="mt-3 text-3xl font-semibold text-white md:text-4xl">{inventory.table?.name ?? "Inventory table"}</h1>
-          <p className="mt-2 text-sm text-slate-400">{inventory.table?.sourceSheetName ?? inventory.table?.tableType ?? "Structured stock rows"}</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">{t("table.sectionLabel")}</p>
+          <h1 className="mt-3 text-3xl font-semibold text-white md:text-4xl">{inventory.table?.name ?? t("table.sectionLabel")}</h1>
+          <p className="mt-2 text-sm text-slate-400">{inventory.table?.sourceSheetName ?? inventory.table?.tableType ?? t("table.structuredStockRows")}</p>
           {inventory.table && (
             <div className="mt-3">
               <InlineManagerStrip
@@ -136,18 +138,18 @@ export function StructuredInventoryTablePage() {
               onClick={toggleTableLowStock}
               type="button"
             >
-              <TrendingDown size={16} /> Low stock: {inventory.table.lowStockEnabled ? "On" : "Off"}
+              <TrendingDown size={16} /> {inventory.table.lowStockEnabled ? t("table.lowStockOn") : t("table.lowStockOff")}
             </button>
           ) : null}
           {canManageInventory ? (
             <>
               <button className={`inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-semibold ${isLayoutOpen ? "border-accent bg-accent/15 text-accent" : "border-line bg-white/5 text-slate-200"}`} onClick={() => setIsLayoutOpen((current) => !current)} type="button">
-                <Settings2 size={16} /> Table layout
+                <Settings2 size={16} /> {t("table.tableLayout")}
               </button>
               <button className="inline-flex items-center gap-2 rounded-md bg-accent px-3 py-2 text-sm font-semibold text-slate-950" onClick={() => setIsAddOpen(true)} type="button">
-                <Plus size={16} /> Add item
+                <Plus size={16} /> {t("table.addItem")}
               </button>
-              <button className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-red-400/40 bg-red-500/10 text-red-100" onClick={deleteTable} title="Remove table" type="button">
+              <button className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-red-400/40 bg-red-500/10 text-red-100" onClick={deleteTable} title={t("card.removeTable")} type="button">
                 <Trash2 size={16} />
               </button>
             </>
@@ -196,7 +198,7 @@ export function StructuredInventoryTablePage() {
             rows={inventory.rows.items}
             table={inventory.table}
             onArchive={canManageInventory ? (row) => void inventory.archiveRow(row.id) : undefined}
-            onDelete={canManageInventory ? (row) => window.confirm("Remove this item from this table?") && void inventory.deleteRow(row.id) : undefined}
+            onDelete={canManageInventory ? (row) => window.confirm(t("confirmRemoveTable")) && void inventory.deleteRow(row.id) : undefined}
             onMove={canTakeReturn ? setMovingRow : undefined}
             onOpen={setSelectedRow}
             onRestore={canManageInventory ? (row) => void inventory.restoreRow(row.id) : undefined}
@@ -273,11 +275,12 @@ function ArchiveModeControls({ active, onChange }: {
   active: "active" | "archived" | "all";
   onChange: (mode: "active" | "archived" | "all") => void;
 }) {
+  const { t } = useTranslation("inventory");
   return (
     <div className="flex flex-wrap gap-2">
       {(["active", "archived", "all"] as const).map((mode) => (
         <button className={`rounded-md border px-3 py-2 text-sm font-semibold ${active === mode ? "border-accent bg-accent/15 text-accent" : "border-line bg-white/5 text-slate-300"}`} key={mode} onClick={() => onChange(mode)} type="button">
-          {mode === "active" ? "Current" : mode === "archived" ? "Archived" : "All"}
+          {mode === "active" ? t("archiveMode.active") : mode === "archived" ? t("archiveMode.archived") : t("archiveMode.all")}
         </button>
       ))}
     </div>
@@ -288,15 +291,16 @@ function TablePagination({ onPage, rows }: {
   onPage: (page: number) => void;
   rows: { page: number; pageSize: number; total: number; totalPages: number };
 }) {
+  const { t } = useTranslation("inventory");
   const start = rows.total === 0 ? 0 : (rows.page - 1) * rows.pageSize + 1;
   const end = Math.min(rows.page * rows.pageSize, rows.total);
   return (
     <div className="flex flex-col justify-between gap-3 rounded-lg border border-line bg-white/[0.04] p-3 text-sm text-slate-300 md:flex-row md:items-center">
-      <span>Showing {start}-{end} of {rows.total}</span>
+      <span>{t("pagination.showing", { start, end, total: rows.total })}</span>
       <div className="flex gap-2">
-        <button className="rounded-md border border-line px-3 py-2 font-semibold disabled:opacity-40" disabled={rows.page <= 1} onClick={() => onPage(rows.page - 1)} type="button">Previous</button>
-        <span className="rounded-md border border-line bg-slate-950/70 px-3 py-2">Page {rows.page} / {Math.max(rows.totalPages, 1)}</span>
-        <button className="rounded-md border border-line px-3 py-2 font-semibold disabled:opacity-40" disabled={rows.page >= rows.totalPages} onClick={() => onPage(rows.page + 1)} type="button">Next</button>
+        <button className="rounded-md border border-line px-3 py-2 font-semibold disabled:opacity-40" disabled={rows.page <= 1} onClick={() => onPage(rows.page - 1)} type="button">{t("pagination.previous")}</button>
+        <span className="rounded-md border border-line bg-slate-950/70 px-3 py-2">{t("pagination.page", { page: rows.page, total: Math.max(rows.totalPages, 1) })}</span>
+        <button className="rounded-md border border-line px-3 py-2 font-semibold disabled:opacity-40" disabled={rows.page >= rows.totalPages} onClick={() => onPage(rows.page + 1)} type="button">{t("pagination.next")}</button>
       </div>
     </div>
   );

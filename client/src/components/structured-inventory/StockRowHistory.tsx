@@ -1,20 +1,9 @@
 import { Clock } from "lucide-react";
 import { UserAvatar } from "../UserAvatar";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getStockRowHistoryRequest } from "../../services/structured-inventory.service";
 import type { ItemInteractionLog } from "../../types/structured-inventory";
-
-const ACTION_LABELS: Record<string, string> = {
-  add: "Added",
-  edit: "Edited",
-  archive: "Archived",
-  restore: "Restored",
-  delete: "Deleted",
-  take: "Taken out",
-  return: "Returned",
-  use_in: "Used in card",
-  return_used: "Returned from card",
-};
 
 const ACTION_COLORS: Record<string, string> = {
   add: "bg-emerald-500/15 text-emerald-300",
@@ -28,7 +17,14 @@ const ACTION_COLORS: Record<string, string> = {
   return_used: "bg-teal-500/15 text-teal-300",
 };
 
+function actionLabel(action: string, t: (key: string) => string): string {
+  const translated = t(`history.actions.${action}`);
+  // If i18next returns the key itself (no translation found), fall back to raw action
+  return translated !== `history.actions.${action}` ? translated : action;
+}
+
 export function StockRowHistory({ rowId, refreshKey }: { rowId: string; refreshKey?: number }) {
+  const { t } = useTranslation("inventory");
   const [logs, setLogs] = useState<ItemInteractionLog[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -44,12 +40,12 @@ export function StockRowHistory({ rowId, refreshKey }: { rowId: string; refreshK
     <section className="rounded-lg border border-line bg-white/[0.03] p-4">
       <div className="flex items-center gap-2">
         <Clock size={14} className="text-slate-400" />
-        <h3 className="font-semibold text-white">Activity — last 7 days</h3>
+        <h3 className="font-semibold text-white">{t("history.title")}</h3>
       </div>
       {loading ? (
-        <p className="mt-3 text-sm text-slate-500">Loading history…</p>
+        <p className="mt-3 text-sm text-slate-500">{t("history.loading")}</p>
       ) : logs.length === 0 ? (
-        <p className="mt-3 text-sm text-slate-500">No activity recorded in the last 7 days.</p>
+        <p className="mt-3 text-sm text-slate-500">{t("history.noActivity")}</p>
       ) : (
         <ul className="mt-3 space-y-2">
           {logs.map((log) => (
@@ -62,7 +58,8 @@ export function StockRowHistory({ rowId, refreshKey }: { rowId: string; refreshK
 }
 
 function HistoryEntry({ log }: { log: ItemInteractionLog }) {
-  const label = ACTION_LABELS[log.action] ?? log.action;
+  const { t } = useTranslation("inventory");
+  const label = actionLabel(log.action, t);
   const colorClass = ACTION_COLORS[log.action] ?? "bg-slate-500/15 text-slate-300";
   const date = new Date(log.createdAt);
   const dateStr = date.toLocaleDateString("sv-SE", { month: "short", day: "numeric" });

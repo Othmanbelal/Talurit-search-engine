@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { buildApiUrl } from "../../services/http";
 import { uploadImageRequest } from "../../services/upload.service";
 
@@ -20,6 +21,7 @@ export function ImageUploadField({
   previewClassName?: string;
   value?: string | null;
 }) {
+  const { t } = useTranslation("inventory");
   const [isUploading, setIsUploading] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ text: string; isError: boolean } | null>(null);
 
@@ -34,15 +36,15 @@ export function ImageUploadField({
       if (decodeQr && onDecodedText) {
         if (qrText) {
           onDecodedText(qrText);
-          setStatusMessage({ text: "QR value linked to this item.", isError: false });
+          setStatusMessage({ text: t("imageUpload.qrLinked"), isError: false });
         } else {
           // Do not clear the existing qrCodeId — the image uploaded fine but was unreadable.
-          setStatusMessage({ text: "Image uploaded. No QR value could be read from it — QR code ID unchanged.", isError: false });
+          setStatusMessage({ text: t("imageUpload.qrUnreadable"), isError: false });
         }
       }
     } catch (err) {
       setStatusMessage({
-        text: err instanceof Error ? err.message : "Upload failed. Please try again.",
+        text: err instanceof Error ? err.message : t("imageUpload.uploadFailed"),
         isError: true,
       });
     } finally {
@@ -62,7 +64,7 @@ export function ImageUploadField({
           type="file"
         />
       </label>
-      {isUploading ? <p className="mt-2 text-sm text-slate-400">Uploading...</p> : null}
+      {isUploading ? <p className="mt-2 text-sm text-slate-400">{t("imageUpload.uploading")}</p> : null}
       {statusMessage ? (
         <p className={`mt-2 text-xs ${statusMessage.isError ? "text-red-300" : "text-slate-400"}`}>
           {statusMessage.text}
@@ -74,11 +76,11 @@ export function ImageUploadField({
           <button
             className="mt-2 inline-flex h-8 w-8 items-center justify-center rounded-md border border-red-400/30 bg-red-500/10 text-red-100"
             onClick={() => {
-              if (!window.confirm("Remove this image?")) return;
+              if (!window.confirm(t("imageUpload.confirmRemove"))) return;
               onChange("");
               onDecodedText?.("");
             }}
-            title="Remove image"
+            title={t("imageUpload.removeImage")}
             type="button"
           >
             <Trash2 size={14} />

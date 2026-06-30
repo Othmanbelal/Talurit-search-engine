@@ -1,8 +1,10 @@
 import { ArrowRight, FolderKanban, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import type { StructuredInventoryGroup } from "../../types/structured-inventory";
 
 export function InventoryGroupCard({ group, onDelete }: { group: StructuredInventoryGroup; onDelete?: (group: StructuredInventoryGroup) => void }) {
+  const { t } = useTranslation("inventory");
   return (
     <article className="group relative rounded-xl border border-line bg-panel p-5 shadow-industrial transition-colors hover:border-slate-600">
       <div className="flex items-start justify-between gap-3">
@@ -14,7 +16,7 @@ export function InventoryGroupCard({ group, onDelete }: { group: StructuredInven
             <button
               className="hidden h-8 w-8 items-center justify-center rounded-md border border-red-400/30 bg-red-500/10 text-red-300 transition-colors hover:bg-red-500/20 group-hover:flex"
               onClick={() => onDelete(group)}
-              title="Remove group"
+              title={t("card.removeGroup")}
               type="button"
             >
               <Trash2 size={13} />
@@ -22,7 +24,7 @@ export function InventoryGroupCard({ group, onDelete }: { group: StructuredInven
           )}
           <Link
             className="flex h-8 w-8 items-center justify-center rounded-md border border-line bg-white/5 text-slate-400 transition-colors hover:border-accent hover:text-accent"
-            title="Open group"
+            title={t("card.openGroup")}
             to={`/inventory/groups/${group.id}`}
           >
             <ArrowRight size={16} />
@@ -31,11 +33,11 @@ export function InventoryGroupCard({ group, onDelete }: { group: StructuredInven
       </div>
 
       <h2 className="mt-4 truncate text-base font-semibold text-white">{group.name}</h2>
-      <p className="mt-0.5 text-xs text-slate-500">Inventory group</p>
+      <p className="mt-0.5 text-xs text-slate-500">{t("card.inventoryGroup")}</p>
 
       <div className="mt-4 flex gap-2">
-        <Stat label="Tables" value={group.tableCount} />
-        <Stat label="Rows" value={group.rowCount} />
+        <Stat label={t("group.statTables")} value={group.tableCount} />
+        <Stat label={t("group.statRows")} value={group.rowCount} />
       </div>
     </article>
   );

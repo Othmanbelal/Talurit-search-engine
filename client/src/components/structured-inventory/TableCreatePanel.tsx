@@ -1,5 +1,6 @@
 import { FormEvent, useState } from "react";
 import { Plus, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { CreateInventoryTableInput } from "../../types/structured-inventory";
 
 export function TableCreatePanel({
@@ -9,6 +10,7 @@ export function TableCreatePanel({
   groupId?: string;
   onCreateTable: (input: CreateInventoryTableInput) => Promise<void>;
 }) {
+  const { t } = useTranslation("inventory");
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
 
@@ -27,7 +29,7 @@ export function TableCreatePanel({
         onClick={() => setOpen(true)}
         type="button"
       >
-        <Plus size={15} /> Add table to this group
+        <Plus size={15} /> {t("create.addTableToGroup")}
       </button>
     );
   }
@@ -41,7 +43,7 @@ export function TableCreatePanel({
         autoFocus
         className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder-slate-500"
         onChange={(e) => setName(e.target.value)}
-        placeholder="Table name…"
+        placeholder={t("create.tablePlaceholder")}
         value={name}
       />
       <button
@@ -49,7 +51,7 @@ export function TableCreatePanel({
         disabled={!name.trim()}
         type="submit"
       >
-        Create
+        {t("create.submit")}
       </button>
       <button
         className="shrink-0 rounded p-1 text-slate-500 hover:text-white"

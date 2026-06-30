@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { InventoryGroupCard } from "../components/structured-inventory/InventoryGroupCard";
 import { InventoryCreatePanel } from "../components/structured-inventory/InventoryCreatePanel";
 import { InventoryTableCard } from "../components/structured-inventory/InventoryTableCard";
@@ -7,6 +8,7 @@ import { usePermissions } from "../hooks/usePermissions";
 import { useStructuredInventoryOverview } from "../hooks/useStructuredInventory";
 
 export function InventoryPage() {
+  const { t } = useTranslation("inventory");
   const { createGroup, createTable, deleteGroup, deleteTable, error, isLoading, overview } = useStructuredInventoryOverview();
   const { canManageInventory } = usePermissions();
   const hasInventory = overview.groups.length > 0 || overview.ungroupedTables.length > 0;
@@ -21,13 +23,13 @@ export function InventoryPage() {
 
       {!isLoading && overview.groups.length > 0 ? (
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold text-white">Groups</h2>
+          <h2 className="text-xl font-semibold text-white">{t("groups")}</h2>
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {overview.groups.map((group) => (
               <InventoryGroupCard
                 group={group}
                 key={group.id}
-                onDelete={canManageInventory ? (target) => window.confirm("Remove this group? Tables will become standalone.") && void deleteGroup(target.id) : undefined}
+                onDelete={canManageInventory ? (target) => window.confirm(t("confirmRemoveGroup")) && void deleteGroup(target.id) : undefined}
               />
             ))}
           </div>
@@ -36,13 +38,13 @@ export function InventoryPage() {
 
       {!isLoading && overview.ungroupedTables.length > 0 ? (
         <section className="space-y-3">
-          <h2 className="text-xl font-semibold text-white">Tables</h2>
+          <h2 className="text-xl font-semibold text-white">{t("tables")}</h2>
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {overview.ungroupedTables.map((table) => (
               <InventoryTableCard
                 key={table.id}
                 table={table}
-                onDelete={canManageInventory ? (target) => window.confirm("Remove this table and its rows?") && void deleteTable(target.id) : undefined}
+                onDelete={canManageInventory ? (target) => window.confirm(t("confirmRemoveTable")) && void deleteTable(target.id) : undefined}
               />
             ))}
           </div>

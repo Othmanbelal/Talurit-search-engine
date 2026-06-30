@@ -1,6 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { DynamicInventoryTable } from "../components/inventory/DynamicInventoryTable";
 import {
   getDynamicInventoryRequest,
@@ -11,6 +12,7 @@ import type { DynamicInventory, DynamicInventoryRow } from "../types/inventory";
 import type { UsedInCard } from "../types/used-in";
 
 export function InventoryDetailsPage() {
+  const { t } = useTranslation("inventory");
   const { id } = useParams();
   const [inventory, setInventory] = useState<DynamicInventory | null>(null);
   const [rows, setRows] = useState<DynamicInventoryRow[]>([]);
@@ -34,7 +36,7 @@ export function InventoryDetailsPage() {
         setError(null);
       })
       .catch((requestError) => {
-        setError(requestError instanceof Error ? requestError.message : "Inventory unavailable");
+        setError(requestError instanceof Error ? requestError.message : t("table.noRows"));
       });
   }, [id]);
 
@@ -46,9 +48,9 @@ export function InventoryDetailsPage() {
     try {
       await assignRowsToCardRequest(cardId, { rowIds: Array.from(selected) });
       setSelected(new Set());
-      setMessage("Rows assigned to Used In card.");
+      setMessage(t("assignment.assigned"));
     } catch (assignError) {
-      setError(assignError instanceof Error ? assignError.message : "Assignment failed");
+      setError(assignError instanceof Error ? assignError.message : t("assignment.failed"));
     }
   }
 
@@ -65,15 +67,15 @@ export function InventoryDetailsPage() {
     <div className="mx-auto max-w-7xl space-y-5">
       <header className="space-y-4">
         <Link className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-accent" to="/inventory">
-          <ArrowLeft size={16} /> Inventory
+          <ArrowLeft size={16} /> {t("details.back")}
         </Link>
         <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">
-              Inventory table
+              {t("details.sectionLabel")}
             </p>
             <h1 className="mt-3 text-3xl font-semibold text-white md:text-4xl">
-              {inventory?.name ?? "Inventory"}
+              {inventory?.name ?? t("sectionLabel")}
             </h1>
           </div>
           <AssignmentBar
@@ -120,6 +122,7 @@ function AssignmentBar({
   onCardChange: (value: string) => void;
   selectedCount: number;
 }) {
+  const { t } = useTranslation("inventory");
   return (
     <div className="flex flex-wrap gap-2 rounded-lg border border-line bg-white/5 p-3">
       <select
@@ -127,7 +130,7 @@ function AssignmentBar({
         onChange={(event) => onCardChange(event.target.value)}
         value={cardId}
       >
-        <option value="">Select Used In card</option>
+        <option value="">{t("assignment.selectCard")}</option>
         {cards.map((card) => (
           <option key={card.id} value={card.id}>{card.name}</option>
         ))}
@@ -138,7 +141,7 @@ function AssignmentBar({
         onClick={onAssign}
         type="button"
       >
-        Assign {selectedCount || ""} row{selectedCount === 1 ? "" : "s"}
+        {selectedCount === 1 ? t("assignment.assignRows", { count: selectedCount }) : t("assignment.assignRowsPlural", { count: selectedCount || "" })}
       </button>
     </div>
   );

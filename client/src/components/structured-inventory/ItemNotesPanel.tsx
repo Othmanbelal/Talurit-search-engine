@@ -1,11 +1,13 @@
 import { Send, Trash2 } from "lucide-react";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../hooks/useAuth";
 import { useItemNotes } from "../../hooks/useItemNotes";
 import type { ItemNote } from "../../types/notes";
 import { UserAvatar } from "../UserAvatar";
 
 export function ItemNotesPanel({ stockBalanceId }: { stockBalanceId: string }) {
+  const { t } = useTranslation("inventory");
   const { user } = useAuth();
   const { notes, loading, error, add, remove } = useItemNotes(stockBalanceId);
   const [content, setContent] = useState("");
@@ -36,14 +38,14 @@ export function ItemNotesPanel({ stockBalanceId }: { stockBalanceId: string }) {
     <div className="flex w-80 shrink-0 flex-col border-l border-line">
       <div className="border-b border-line px-4 py-3">
         <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
-          Notes {notes.length > 0 ? `(${notes.length})` : ""}
+          {t("notes.title")} {notes.length > 0 ? `(${notes.length})` : ""}
         </p>
       </div>
       <div className="flex-1 space-y-3 overflow-y-auto px-4 py-3">
-        {loading && <p className="text-xs text-slate-500">Loading…</p>}
+        {loading && <p className="text-xs text-slate-500">{t("notes.loading")}</p>}
         {error && <p className="text-xs text-red-400">{error}</p>}
         {!loading && notes.length === 0 && (
-          <p className="text-xs text-slate-500">No notes yet. Be the first to add one.</p>
+          <p className="text-xs text-slate-500">{t("notes.noNotes")}</p>
         )}
         {notes.map((note) => (
           <NoteCard
@@ -64,7 +66,7 @@ export function ItemNotesPanel({ stockBalanceId }: { stockBalanceId: string }) {
             onKeyDown={(e) => {
               if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) void handleSubmit();
             }}
-            placeholder="Write a note… (Ctrl+Enter to send)"
+            placeholder={t("notes.placeholder")}
             rows={3}
             value={content}
           />
@@ -74,12 +76,12 @@ export function ItemNotesPanel({ stockBalanceId }: { stockBalanceId: string }) {
             onClick={() => void handleSubmit()}
             type="button"
           >
-            <Send size={14} /> {submitting ? "Sending…" : "Add note"}
+            <Send size={14} /> {submitting ? t("notes.sending") : t("notes.addNote")}
           </button>
         </div>
       ) : (
         <div className="border-t border-line p-3 text-center">
-          <p className="text-xs text-slate-500">View only — notes cannot be added</p>
+          <p className="text-xs text-slate-500">{t("notes.viewOnly")}</p>
         </div>
       )}
     </div>
@@ -95,6 +97,7 @@ function NoteCard({
   canDelete: boolean;
   onDelete: (id: string) => Promise<void>;
 }) {
+  const { t } = useTranslation("inventory");
   const [deleting, setDeleting] = useState(false);
   const date = new Date(note.createdAt);
   const dateStr = date.toLocaleString("sv-SE", {
@@ -118,13 +121,13 @@ function NoteCard({
       <div className="mb-2 flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2">
           <UserAvatar
-            name={note.author?.name ?? "Unknown"}
+            name={note.author?.name ?? t("notes.unknownUser")}
             pictureUrl={note.author?.profile?.profilePictureUrl}
             size={36}
           />
           <div className="min-w-0">
             <p className="truncate text-xs font-semibold text-white">
-              {note.author?.name ?? "Unknown user"}
+              {note.author?.name ?? t("notes.unknownUser")}
             </p>
             <p className="text-[10px] text-slate-500">{dateStr}</p>
           </div>
@@ -134,7 +137,7 @@ function NoteCard({
             className="shrink-0 rounded p-1 text-slate-600 opacity-0 transition-opacity hover:bg-red-500/20 hover:text-red-400 group-hover:opacity-100 disabled:opacity-50"
             disabled={deleting}
             onClick={() => void handleDelete()}
-            title="Delete note"
+            title={t("notes.deleteNote")}
             type="button"
           >
             <Trash2 size={12} />

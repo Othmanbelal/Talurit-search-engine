@@ -1,5 +1,6 @@
 import { AlertTriangle, X } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { urgentIssuesService } from "../../services/urgentIssuesService";
 
 type Props = {
@@ -17,6 +18,7 @@ export function UrgentIssueModal({
   stockBalanceId,
   onClose,
 }: Props) {
+  const { t } = useTranslation("inventory");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,7 +26,7 @@ export function UrgentIssueModal({
 
   async function handleSubmit() {
     if (message.trim().length < 10) {
-      setError("Please describe the issue (minimum 10 characters).");
+      setError(t("details.minCharsError"));
       return;
     }
     setSubmitting(true);
@@ -34,7 +36,7 @@ export function UrgentIssueModal({
       setSent(true);
       setTimeout(onClose, 1500);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to send issue");
+      setError(err instanceof Error ? err.message : t("details.urgentIssue"));
     } finally {
       setSubmitting(false);
     }
@@ -47,7 +49,7 @@ export function UrgentIssueModal({
           <div>
             <div className="flex items-center gap-2">
               <AlertTriangle size={18} className="text-red-400" />
-              <h2 className="text-base font-semibold text-white">Report Urgent Issue</h2>
+              <h2 className="text-base font-semibold text-white">{t("details.reportUrgentIssue")}</h2>
             </div>
             <p className="mt-1 text-xs text-slate-400">
               {itemName} · {tableName}
@@ -64,12 +66,12 @@ export function UrgentIssueModal({
         <div className="p-5">
           {sent ? (
             <p className="py-4 text-center text-sm text-emerald-400">
-              ✓ Issue reported to the table manager.
+              {t("details.issueSent")}
             </p>
           ) : (
             <>
               <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
-                Describe the issue
+                {t("details.describeIssue")}
               </label>
               <textarea
                 autoFocus
@@ -86,7 +88,7 @@ export function UrgentIssueModal({
                   onClick={onClose}
                   type="button"
                 >
-                  Cancel
+                  {t("row.cancel")}
                 </button>
                 <button
                   className="inline-flex items-center gap-2 rounded-md bg-red-500 px-4 py-2 text-sm font-semibold text-white hover:bg-red-400 disabled:opacity-50"
@@ -95,7 +97,7 @@ export function UrgentIssueModal({
                   type="button"
                 >
                   <AlertTriangle size={14} />
-                  {submitting ? "Sending…" : "Send to Manager"}
+                  {submitting ? t("details.sending") : t("details.sendToManager")}
                 </button>
               </div>
             </>

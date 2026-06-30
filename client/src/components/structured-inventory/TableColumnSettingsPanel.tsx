@@ -1,6 +1,7 @@
 import { Check, Plus, Trash2, X } from "lucide-react";
 import { Modal } from "../Modal";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { ColumnSettingsInput, CustomColumn, StructuredInventoryTable } from "../../types/structured-inventory";
 import { attributeColumnKey, availableColumns, defaultStockColumns, type StockColumnKey } from "./StructuredStockRowsTable";
 
@@ -13,6 +14,7 @@ export function TableColumnSettingsPanel({
   onSave: (settings: ColumnSettingsInput) => Promise<void>;
   table: StructuredInventoryTable | null;
 }) {
+  const { t } = useTranslation("inventory");
   const initial = settingsFromTable(table);
   const [selected, setSelected] = useState<string[]>(initial);
   const [customColumns, setCustomColumns] = useState<CustomColumn[]>(table?.columnSettings.customColumns ?? []);
@@ -47,7 +49,7 @@ export function TableColumnSettingsPanel({
 
   function removeColumn(key: string) {
     const isCustom = customColumns.some((c) => c.key === key);
-    const msg = isCustom ? "Delete this custom column and its values?" : "Hide this built-in column?";
+    const msg = isCustom ? t("columns.deleteCustomColumn") : t("columns.hideBuiltinColumn");
     if (!window.confirm(msg)) return;
     if (!isCustom) return setSelected((c) => c.filter((k) => k !== key));
     setCustomColumns((c) => c.filter((col) => col.key !== key));
@@ -72,8 +74,8 @@ export function TableColumnSettingsPanel({
       {/* Header */}
       <header className="flex shrink-0 items-center justify-between gap-4 border-b border-line px-6 py-4">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-accent">Configure</p>
-          <h2 className="mt-0.5 text-lg font-semibold text-white">Table layout</h2>
+          <p className="text-xs font-semibold uppercase tracking-widest text-accent">{t("columns.configure")}</p>
+          <h2 className="mt-0.5 text-lg font-semibold text-white">{t("columns.tableLayout")}</h2>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -81,7 +83,7 @@ export function TableColumnSettingsPanel({
             onClick={save}
             type="button"
           >
-            {saved ? <><Check size={14} /> Saved</> : "Save"}
+            {saved ? <><Check size={14} /> {t("columns.saved")}</> : t("columns.save")}
           </button>
           <button
             className="rounded-md border border-line p-2 text-slate-400 hover:border-slate-500 hover:text-white"
@@ -97,10 +99,10 @@ export function TableColumnSettingsPanel({
         {/* Columns section */}
         <section className="px-6 py-4">
           <div className="mb-1 flex items-center justify-between">
-            <h3 className="text-xs font-semibold uppercase tracking-widest text-slate-500">Columns</h3>
-            <span className="text-xs text-slate-600">{selected.length} visible</span>
+            <h3 className="text-xs font-semibold uppercase tracking-widest text-slate-500">{t("table.columns")}</h3>
+            <span className="text-xs text-slate-600">{t("columns.visibleCount", { count: selected.length })}</span>
           </div>
-          <p className="mb-4 text-xs text-slate-600">Toggle visibility · click label to rename</p>
+          <p className="mb-4 text-xs text-slate-600">{t("columns.toggleRename")}</p>
           <div className="divide-y divide-line/50">
             {columns.map((col) => {
               const isCustom = customColumns.some((c) => c.key === col.key);
@@ -136,14 +138,14 @@ export function TableColumnSettingsPanel({
                   <span className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide ${
                     isCustom ? "bg-accent/10 text-accent/70" : "bg-white/5 text-slate-600"
                   }`}>
-                    {isCustom ? "custom" : "default"}
+                    {isCustom ? t("columns.custom") : t("columns.default")}
                   </span>
 
                   {/* Remove — show on hover */}
                   <button
                     className="shrink-0 opacity-0 transition-opacity group-hover:opacity-100 text-slate-600 hover:text-red-400"
                     onClick={() => removeColumn(col.key)}
-                    title={isCustom ? "Delete column" : "Hide column"}
+                    title={isCustom ? t("columns.deleteColumn") : t("columns.hideColumn")}
                     type="button"
                   >
                     <Trash2 size={13} />
@@ -156,13 +158,13 @@ export function TableColumnSettingsPanel({
 
         {/* Add custom column */}
         <section className="border-t border-line px-6 py-4">
-          <h3 className="mb-3 text-xs font-semibold uppercase tracking-widest text-slate-500">Add custom column</h3>
+          <h3 className="mb-3 text-xs font-semibold uppercase tracking-widest text-slate-500">{t("columns.addCustomColumn")}</h3>
           <div className="flex gap-2">
             <input
               className="min-w-0 flex-1 rounded-md border border-line bg-white/[0.04] px-3 py-2 text-sm text-white placeholder-slate-600 outline-none focus:border-accent"
               onChange={(e) => setNewColumn(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && addCustomColumn()}
-              placeholder="Column name (e.g. Diameter)"
+              placeholder={t("columns.columnNamePlaceholder")}
               value={newColumn}
             />
             <button
@@ -170,7 +172,7 @@ export function TableColumnSettingsPanel({
               onClick={addCustomColumn}
               type="button"
             >
-              <Plus size={14} /> Add
+              <Plus size={14} /> {t("columns.add")}
             </button>
           </div>
         </section>
@@ -179,19 +181,19 @@ export function TableColumnSettingsPanel({
         {customColumns.length > 0 && (
           <section className="border-t border-line px-6 py-4">
             <div className="mb-1 flex items-center justify-between">
-              <h3 className="text-xs font-semibold uppercase tracking-widest text-slate-500">Attribute search access</h3>
+              <h3 className="text-xs font-semibold uppercase tracking-widest text-slate-500">{t("columns.attributeSearchAccess")}</h3>
               <button
                 className="text-xs text-slate-500 hover:text-accent"
                 onClick={() => setAllowedSearchAttributes(allowedSearchAttributes === null ? [] : null)}
                 type="button"
               >
-                {allowedSearchAttributes === null ? "Restrict all" : "Allow all"}
+                {allowedSearchAttributes === null ? t("columns.restrictAll") : t("columns.allowAll")}
               </button>
             </div>
             <p className="mb-3 text-xs text-slate-600">
               {allowedSearchAttributes === null
-                ? "All users can search by every attribute. Toggle individual attributes to restrict."
-                : "Only the toggled attributes are searchable by employees and viewers."}
+                ? t("columns.allAllowed")
+                : t("columns.selectedOnly")}
             </p>
             <div className="space-y-1">
               {customColumns.map((col) => {
@@ -220,16 +222,16 @@ export function TableColumnSettingsPanel({
 
         {/* Widgets */}
         <section className="border-t border-line px-6 py-4">
-          <h3 className="mb-3 text-xs font-semibold uppercase tracking-widest text-slate-500">Summary widgets</h3>
+          <h3 className="mb-3 text-xs font-semibold uppercase tracking-widest text-slate-500">{t("columns.summaryWidgets")}</h3>
           <div className="space-y-2">
             <ToggleRow
               checked={widgets.itemCount}
-              label="Item count"
+              label={t("columns.itemCount")}
               onChange={(v) => setWidgets({ ...widgets, itemCount: v })}
             />
             <ToggleRow
               checked={widgets.balance}
-              label="Inventory balance"
+              label={t("columns.inventoryBalance")}
               onChange={(v) => setWidgets({ ...widgets, balance: v })}
             />
           </div>

@@ -1,5 +1,6 @@
 import { FormEvent, useState } from "react";
 import { FolderPlus, Plus, Table2, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { CreateInventoryGroupInput, CreateInventoryTableInput } from "../../types/structured-inventory";
 
 type Mode = "group" | "table" | null;
@@ -11,6 +12,7 @@ export function InventoryCreatePanel({
   onCreateGroup: (input: CreateInventoryGroupInput) => Promise<void>;
   onCreateTable: (input: CreateInventoryTableInput) => Promise<void>;
 }) {
+  const { t } = useTranslation("inventory");
   const [mode, setMode] = useState<Mode>(null);
   const [groupName, setGroupName] = useState("");
   const [tableName, setTableName] = useState("");
@@ -42,13 +44,13 @@ export function InventoryCreatePanel({
         <OptionButton
           active={mode === "group"}
           icon={<FolderPlus size={15} />}
-          label="New group"
+          label={t("create.groupLabel")}
           onClick={() => activate(mode === "group" ? null : "group")}
         />
         <OptionButton
           active={mode === "table"}
           icon={<Table2 size={15} />}
-          label="New standalone table"
+          label={t("create.standaloneTable")}
           onClick={() => activate(mode === "table" ? null : "table")}
         />
       </div>
@@ -59,8 +61,8 @@ export function InventoryCreatePanel({
           onCancel={() => activate(null)}
           onSubmit={submitGroup}
           onChange={setGroupName}
-          placeholder="Group name…"
-          submitLabel="Create group"
+          placeholder={t("create.groupPlaceholder")}
+          submitLabel={t("create.groupSubmit")}
           value={groupName}
         />
       )}
@@ -69,8 +71,8 @@ export function InventoryCreatePanel({
           onCancel={() => activate(null)}
           onSubmit={submitTable}
           onChange={setTableName}
-          placeholder="Table name…"
-          submitLabel="Create table"
+          placeholder={t("create.tablePlaceholder")}
+          submitLabel={t("create.tableSubmit")}
           value={tableName}
         />
       )}

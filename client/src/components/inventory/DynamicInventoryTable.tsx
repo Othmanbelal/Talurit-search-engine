@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { DynamicInventoryColumn, DynamicInventoryRow } from "../../types/inventory";
 
 type DynamicInventoryTableProps = {
@@ -13,6 +14,7 @@ export function DynamicInventoryTable({
   selectedRowIds,
   onToggleRow,
 }: DynamicInventoryTableProps) {
+  const { t } = useTranslation("inventory");
   const selectable = Boolean(selectedRowIds && onToggleRow);
 
   return (
@@ -22,7 +24,7 @@ export function DynamicInventoryTable({
           <thead className="bg-white/[0.03] text-xs uppercase tracking-wide text-slate-400">
             <tr>
               {selectable ? <th className="w-12 px-4 py-3 font-medium" /> : null}
-              <th className="px-4 py-3 font-medium">Row</th>
+              <th className="px-4 py-3 font-medium">{t("legacy.row")}</th>
               {columns.map((column) => (
                 <th className="min-w-36 px-4 py-3 font-medium" key={column.key}>
                   {column.name}
@@ -34,7 +36,7 @@ export function DynamicInventoryTable({
             {rows.length === 0 ? (
               <tr>
                 <td className="px-4 py-10 text-center text-slate-400" colSpan={columns.length + 2}>
-                  No rows found.
+                  {t("table.noRowsFound")}
                 </td>
               </tr>
             ) : (

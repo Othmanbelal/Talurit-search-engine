@@ -1,4 +1,5 @@
 import { X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { AddStockRowInput } from "../../types/structured-inventory";
 import { Modal } from "../Modal";
 import { StockRowForm } from "./StockRowForm";
@@ -12,13 +13,14 @@ export function StockRowAddDrawer({
   onAddRow: (input: AddStockRowInput) => Promise<void>;
   onClose: () => void;
 }) {
+  const { t } = useTranslation("inventory");
   if (!isOpen) return null;
   return (
     <Modal maxWidth="max-w-4xl" onClose={onClose}>
       <header className="flex shrink-0 items-start justify-between gap-4 border-b border-line p-5">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">New inventory item</p>
-          <h2 className="mt-2 text-2xl font-semibold text-white">Add item</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">{t("addItem.sectionLabel")}</p>
+          <h2 className="mt-2 text-2xl font-semibold text-white">{t("addItem.title")}</h2>
         </div>
         <button className="rounded-md border border-line bg-white/5 p-2 text-slate-300 hover:text-white" onClick={onClose} type="button">
           <X size={18} />

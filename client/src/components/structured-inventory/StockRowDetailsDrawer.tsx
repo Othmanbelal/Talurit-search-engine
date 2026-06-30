@@ -2,6 +2,7 @@ import { AlertTriangle, Pencil, Warehouse, X } from "lucide-react";
 import { Modal } from "../Modal";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { usePermissions } from "../../hooks/usePermissions";
 import { buildApiUrl } from "../../services/http";
 import { getAssignmentByStockRequest } from "../../services/warehouse.service";
@@ -36,6 +37,7 @@ export function StockRowDetailsDrawer({
   tableId?: string;
   tableName?: string;
 }) {
+  const { t } = useTranslation("inventory");
   const { canTakeReturn } = usePermissions();
   const [form, setForm] = useState<FormState | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -62,7 +64,7 @@ export function StockRowDetailsDrawer({
     if (!row || !form) return;
     await onSave(row.id, cleanForm(form));
     setIsEditing(false);
-    setMessage("Item saved.");
+    setMessage(t("details.itemSaved"));
   }
 
   return (
@@ -71,7 +73,7 @@ export function StockRowDetailsDrawer({
         <header className="flex shrink-0 items-start justify-between gap-4 border-b border-line p-5">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">
-              Item details
+              {t("details.itemDetails")}
             </p>
             <h2 className="mt-2 text-2xl font-semibold text-white">{row.item.name}</h2>
           </div>
@@ -82,7 +84,7 @@ export function StockRowDetailsDrawer({
                 onClick={() => setUrgentOpen(true)}
                 type="button"
               >
-                <AlertTriangle size={15} /> Urgent Issue
+                <AlertTriangle size={15} /> {t("details.urgentIssue")}
               </button>
             )}
             {!isEditing && (
@@ -91,7 +93,7 @@ export function StockRowDetailsDrawer({
                 onClick={() => setIsEditing(true)}
                 type="button"
               >
-                <Pencil size={16} /> Edit
+                <Pencil size={16} /> {t("row.edit")}
               </button>
             )}
             <button
@@ -130,14 +132,14 @@ export function StockRowDetailsDrawer({
                 onClick={() => setIsEditing(false)}
                 type="button"
               >
-                Cancel
+                {t("row.cancel")}
               </button>
               <button
                 className="flex-1 rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-slate-950 sm:flex-none"
                 onClick={save}
                 type="button"
               >
-                Save edit
+                {t("details.saveEdit")}
               </button>
             </div>
           </footer>
@@ -174,11 +176,12 @@ function ViewBody({
   row: StructuredStockRow;
   warehousePlacement: WarehouseStockPlacement | null;
 }) {
+  const { t } = useTranslation("inventory");
   return (
     <div className="space-y-5">
       <MediaPreview form={form} />
       <section className="grid gap-3 md:grid-cols-2">
-        {detailCards(form, row).map((item) => (
+        {detailCards(form, row, t).map((item) => (
           <DetailCard item={item} key={item.label} />
         ))}
       </section>
@@ -188,7 +191,7 @@ function ViewBody({
           <div className="flex items-center justify-between gap-3">
             <div>
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
-                <Warehouse size={13} /> Warehouse placement
+                <Warehouse size={13} /> {t("details.warehousePlacement")}
               </div>
               <p className="mt-1 font-semibold text-white">{warehousePlacement.warehouseName}</p>
               <p className="mt-0.5 text-sm text-slate-400">
@@ -200,7 +203,7 @@ function ViewBody({
               className="inline-flex shrink-0 items-center gap-2 rounded-md border border-accent px-3 py-2 text-sm font-semibold text-accent hover:bg-accent hover:text-slate-950"
               to={`/warehouses/${warehousePlacement.warehouseId}?view=3d&slot=${warehousePlacement.slotId}&stock=${row.id}`}
             >
-              <Warehouse size={15} /> View in warehouse
+              <Warehouse size={15} /> {t("details.viewInWarehouse")}
             </Link>
           </div>
         </section>
@@ -212,12 +215,18 @@ function ViewBody({
 }
 
 function MediaPreview({ form }: { form: FormState }) {
+  const { t } = useTranslation("inventory");
   return (
     <section className="grid gap-3 md:grid-cols-2">
-      <ImagePreview alt="Item picture" label="Item picture" value={form.imageUrl} />
-      <ImagePreview alt="QR code" label="QR code image" value={form.qrCodeImageUrl} />
+      <ImagePreview alt={t("details.itemPicture")} label={t("details.itemPicture")} value={form.imageUrl} />
+      <ImagePreview alt={t("details.qrCode")} label={t("details.qrCode")} value={form.qrCodeImageUrl} />
     </section>
   );
+}
+
+function NoImageText() {
+  const { t } = useTranslation("inventory");
+  return <p className="mt-3 text-sm text-slate-500">{t("details.noImage")}</p>;
 }
 
 function ImagePreview({ alt, label, value }: { alt: string; label: string; value: string }) {
@@ -231,7 +240,7 @@ function ImagePreview({ alt, label, value }: { alt: string; label: string; value
           src={buildApiUrl(value)}
         />
       ) : (
-        <p className="mt-3 text-sm text-slate-500">No image uploaded.</p>
+        <NoImageText />
       )}
     </div>
   );
@@ -249,12 +258,13 @@ function DetailCard({ item }: { item: { label: string; value: string } }) {
 }
 
 function AttributeWidgets({ attributes }: { attributes: ItemAttributeInput[] }) {
+  const { t } = useTranslation("inventory");
   return (
     <section className="rounded-lg border border-line bg-white/[0.03] p-4">
-      <h3 className="font-semibold text-white">Additional columns</h3>
+      <h3 className="font-semibold text-white">{t("details.additionalColumns")}</h3>
       <div className="mt-3 grid gap-3 md:grid-cols-2">
         {attributes.length === 0 ? (
-          <p className="text-sm text-slate-500">No additional columns recorded.</p>
+          <p className="text-sm text-slate-500">{t("details.noAdditionalColumns")}</p>
         ) : null}
         {attributes.map((attribute) => (
           <DetailCard
@@ -270,26 +280,26 @@ function AttributeWidgets({ attributes }: { attributes: ItemAttributeInput[] }) 
   );
 }
 
-function detailCards(form: FormState, row: StructuredStockRow) {
+function detailCards(form: FormState, row: StructuredStockRow, t: (key: string) => string) {
   return [
-    { label: "Item name", value: form.itemName },
-    { label: "Manufacturer", value: form.manufacturerName },
-    { label: "Article", value: form.articleNumber },
-    { label: "Alt. article", value: form.alternativeArticleNumber },
-    { label: "Category", value: form.categoryName },
-    { label: "Grade", value: form.grade },
-    { label: "Placement type", value: placementLabel(form.locationType) },
-    { label: "Location / used in", value: form.locationCode },
-    { label: "Fack / compartment", value: form.compartment },
-    { label: "Quantity", value: `${row.quantity} ${row.unit}` },
-    { label: "Unit price", value: form.unitPrice === null ? "" : `${form.unitPrice} ${form.currency}` },
+    { label: t("details.itemName"), value: form.itemName },
+    { label: t("details.manufacturer"), value: form.manufacturerName },
+    { label: t("details.article"), value: form.articleNumber },
+    { label: t("details.altArticle"), value: form.alternativeArticleNumber },
+    { label: t("details.category"), value: form.categoryName },
+    { label: t("details.grade"), value: form.grade },
+    { label: t("details.placementType"), value: placementLabel(form.locationType, t) },
+    { label: t("details.locationUsedIn"), value: form.locationCode },
+    { label: t("details.fackCompartment"), value: form.compartment },
+    { label: t("addItem.quantity"), value: `${row.quantity} ${row.unit}` },
+    { label: t("details.unitPrice"), value: form.unitPrice === null ? "" : `${form.unitPrice} ${form.currency}` },
   ];
 }
 
-function placementLabel(value: FormState["locationType"]) {
-  if (value === "used_in") return "Used in";
-  if (value === "location_in") return "Location in";
-  return "Storage location";
+function placementLabel(value: FormState["locationType"], t: (key: string) => string) {
+  if (value === "used_in") return t("details.usedIn");
+  if (value === "location_in") return t("details.locationIn");
+  return t("details.storageLocation");
 }
 
 function formFromRow(row: StructuredStockRow): FormState {

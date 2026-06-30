@@ -1,5 +1,6 @@
 import { PackageX, X } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Modal } from "../Modal";
 import { setRowLowStockRequest } from "../../services/low-stock.service";
 import type { StructuredStockRow } from "../../types/structured-inventory";
@@ -10,6 +11,7 @@ export function LowStockConfigPopover({ onClose, onSaved, row, tableId }: {
   row: StructuredStockRow;
   tableId: string;
 }) {
+  const { t } = useTranslation("inventory");
   const [enabled, setEnabled] = useState(row.lowStockEnabled);
   const [threshold, setThreshold] = useState(row.lowStockThreshold != null ? String(row.lowStockThreshold) : "");
   const [reorderUrl, setReorderUrl] = useState(row.reorderUrl ?? "");
@@ -19,7 +21,7 @@ export function LowStockConfigPopover({ onClose, onSaved, row, tableId }: {
   async function save() {
     const parsed = threshold.trim() === "" ? null : Number(threshold);
     if (enabled && (parsed == null || Number.isNaN(parsed) || parsed < 0)) {
-      setError("Enter a valid threshold (0 or more) to enable low stock.");
+      setError(t("lowStock.invalidThreshold"));
       return;
     }
     setSaving(true);
@@ -33,7 +35,7 @@ export function LowStockConfigPopover({ onClose, onSaved, row, tableId }: {
       onSaved();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not save low-stock settings.");
+      setError(err instanceof Error ? err.message : t("lowStock.errorSave"));
     } finally {
       setSaving(false);
     }
@@ -43,7 +45,7 @@ export function LowStockConfigPopover({ onClose, onSaved, row, tableId }: {
     <Modal maxWidth="max-w-md" onClose={onClose}>
       <header className="flex items-start justify-between gap-4 border-b border-line p-5">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Low stock</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">{t("lowStock.title")}</p>
           <h2 className="mt-1 text-lg font-semibold text-white">{row.item.name}</h2>
         </div>
         <button className="rounded-md border border-line bg-white/5 p-2 text-slate-300 hover:text-white" onClick={onClose} type="button">
@@ -53,11 +55,11 @@ export function LowStockConfigPopover({ onClose, onSaved, row, tableId }: {
 
       <div className="space-y-4 p-5">
         <label className="flex items-center justify-between gap-3 rounded-md border border-line bg-white/[0.03] px-3 py-2.5">
-          <span className="text-sm font-semibold text-slate-200">Monitor low stock for this item</span>
+          <span className="text-sm font-semibold text-slate-200">{t("lowStock.monitor")}</span>
           <input checked={enabled} onChange={(e) => setEnabled(e.target.checked)} type="checkbox" className="h-4 w-4 accent-[var(--accent,#f0a500)]" />
         </label>
 
-        <Field label={`Low-stock threshold (${row.unit})`}>
+        <Field label={t("lowStock.threshold", { unit: row.unit })}>
           <input
             className="w-full rounded-md border border-line bg-slate-950/70 px-3 py-2 text-sm text-white outline-none focus:border-accent disabled:opacity-50"
             disabled={!enabled}
@@ -69,7 +71,7 @@ export function LowStockConfigPopover({ onClose, onSaved, row, tableId }: {
           />
         </Field>
 
-        <Field label="Order link (optional)">
+        <Field label={t("lowStock.orderLink")}>
           <input
             className="w-full rounded-md border border-line bg-slate-950/70 px-3 py-2 text-sm text-white outline-none focus:border-accent disabled:opacity-50"
             disabled={!enabled}
@@ -78,7 +80,7 @@ export function LowStockConfigPopover({ onClose, onSaved, row, tableId }: {
             type="url"
             value={reorderUrl}
           />
-          <p className="mt-1 text-xs text-slate-500">Included as a "Reorder now" button in the alert email.</p>
+          <p className="mt-1 text-xs text-slate-500">{t("lowStock.orderLinkHint")}</p>
         </Field>
 
         {error ? <p className="text-sm text-red-300">{error}</p> : null}
@@ -92,13 +94,13 @@ export function LowStockConfigPopover({ onClose, onSaved, row, tableId }: {
             onClick={() => { setEnabled(false); setThreshold(""); void saveDisabled(); }}
             type="button"
           >
-            <PackageX size={14} /> Turn off for this item
+            <PackageX size={14} /> {t("lowStock.turnOff")}
           </button>
         ) : <span />}
         <div className="flex gap-2">
-          <button className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-slate-200" onClick={onClose} type="button">Cancel</button>
+          <button className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-slate-200" onClick={onClose} type="button">{t("lowStock.cancel")}</button>
           <button className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-slate-950 disabled:opacity-50" disabled={saving} onClick={() => void save()} type="button">
-            {saving ? "Saving..." : "Save"}
+            {saving ? t("lowStock.saving") : t("lowStock.save")}
           </button>
         </div>
       </footer>
@@ -113,7 +115,7 @@ export function LowStockConfigPopover({ onClose, onSaved, row, tableId }: {
       onSaved();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not turn off low stock.");
+      setError(err instanceof Error ? err.message : t("lowStock.errorTurnOff"));
     } finally {
       setSaving(false);
     }
