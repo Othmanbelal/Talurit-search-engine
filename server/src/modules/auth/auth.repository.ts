@@ -209,6 +209,7 @@ const profileSelect = {
   lastName: true,
   phoneNumber: true,
   profilePictureUrl: true,
+  language: true,
   landingType: true,
   landingPath: true,
   landingTargetId: true,

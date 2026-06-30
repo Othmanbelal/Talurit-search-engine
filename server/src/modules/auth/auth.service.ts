@@ -59,6 +59,7 @@ async function toPublicUser(user: RawUserRecord): Promise<PublicUser> {
           lastName: user.profile.lastName,
           phoneNumber: user.profile.phoneNumber,
           profilePictureUrl: user.profile.profilePictureUrl,
+          language: user.profile.language,
         }
       : null,
     landingResolvedPath: path,

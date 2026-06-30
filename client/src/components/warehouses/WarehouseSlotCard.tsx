@@ -34,7 +34,7 @@ export function WarehouseSlotCard({ items, isSelected, onSelect, slot }: Props) 
       ) : null}
       {occupied ? (
         <span className="mt-1 block truncate text-[10px] text-emerald-300">
-          {items.length === 1 ? items[0].itemName : `${items.length} items`}
+          {items.length === 1 ? items[0].itemName : t("slotMap.itemsShareSlot", { count: items.length })}
         </span>
       ) : (
         <span className="mt-1 block text-[10px] text-slate-600">{t("slotMap.free")}</span>
