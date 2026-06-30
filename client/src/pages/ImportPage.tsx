@@ -1,4 +1,5 @@
 import { Database } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { ColumnMappingStep } from "../components/structured-import/ColumnMappingStep";
 import { ImportResultStep } from "../components/structured-import/ImportResultStep";
 import { ImportWizardSteps } from "../components/structured-import/ImportWizardSteps";
@@ -8,6 +9,7 @@ import { UploadWorkbookStep } from "../components/structured-import/UploadWorkbo
 import { useStructuredImportWizard } from "../hooks/useStructuredImportWizard";
 
 export function ImportPage() {
+  const { t } = useTranslation("import");
   const wizard = useStructuredImportWizard();
 
   return (
@@ -15,15 +17,15 @@ export function ImportPage() {
       <header className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">
-            Assisted Excel import
+            {t("sectionLabel")}
           </p>
           <h1 className="mt-3 text-3xl font-semibold text-white md:text-4xl">
-            Map workbook into inventory
+            {t("pageTitle")}
           </h1>
         </div>
         <div className="flex items-center gap-2 rounded-lg border border-line bg-white/5 px-4 py-3 text-sm text-slate-300">
           <Database className="text-accent" size={17} />
-          Structured PostgreSQL model
+          {t("badge")}
         </div>
       </header>
 

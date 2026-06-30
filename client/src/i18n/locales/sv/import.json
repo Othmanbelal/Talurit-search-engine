@@ -1,0 +1,195 @@
+{
+  "sectionLabel": "Importera",
+  "title": "Importera Excel",
+  "subtitle": "Ladda upp ett Excel-arbetsblad för att importera inventariedata.",
+  "sectionLabel2": "Strukturerad Excel-import",
+  "title2": "Importera inventarie med mappningar",
+  "subtitle2": "Skanna blad, välj gruppering, mappa kolumner, stage:a rader, åtgärda varningar och skriv sedan ren inventariedata.",
+  "badge": "Strukturerad PostgreSQL-modell",
+  "badge2": "Grupperad, inte sammanslagen",
+  "pageTitle": "Mappa arbetsbok till inventarie",
+  "steps": {
+    "upload": "Ladda upp",
+    "sheets": "Blad",
+    "mappings": "Mappningar",
+    "preview": "Förhandsgranska",
+    "result": "Resultat"
+  },
+  "upload": {
+    "label": "Välj Excel-fil",
+    "selectWorkbook": "Välj Excel-arbetsbok",
+    "hint": "Stöder .xlsx, .xlsm och .xls",
+    "hintShort": ".xlsx, .xlsm eller .xls",
+    "scannedHint": "Arbetsboken skannas innan något importeras.",
+    "submit": "Ladda upp",
+    "uploading": "Laddar upp...",
+    "scanning": "Skannar...",
+    "scan": "Skanna arbetsbok",
+    "reading": "Läser...",
+    "preview": "Förhandsgranska import",
+    "clear": "Rensa"
+  },
+  "sheetSelection": {
+    "title": "Välj blad att importera",
+    "title2": "Välj blad och gruppering",
+    "subtitle": "Gruppering är bara en mapp. Den slår aldrig ihop valda blad till en tabell.",
+    "selectAll": "Välj alla",
+    "deselectAll": "Avmarkera alla",
+    "continue": "Fortsätt till mappningar",
+    "importCheckbox": "Importera",
+    "sheetType": "Bladtyp",
+    "target": "Mål",
+    "header": "Rubrik",
+    "headerRow": "rubrikrad {{number}}",
+    "columns": "{{count}} kolumner",
+    "groupName": "Inventariegruppsnamn",
+    "saving": "Sparar...",
+    "save": "Spara bladval"
+  },
+  "columnMapping": {
+    "title": "Mappa kolumner",
+    "subtitle": "Bekräfta vad varje Excel-kolumn betyder innan rader stage:as.",
+    "sourceColumn": "Källkolumn",
+    "targetField": "Målfält",
+    "mapTo": "Mappa till",
+    "skip": "Hoppa över",
+    "continue": "Fortsätt",
+    "stageRows": "Stage:a rader för förhandsgranskning",
+    "saving": "Stage:ar...",
+    "saveAndStage": "Spara mappningar och stage:a rader",
+    "mappedColumns": "mappade kolumner",
+    "confidence": "Konfidensgrad {{text}}",
+    "suggested": "Föreslagen: {{value}}",
+    "summary": {
+      "selectedSheets": "Valda blad",
+      "mappedColumns": "Mappade kolumner",
+      "ignoredColumns": "Ignorerade kolumner"
+    },
+    "fields": {
+      "attribute": "Attribut",
+      "unit": "Enhet",
+      "type": "Typ",
+      "identifierType": "Identifierartyp",
+      "field": "Fält"
+    },
+    "placeholders": {
+      "attributeName": "attributnamn",
+      "unit": "enhet, t.ex. mm"
+    },
+    "dataTypes": {
+      "text": "Text",
+      "number": "Nummer",
+      "decimal": "Decimal",
+      "date": "Datum",
+      "mixed": "Blandat"
+    }
+  },
+  "staging": {
+    "title": "Staging-förhandsgranskning",
+    "subtitle": "Lös gransknings-/felrader innan slutlig import.",
+    "rows": "Rader",
+    "warnings": "Varningar",
+    "errors": "Fel",
+    "review": "Granskning",
+    "ready": "Klara",
+    "confirm": "Bekräfta import",
+    "confirmFinal": "Bekräfta slutlig import",
+    "importing": "Importerar...",
+    "back": "Tillbaka",
+    "columns": {
+      "sheet": "Blad",
+      "row": "Rad",
+      "status": "Status",
+      "item": "Artikel",
+      "location": "Plats",
+      "quantity": "Antal",
+      "duplicate": "Duplikat",
+      "message": "Meddelande",
+      "actions": "Åtgärder"
+    },
+    "actions": {
+      "verify": "Verifiera",
+      "dismiss": "Avfärda",
+      "useSuggestion": "Använd förslag",
+      "ready": "Klar",
+      "unassigned": "Otilldelad",
+      "ignore": "Ignorera",
+      "markReady": "Markera som klar",
+      "ignoredByUser": "Ignorerad av användaren."
+    },
+    "messages": {
+      "importedWithoutLocation": "Importerad utan tilldelad plats.",
+      "noWarning": "Ingen varning",
+      "showingFirst": "Visar de första {{shown}} av {{total}} staging-rader."
+    }
+  },
+  "result": {
+    "success": "Import klar",
+    "title": "Import slutförd",
+    "imported": "{{count}} rader importerades till strukturerade inventarietabeller.",
+    "imported_one": "{{count}} rad importerades till strukturerade inventarietabeller.",
+    "imported_other": "{{count}} rader importerades till strukturerade inventarietabeller.",
+    "errors": "{{count}} fel",
+    "fileImported": "{{fileName}} importerades till den strukturerade inventeringsdatabasen.",
+    "inventoryGroup": "Inventariegrupp: ",
+    "viewInventory": "Öppna inventarie",
+    "importMore": "Importera mer",
+    "counts": {
+      "readyRows": "Klara rader",
+      "reviewRows": "Granskningsrader",
+      "errorRows": "Felrader"
+    }
+  },
+  "issues": {
+    "title": "Förhandsgranskningsproblem",
+    "warning": "Varning",
+    "error": "Fel",
+    "severity": "Allvarlighet",
+    "sheet": "Blad",
+    "row": "Rad",
+    "message": "Meddelande",
+    "noIssues": "Inga förhandsgranskningsproblem hittades."
+  },
+  "summary": {
+    "total": "Totalt",
+    "totalRows": "Totalt rader",
+    "ready": "Klara",
+    "warnings": "Varningar",
+    "errors": "Fel",
+    "needsReview": "Behöver granskning",
+    "tools": "Verktyg",
+    "locations": "Platser",
+    "duplicates": "Duplikat"
+  },
+  "confirm": {
+    "title": "Spara förhandsgranskning till PostgreSQL",
+    "subtitle": "{{tools}} verktyg och {{locations}} platser kommer att bearbetas.",
+    "saving": "Sparar...",
+    "submit": "Bekräfta import"
+  },
+  "preview": {
+    "sheetsTitle": "Blad",
+    "toolPreview": "Verktygförhandsgranskning",
+    "locationPreview": "Platsförhandsgranskning",
+    "noRows": "Inga rader hittades.",
+    "rows": "{{count}} rader",
+    "columns": {
+      "row": "Rad",
+      "product": "Produkt",
+      "article": "Artikel",
+      "manufacturer": "Tillverkare",
+      "location": "Plats",
+      "label": "Etikett",
+      "shelf": "Hylla",
+      "compartment": "Fack",
+      "map": "Karta"
+    }
+  },
+  "legacyConfirm": {
+    "toolsCreated": "Verktyg skapade",
+    "toolsUpdated": "Verktyg uppdaterade",
+    "locationsCreated": "Platser skapade",
+    "locationsUpdated": "Platser uppdaterade",
+    "issuesLogged": "Problem loggade"
+  }
+}

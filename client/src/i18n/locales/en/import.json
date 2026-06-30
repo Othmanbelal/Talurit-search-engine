@@ -1,0 +1,195 @@
+{
+  "sectionLabel": "Import",
+  "title": "Import Excel",
+  "subtitle": "Upload an Excel workbook to import inventory data.",
+  "sectionLabel2": "Structured Excel import",
+  "title2": "Import inventory with mappings",
+  "subtitle2": "Scan sheets, choose grouping, map columns, stage rows, fix warnings, then write clean inventory data.",
+  "badge": "Structured PostgreSQL model",
+  "badge2": "Grouped, not merged",
+  "pageTitle": "Map workbook into inventory",
+  "steps": {
+    "upload": "Upload",
+    "sheets": "Sheets",
+    "mappings": "Mappings",
+    "preview": "Preview",
+    "result": "Result"
+  },
+  "upload": {
+    "label": "Choose Excel file",
+    "selectWorkbook": "Select Excel workbook",
+    "hint": "Supports .xlsx, .xlsm and .xls",
+    "hintShort": ".xlsx, .xlsm, or .xls",
+    "scannedHint": "The workbook will be scanned before anything is imported.",
+    "submit": "Upload",
+    "uploading": "Uploading...",
+    "scanning": "Scanning...",
+    "scan": "Scan workbook",
+    "reading": "Reading...",
+    "preview": "Preview import",
+    "clear": "Clear"
+  },
+  "sheetSelection": {
+    "title": "Select sheets to import",
+    "title2": "Choose sheets and grouping",
+    "subtitle": "Grouping is a folder only. It never merges selected sheets into one table.",
+    "selectAll": "Select all",
+    "deselectAll": "Deselect all",
+    "continue": "Continue to mappings",
+    "importCheckbox": "Import",
+    "sheetType": "Sheet type",
+    "target": "Target",
+    "header": "Header",
+    "headerRow": "header row {{number}}",
+    "columns": "{{count}} columns",
+    "groupName": "Inventory group name",
+    "saving": "Saving...",
+    "save": "Save sheet choices"
+  },
+  "columnMapping": {
+    "title": "Map columns",
+    "subtitle": "Confirm what each Excel column means before rows are staged.",
+    "sourceColumn": "Source column",
+    "targetField": "Target field",
+    "mapTo": "Map to",
+    "skip": "Skip",
+    "continue": "Continue",
+    "stageRows": "Stage rows for preview",
+    "saving": "Staging...",
+    "saveAndStage": "Save mappings and stage rows",
+    "mappedColumns": "mapped columns",
+    "confidence": "Confidence {{text}}",
+    "suggested": "Suggested: {{value}}",
+    "summary": {
+      "selectedSheets": "Selected sheets",
+      "mappedColumns": "Mapped columns",
+      "ignoredColumns": "Ignored columns"
+    },
+    "fields": {
+      "attribute": "Attribute",
+      "unit": "Unit",
+      "type": "Type",
+      "identifierType": "Identifier type",
+      "field": "Field"
+    },
+    "placeholders": {
+      "attributeName": "attribute name",
+      "unit": "unit, e.g. mm"
+    },
+    "dataTypes": {
+      "text": "Text",
+      "number": "Number",
+      "decimal": "Decimal",
+      "date": "Date",
+      "mixed": "Mixed"
+    }
+  },
+  "staging": {
+    "title": "Staging preview",
+    "subtitle": "Resolve review/error rows before final import.",
+    "rows": "Rows",
+    "warnings": "Warnings",
+    "errors": "Errors",
+    "review": "Review",
+    "ready": "Ready",
+    "confirm": "Confirm import",
+    "confirmFinal": "Confirm final import",
+    "importing": "Importing...",
+    "back": "Back",
+    "columns": {
+      "sheet": "Sheet",
+      "row": "Row",
+      "status": "Status",
+      "item": "Item",
+      "location": "Location",
+      "quantity": "Quantity",
+      "duplicate": "Duplicate",
+      "message": "Message",
+      "actions": "Actions"
+    },
+    "actions": {
+      "verify": "Verify",
+      "dismiss": "Dismiss",
+      "useSuggestion": "Use suggestion",
+      "ready": "Ready",
+      "unassigned": "Unassigned",
+      "ignore": "Ignore",
+      "markReady": "Mark ready",
+      "ignoredByUser": "Ignored by user."
+    },
+    "messages": {
+      "importedWithoutLocation": "Imported without assigned location.",
+      "noWarning": "No warning",
+      "showingFirst": "Showing first {{shown}} of {{total}} staging rows."
+    }
+  },
+  "result": {
+    "success": "Import complete",
+    "title": "Import completed",
+    "imported": "{{count}} staged rows were imported into structured inventory tables.",
+    "imported_one": "{{count}} staged row was imported into structured inventory tables.",
+    "imported_other": "{{count}} staged rows were imported into structured inventory tables.",
+    "errors": "{{count}} errors",
+    "fileImported": "{{fileName}} was imported into the structured inventory database.",
+    "inventoryGroup": "Inventory group: ",
+    "viewInventory": "Open inventory",
+    "importMore": "Import more",
+    "counts": {
+      "readyRows": "Ready rows",
+      "reviewRows": "Review rows",
+      "errorRows": "Error rows"
+    }
+  },
+  "issues": {
+    "title": "Preview issues",
+    "warning": "Warning",
+    "error": "Error",
+    "severity": "Severity",
+    "sheet": "Sheet",
+    "row": "Row",
+    "message": "Message",
+    "noIssues": "No preview issues found."
+  },
+  "summary": {
+    "total": "Total",
+    "totalRows": "Total rows",
+    "ready": "Ready",
+    "warnings": "Warnings",
+    "errors": "Errors",
+    "needsReview": "Needs review",
+    "tools": "Tools",
+    "locations": "Locations",
+    "duplicates": "Duplicates"
+  },
+  "confirm": {
+    "title": "Save preview to PostgreSQL",
+    "subtitle": "{{tools}} tools and {{locations}} locations will be processed.",
+    "saving": "Saving...",
+    "submit": "Confirm import"
+  },
+  "preview": {
+    "sheetsTitle": "Sheets",
+    "toolPreview": "Tool preview",
+    "locationPreview": "Location preview",
+    "noRows": "No rows found.",
+    "rows": "{{count}} rows",
+    "columns": {
+      "row": "Row",
+      "product": "Product",
+      "article": "Article",
+      "manufacturer": "Manufacturer",
+      "location": "Location",
+      "label": "Label",
+      "shelf": "Shelf",
+      "compartment": "Compartment",
+      "map": "Map"
+    }
+  },
+  "legacyConfirm": {
+    "toolsCreated": "Tools created",
+    "toolsUpdated": "Tools updated",
+    "locationsCreated": "Locations created",
+    "locationsUpdated": "Locations updated",
+    "issuesLogged": "Issues logged"
+  }
+}

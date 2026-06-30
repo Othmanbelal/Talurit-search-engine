@@ -1,5 +1,8 @@
 import type React from "react";
+import { useTranslation } from "react-i18next";
 import type { StagingRow, StructuredImportBatch } from "../../lib/import/structuredImportTypes";
+
+type TFunction = (key: string, opts?: Record<string, unknown>) => string;
 
 export function StagingPreviewStep({
   batch,
@@ -16,13 +19,14 @@ export function StagingPreviewStep({
   onPatchRow: (rowId: string, input: Partial<StagingRow>) => void;
   rows: StagingRow[];
 }) {
+  const { t } = useTranslation("import");
   return (
     <section className="space-y-4">
       <div className="grid gap-3 md:grid-cols-4">
-        <Count label="Rows" value={batch.counts.totalRows} />
-        <Count label="Ready" value={batch.counts.readyRows} />
-        <Count label="Review" value={batch.counts.reviewRows} />
-        <Count label="Errors" value={batch.counts.errorRows} />
+        <Count label={t("staging.rows")} value={batch.counts.totalRows} />
+        <Count label={t("staging.ready")} value={batch.counts.readyRows} />
+        <Count label={t("staging.review")} value={batch.counts.reviewRows} />
+        <Count label={t("staging.errors")} value={batch.counts.errorRows} />
       </div>
       <div className="flex justify-end">
         <button
@@ -31,7 +35,7 @@ export function StagingPreviewStep({
           onClick={onConfirm}
           type="button"
         >
-          Confirm import
+          {t("staging.confirm")}
         </button>
       </div>
       <div className="overflow-hidden rounded-lg border border-line bg-panel shadow-industrial">
@@ -39,15 +43,15 @@ export function StagingPreviewStep({
           <table className="min-w-[980px] divide-y divide-line text-sm">
             <thead className="bg-white/[0.04] text-left text-xs uppercase tracking-[0.16em] text-slate-400">
               <tr>
-                <Header>Sheet</Header>
-                <Header>Row</Header>
-                <Header>Status</Header>
-                <Header>Item</Header>
-                <Header>Location</Header>
-                <Header>Quantity</Header>
-                <Header>Duplicate</Header>
-                <Header>Message</Header>
-                <Header>Actions</Header>
+                <Header>{t("staging.columns.sheet")}</Header>
+                <Header>{t("staging.columns.row")}</Header>
+                <Header>{t("staging.columns.status")}</Header>
+                <Header>{t("staging.columns.item")}</Header>
+                <Header>{t("staging.columns.location")}</Header>
+                <Header>{t("staging.columns.quantity")}</Header>
+                <Header>{t("staging.columns.duplicate")}</Header>
+                <Header>{t("staging.columns.message")}</Header>
+                <Header>{t("staging.columns.actions")}</Header>
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
@@ -64,9 +68,11 @@ function PreviewRow({ onPatchRow, row }: {
   onPatchRow: (rowId: string, input: Partial<StagingRow>) => void;
   row: StagingRow;
 }) {
+  const { t } = useTranslation("import");
   const mapped = asMapped(row.mappedData);
   const suggested = textValue(mapped.location?.suggestedCode);
-  const location = textValue(mapped.location?.code) || (suggested ? `Suggested: ${suggested}` : "-");
+  const locationCode = textValue(mapped.location?.code);
+  const location = locationCode || (suggested ? t("columnMapping.suggested", { value: suggested }) : "-");
   const duplicate = mapped.duplicate;
 
   return (
@@ -83,19 +89,27 @@ function PreviewRow({ onPatchRow, row }: {
         <div className="flex flex-wrap gap-2">
           {duplicate?.status === "possible" ? (
             <>
-              <ActionButton onClick={() => onPatchRow(row.id, updateDuplicate(row, "verified"))}>Verify</ActionButton>
-              <ActionButton onClick={() => onPatchRow(row.id, updateDuplicate(row, "dismissed"))}>Dismiss</ActionButton>
+              <ActionButton onClick={() => onPatchRow(row.id, updateDuplicate(row, "verified"))}>
+                {t("staging.actions.verify")}
+              </ActionButton>
+              <ActionButton onClick={() => onPatchRow(row.id, updateDuplicate(row, "dismissed"))}>
+                {t("staging.actions.dismiss")}
+              </ActionButton>
             </>
           ) : null}
           {suggested ? (
             <ActionButton onClick={() => onPatchRow(row.id, useSuggestedLocation(row, suggested))}>
-              Use suggestion
+              {t("staging.actions.useSuggestion")}
             </ActionButton>
           ) : null}
-          <ActionButton onClick={() => onPatchRow(row.id, markReady(row))}>Ready</ActionButton>
-          <ActionButton onClick={() => onPatchRow(row.id, markUnassigned(row))}>Unassigned</ActionButton>
-          <ActionButton onClick={() => onPatchRow(row.id, { status: "ignored", message: "Ignored by user." })}>
-            Ignore
+          <ActionButton onClick={() => onPatchRow(row.id, markReady(row))}>
+            {t("staging.actions.ready")}
+          </ActionButton>
+          <ActionButton onClick={() => onPatchRow(row.id, markUnassigned(row, t))}>
+            {t("staging.actions.unassigned")}
+          </ActionButton>
+          <ActionButton onClick={() => onPatchRow(row.id, ignoreRow(row, t))}>
+            {t("staging.actions.ignore")}
           </ActionButton>
         </div>
       </Cell>
@@ -109,14 +123,18 @@ function useSuggestedLocation(row: StagingRow, suggested: string): Partial<Stagi
   return { mappedData, status: "ready", message: null };
 }
 
-function markUnassigned(row: StagingRow): Partial<StagingRow> {
+function markUnassigned(row: StagingRow, t: TFunction): Partial<StagingRow> {
   const mappedData = asMapped(row.mappedData);
   mappedData.location = { ...(mappedData.location ?? {}), code: null };
-  return { mappedData, status: "ready", message: "Imported without assigned location." };
+  return { mappedData, status: "ready", message: t("staging.messages.importedWithoutLocation") };
 }
 
 function markReady(row: StagingRow): Partial<StagingRow> {
   return { mappedData: row.mappedData, status: "ready", message: null };
+}
+
+function ignoreRow(row: StagingRow, t: TFunction): Partial<StagingRow> {
+  return { mappedData: row.mappedData, status: "ignored", message: t("staging.actions.ignoredByUser") };
 }
 
 function updateDuplicate(row: StagingRow, status: "verified" | "dismissed"): Partial<StagingRow> {

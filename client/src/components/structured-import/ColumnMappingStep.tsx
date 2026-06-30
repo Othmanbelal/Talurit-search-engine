@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { mappingTargetOptions } from "../../lib/import/structuredImportOptions";
 import { confidenceText, fieldForTarget, needsAttributeDetails } from "../../lib/import/structuredImportFormatters";
 import type { MappingTargetType, StructuredImportBatch, StructuredMapping } from "../../lib/import/structuredImportTypes";
@@ -12,6 +13,7 @@ export function ColumnMappingStep({
   isLoading: boolean;
   onContinue: (drafts: Record<string, StructuredMapping[]>) => void;
 }) {
+  const { t } = useTranslation("import");
   const selectedSheets = batch.sheets.filter((sheet) => sheet.selectedForImport && sheet.targetMode !== "ignore");
   const initialDrafts = useMemo(() => buildDrafts(selectedSheets), [selectedSheets]);
   const [drafts, setDrafts] = useState(initialDrafts);
@@ -32,7 +34,9 @@ export function ColumnMappingStep({
         <article className="rounded-lg border border-line bg-panel p-4" key={sheet.id}>
           <div className="mb-4">
             <h2 className="text-lg font-semibold text-white">{sheet.sheetName}</h2>
-            <p className="mt-1 text-sm text-slate-400">{drafts[sheet.id]?.length ?? 0} mapped columns</p>
+            <p className="mt-1 text-sm text-slate-400">
+              {drafts[sheet.id]?.length ?? 0} {t("columnMapping.mappedColumns")}
+            </p>
           </div>
           <div className="space-y-3">
             {(drafts[sheet.id] ?? []).map((mapping) => (
@@ -52,7 +56,7 @@ export function ColumnMappingStep({
           onClick={() => onContinue(drafts)}
           type="button"
         >
-          Stage rows for preview
+          {t("columnMapping.stageRows")}
         </button>
       </div>
     </section>
@@ -66,14 +70,15 @@ function MappingSummary({
   drafts: Record<string, StructuredMapping[]>;
   sheets: StructuredImportBatch["sheets"];
 }) {
+  const { t } = useTranslation("import");
   const mapped = sheets.reduce((sum, sheet) => sum + (drafts[sheet.id] ?? []).filter((mapping) => mapping.targetType !== "ignore").length, 0);
   const ignored = sheets.reduce((sum, sheet) => sum + (drafts[sheet.id] ?? []).filter((mapping) => mapping.targetType === "ignore").length, 0);
 
   return (
     <div className="grid gap-3 rounded-lg border border-line bg-panel p-4 md:grid-cols-3">
-      <SummaryValue label="Selected sheets" value={sheets.length} />
-      <SummaryValue label="Mapped columns" value={mapped} />
-      <SummaryValue label="Ignored columns" value={ignored} />
+      <SummaryValue label={t("columnMapping.summary.selectedSheets")} value={sheets.length} />
+      <SummaryValue label={t("columnMapping.summary.mappedColumns")} value={mapped} />
+      <SummaryValue label={t("columnMapping.summary.ignoredColumns")} value={ignored} />
     </div>
   );
 }
@@ -94,6 +99,7 @@ function MappingRow({
   mapping: StructuredMapping;
   onChange: (patch: Partial<StructuredMapping>) => void;
 }) {
+  const { t } = useTranslation("import");
   return (
     <div className="grid gap-3 rounded-md border border-line bg-white/[0.03] p-3 xl:grid-cols-[1fr_190px_180px]">
       <div>
@@ -110,7 +116,9 @@ function MappingRow({
             </span>
             ))}
           </div>
-          <div className="mt-2 text-xs text-slate-400">Suggested: {targetLabel(mapping)}</div>
+          <div className="mt-2 text-xs text-slate-400">
+            {t("columnMapping.suggested", { value: targetLabel(mapping) })}
+          </div>
         </div>
       <SelectTarget mapping={mapping} onChange={onChange} />
       <MappingDetails mapping={mapping} onChange={onChange} />
@@ -128,9 +136,10 @@ function SelectTarget({ mapping, onChange }: {
   mapping: StructuredMapping;
   onChange: (patch: Partial<StructuredMapping>) => void;
 }) {
+  const { t } = useTranslation("import");
   return (
     <label className="block">
-      <span className="mb-2 block text-xs font-medium uppercase text-slate-400">Map to</span>
+      <span className="mb-2 block text-xs font-medium uppercase text-slate-400">{t("columnMapping.mapTo")}</span>
       <select
         className="w-full rounded-md border border-line bg-slate-950/70 px-3 py-2 text-sm text-white"
         onChange={(event) => onChange({
@@ -149,21 +158,22 @@ function MappingDetails({ mapping, onChange }: {
   mapping: StructuredMapping;
   onChange: (patch: Partial<StructuredMapping>) => void;
 }) {
+  const { t } = useTranslation("import");
   if (needsAttributeDetails(mapping)) {
     return (
       <div className="grid gap-2 md:grid-cols-3 xl:grid-cols-1">
-        <TextInput label="Attribute" onChange={(value) => onChange({ attributeName: value })} value={mapping.attributeName ?? ""} />
-        <TextInput label="Unit" onChange={(value) => onChange({ attributeUnit: value })} value={mapping.attributeUnit ?? ""} />
-        <TextInput label="Type" onChange={(value) => onChange({ attributeDataType: value })} value={mapping.attributeDataType ?? ""} />
+        <TextInput label={t("columnMapping.fields.attribute")} onChange={(value) => onChange({ attributeName: value })} value={mapping.attributeName ?? ""} />
+        <TextInput label={t("columnMapping.fields.unit")} onChange={(value) => onChange({ attributeUnit: value })} value={mapping.attributeUnit ?? ""} />
+        <TextInput label={t("columnMapping.fields.type")} onChange={(value) => onChange({ attributeDataType: value })} value={mapping.attributeDataType ?? ""} />
       </div>
     );
   }
 
   if (mapping.targetType === "identifier") {
-    return <TextInput label="Identifier type" onChange={(value) => onChange({ targetField: value })} value={mapping.targetField ?? ""} />;
+    return <TextInput label={t("columnMapping.fields.identifierType")} onChange={(value) => onChange({ targetField: value })} value={mapping.targetField ?? ""} />;
   }
 
-  return <TextInput label="Field" onChange={(value) => onChange({ targetField: value })} value={mapping.targetField ?? ""} />;
+  return <TextInput label={t("columnMapping.fields.field")} onChange={(value) => onChange({ targetField: value })} value={mapping.targetField ?? ""} />;
 }
 
 function TextInput({ label, onChange, value }: { label: string; onChange: (value: string) => void; value: string }) {

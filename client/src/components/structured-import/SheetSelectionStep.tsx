@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { sheetTypeOptions, targetModeOptions } from "../../lib/import/structuredImportOptions";
 import type { SheetChoice, SheetTargetMode, SheetType, StructuredImportBatch } from "../../lib/import/structuredImportTypes";
 
@@ -15,6 +16,7 @@ export function SheetSelectionStep({
   onGroupNameChange: (value: string) => void;
   onSave: (choices: SheetChoice[]) => void;
 }) {
+  const { t } = useTranslation("import");
   const [choices, setChoices] = useState<Record<string, SheetChoice>>(() =>
     Object.fromEntries(batch.sheets.map((sheet) => [sheet.id, sheetChoice(sheet)])),
   );
@@ -28,7 +30,7 @@ export function SheetSelectionStep({
     <section className="space-y-4">
       <div className="rounded-lg border border-line bg-panel p-4">
         <label className="block max-w-xl">
-          <span className="mb-2 block text-sm font-medium text-slate-300">Inventory group name</span>
+          <span className="mb-2 block text-sm font-medium text-slate-300">{t("sheetSelection.groupName")}</span>
           <input
             className="w-full rounded-md border border-line bg-slate-950/70 px-3 py-2.5 text-sm text-white outline-none focus:border-accent"
             onChange={(event) => onGroupNameChange(event.target.value)}
@@ -46,28 +48,28 @@ export function SheetSelectionStep({
                   onChange={(event) => updateChoice(sheet.id, { selectedForImport: event.target.checked })}
                   type="checkbox"
                 />
-                Import
+                {t("sheetSelection.importCheckbox")}
               </label>
               <div>
                 <div className="font-semibold text-white">{sheet.sheetName}</div>
                 <div className="mt-1 text-xs text-slate-400">
-                  Header row {sheet.headerRowNumber ?? "-"} · {sheet.mappings.length} columns
+                  {t("sheetSelection.headerRow", { number: sheet.headerRowNumber ?? "-" })} · {t("sheetSelection.columns", { count: sheet.mappings.length })}
                 </div>
               </div>
               <Select
-                label="Sheet type"
+                label={t("sheetSelection.sheetType")}
                 onChange={(value) => updateChoice(sheet.id, { userSelectedSheetType: value as SheetType })}
                 options={sheetTypeOptions}
                 value={choices[sheet.id]?.userSelectedSheetType ?? "generic_table"}
               />
               <Select
-                label="Target"
+                label={t("sheetSelection.target")}
                 onChange={(value) => updateChoice(sheet.id, { targetMode: value as SheetTargetMode })}
                 options={targetModeOptions}
                 value={choices[sheet.id]?.targetMode ?? "group_with_other_sheets"}
               />
               <label className="block">
-                <span className="mb-2 block text-xs font-medium uppercase text-slate-400">Header</span>
+                <span className="mb-2 block text-xs font-medium uppercase text-slate-400">{t("sheetSelection.header")}</span>
                 <input
                   className="w-full rounded-md border border-line bg-slate-950/70 px-3 py-2 text-sm text-white"
                   min={1}
@@ -87,7 +89,7 @@ export function SheetSelectionStep({
           onClick={() => onSave(Object.values(choices))}
           type="button"
         >
-          Continue to mappings
+          {t("sheetSelection.continue")}
         </button>
       </div>
     </section>
