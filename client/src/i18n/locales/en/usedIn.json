@@ -1,0 +1,77 @@
+{
+  "sectionLabel": "Used In",
+  "title": "Usage cards",
+  "description": "Create named places where inventory items can be assigned and returned.",
+  "create": {
+    "label": "New card",
+    "submit": "Save card"
+  },
+  "search": "Search card name or description...",
+  "empty": {
+    "noCards": "No usage cards created yet.",
+    "noMatch": "No cards match your search."
+  },
+  "card": {
+    "noDescription": "No description.",
+    "assigned": "Assigned",
+    "spots": "Spots",
+    "none": "None",
+    "editTitle": "Edit card",
+    "deleteTitle": "Delete card",
+    "openTitle": "Open card"
+  },
+  "error": {
+    "unavailable": "Used In cards unavailable",
+    "deleteFailed": "Card could not be deleted",
+    "saveFailed": "Card could not be saved"
+  },
+  "confirmDelete": "Delete \"{{name}}\"? Cards with assigned items must be emptied first.",
+  "drawer": {
+    "sectionLabel": "Usage card",
+    "editHeading": "Edit card",
+    "newHeading": "New card",
+    "cardNameLabel": "Card name",
+    "cardNamePlaceholder": "OKUMA, Service Van 1",
+    "descriptionLabel": "Description",
+    "descriptionPlaceholder": "Optional context",
+    "cancel": "Cancel"
+  },
+  "spots": {
+    "heading": "Spots",
+    "singlePlaceholder": "Single spot name",
+    "add": "Add",
+    "prefixPlaceholder": "Prefix, e.g. T",
+    "createSeries": "Create series",
+    "returnBeforeDelete": "Return item before deleting spot",
+    "deleteSpot": "Delete spot",
+    "noSpots": "No named spots. Items can still be assigned directly to the card."
+  },
+  "details": {
+    "sectionLabel": "Used In",
+    "backLink": "Used In",
+    "fallbackTitle": "Used In",
+    "noAssignments": "No inventory rows assigned yet.",
+    "confirmRemove": "Remove this assigned row from the card?",
+    "error": {
+      "unavailable": "Used In card unavailable",
+      "removeFailed": "Could not remove assignment",
+      "returnFailed": "Could not return item"
+    }
+  },
+  "spotOverview": {
+    "heading": "Spots",
+    "occupied": "{{occupied}}/{{total}} occupied",
+    "status": {
+      "occupied": "Occupied",
+      "empty": "Empty"
+    }
+  },
+  "table": {
+    "spot": "Spot",
+    "qty": "Qty",
+    "action": "Action",
+    "return": "Return",
+    "row": "Row",
+    "removeTitle": "Remove"
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "sectionLabel": "Används i",
+  "title": "Användningskort",
+  "description": "Skapa namngivna platser där inventarieartiklar kan tilldelas och återlämnas.",
+  "create": {
+    "label": "Nytt kort",
+    "submit": "Spara kort"
+  },
+  "search": "Sök kortnamn eller beskrivning...",
+  "empty": {
+    "noCards": "Inga användningskort skapade ännu.",
+    "noMatch": "Inga kort matchar din sökning."
+  },
+  "card": {
+    "noDescription": "Ingen beskrivning.",
+    "assigned": "Tilldelat",
+    "spots": "Platser",
+    "none": "Ingen",
+    "editTitle": "Redigera kort",
+    "deleteTitle": "Ta bort kort",
+    "openTitle": "Öppna kort"
+  },
+  "error": {
+    "unavailable": "Användningskort är inte tillgängliga",
+    "deleteFailed": "Kortet kunde inte tas bort",
+    "saveFailed": "Kortet kunde inte sparas"
+  },
+  "confirmDelete": "Ta bort \"{{name}}\"? Kort med tilldelade artiklar måste tömmas först.",
+  "drawer": {
+    "sectionLabel": "Användningskort",
+    "editHeading": "Redigera kort",
+    "newHeading": "Nytt kort",
+    "cardNameLabel": "Kortnamn",
+    "cardNamePlaceholder": "OKUMA, Servicebil 1",
+    "descriptionLabel": "Beskrivning",
+    "descriptionPlaceholder": "Valfri kontext",
+    "cancel": "Avbryt"
+  },
+  "spots": {
+    "heading": "Platser",
+    "singlePlaceholder": "Enstaka platsnamn",
+    "add": "Lägg till",
+    "prefixPlaceholder": "Prefix, t.ex. T",
+    "createSeries": "Skapa serie",
+    "returnBeforeDelete": "Återlämna artikel innan platsen tas bort",
+    "deleteSpot": "Ta bort plats",
+    "noSpots": "Inga namngivna platser. Artiklar kan fortfarande tilldelas direkt till kortet."
+  },
+  "details": {
+    "sectionLabel": "Används i",
+    "backLink": "Används i",
+    "fallbackTitle": "Används i",
+    "noAssignments": "Inga inventarierader tilldelade ännu.",
+    "confirmRemove": "Ta bort den här tilldelade raden från kortet?",
+    "error": {
+      "unavailable": "Användningskortet är inte tillgängligt",
+      "removeFailed": "Kunde inte ta bort tilldelning",
+      "returnFailed": "Kunde inte återlämna artikel"
+    }
+  },
+  "spotOverview": {
+    "heading": "Platser",
+    "occupied": "{{occupied}}/{{total}} belagda",
+    "status": {
+      "occupied": "Belagd",
+      "empty": "Tom"
+    }
+  },
+  "table": {
+    "spot": "Plats",
+    "qty": "Antal",
+    "action": "Åtgärd",
+    "return": "Återlämna",
+    "row": "Rad",
+    "removeTitle": "Ta bort"
+  }
+}

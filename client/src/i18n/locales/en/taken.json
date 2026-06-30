@@ -1,0 +1,18 @@
+{
+  "sectionLabel": "Taken items",
+  "title": "Items taken out",
+  "search": "Search by table, item name, location...",
+  "empty": {
+    "noItems": "No items are currently taken out.",
+    "noMatch": "No items match your search."
+  },
+  "table": {
+    "taken": "Taken",
+    "action": "Action",
+    "return": "Return"
+  },
+  "error": {
+    "unavailable": "Taken items unavailable",
+    "returnFailed": "Could not return item"
+  }
+}

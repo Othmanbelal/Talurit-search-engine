@@ -1,10 +1,12 @@
 import { RotateCcw, Search } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { listTakenItemsRequest, returnTakenItemRequest } from "../services/structured-inventory.service";
 import { labelForSettings, renderStockCell, selectedColumnsFromSettings } from "../components/structured-inventory/StructuredStockRowsTable";
 import type { TakenStockItem, TableColumnSettings } from "../types/structured-inventory";
 
 export function TakenItemsPage() {
+  const { t } = useTranslation("taken");
   const [items, setItems] = useState<TakenStockItem[]>([]);
   const [search, setSearch] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -15,7 +17,7 @@ export function TakenItemsPage() {
         setItems(result.items);
         setError(null);
       })
-      .catch((requestError) => setError(requestError instanceof Error ? requestError.message : "Taken items unavailable"));
+      .catch((requestError) => setError(requestError instanceof Error ? requestError.message : t("error.unavailable")));
   }
 
   useEffect(loadItems, []);
@@ -25,7 +27,7 @@ export function TakenItemsPage() {
       await returnTakenItemRequest(id);
       loadItems();
     } catch (requestError) {
-      setError(requestError instanceof Error ? requestError.message : "Could not return item");
+      setError(requestError instanceof Error ? requestError.message : t("error.returnFailed"));
     }
   }
 
@@ -44,22 +46,22 @@ export function TakenItemsPage() {
   return (
     <div className="mx-auto max-w-7xl space-y-5">
       <header>
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">Taken items</p>
-        <h1 className="mt-3 text-3xl font-semibold text-white md:text-4xl">Items taken out</h1>
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">{t("sectionLabel")}</p>
+        <h1 className="mt-3 text-3xl font-semibold text-white md:text-4xl">{t("title")}</h1>
       </header>
       <div className="flex items-center gap-2 rounded-lg border border-line bg-white/[0.04] px-3 py-2">
         <Search className="shrink-0 text-slate-500" size={16} />
         <input
           className="min-w-0 flex-1 bg-transparent text-sm text-white placeholder:text-slate-500 focus:outline-none"
           onChange={(event) => setSearch(event.target.value)}
-          placeholder="Search by table, item name, location..."
+          placeholder={t("search")}
           value={search}
         />
       </div>
       {error ? <section className="rounded-lg border border-red-400/30 bg-red-500/10 p-4 text-sm text-red-100">{error}</section> : null}
       {filteredItems.length === 0 ? (
         <section className="rounded-lg border border-line bg-panel p-6 text-sm text-slate-400">
-          {items.length === 0 ? "No items are currently taken out." : "No items match your search."}
+          {items.length === 0 ? t("empty.noItems") : t("empty.noMatch")}
         </section>
       ) : null}
       {itemsByTable(filteredItems).map((group) => <TakenTable group={group} key={group.tableId} onReturn={(id) => void returnItem(id)} />)}
@@ -71,6 +73,7 @@ function TakenTable({ group, onReturn }: {
   group: { tableId: string; tableName: string; items: TakenStockItem[]; columns: TableColumnSettings };
   onReturn: (id: string) => void;
 }) {
+  const { t } = useTranslation("taken");
   const columns = selectedColumnsFromSettings(group.columns);
   return (
     <section className="space-y-3">
@@ -78,7 +81,7 @@ function TakenTable({ group, onReturn }: {
       <div className="overflow-hidden rounded-lg border border-line bg-panel shadow-industrial">
         <table className="min-w-full divide-y divide-line text-left text-sm">
           <thead className="bg-white/[0.03] text-xs uppercase tracking-wide text-slate-400">
-            <tr>{columns.map((column) => <th className="px-4 py-3" key={column}>{labelForSettings(column, group.columns)}</th>)}<th className="px-4 py-3">Taken</th><th className="px-4 py-3">Action</th></tr>
+            <tr>{columns.map((column) => <th className="px-4 py-3" key={column}>{labelForSettings(column, group.columns)}</th>)}<th className="px-4 py-3">{t("table.taken")}</th><th className="px-4 py-3">{t("table.action")}</th></tr>
           </thead>
           <tbody className="divide-y divide-line">
             {group.items.map((item) => (
@@ -87,7 +90,7 @@ function TakenTable({ group, onReturn }: {
                 <td className="px-4 py-3">{item.quantity}</td>
                 <td className="px-4 py-3">
                   <button className="inline-flex items-center gap-2 rounded-md border border-line bg-white/5 px-3 py-1.5 text-xs font-semibold text-slate-200 hover:border-accent hover:text-accent" onClick={() => onReturn(item.id)} type="button">
-                    <RotateCcw size={14} /> Return
+                    <RotateCcw size={14} /> {t("table.return")}
                   </button>
                 </td>
               </tr>
