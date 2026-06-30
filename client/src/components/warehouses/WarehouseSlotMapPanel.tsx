@@ -164,7 +164,7 @@ function SlotDetailPanel({ canEdit, onAssign, onClose, slot }: { canEdit: boolea
       <div className="flex shrink-0 items-center justify-between border-b border-line p-4">
         <div>
           <h3 className="font-semibold text-white">{label}</h3>
-          <p className="text-xs text-slate-400">{slot.items.length} item{slot.items.length !== 1 ? "s" : ""} at this slot</p>
+          <p className="text-xs text-slate-400">{t("slotMap.itemsAtSlot", { count: slot.items.length })}</p>
         </div>
         <div className="flex items-center gap-2">
           {canEdit ? (

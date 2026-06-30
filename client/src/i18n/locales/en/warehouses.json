@@ -11,8 +11,6 @@
   "confirmArchive": "Archive this warehouse layout?",
   "confirmDelete": "Permanently delete \"{{name}}\"? This cannot be undone.",
   "archiveControls": {
-    "showArchived": "Show archived",
-    "hideArchived": "Hide archived",
     "current": "Current",
     "archived": "Archived",
     "all": "All"
@@ -71,7 +69,72 @@
     "minimap": "Minimap",
     "readOnly": "Read only",
     "3dDesigner": "3D warehouse designer",
-    "designDescription": "Design the warehouse here and save it directly to the database."
+    "designDescription": "Design the warehouse here and save it directly to the database.",
+    "issuePanel": {
+      "errors": "Errors",
+      "warnings": "Warnings",
+      "info": "Info",
+      "status": "Status",
+      "noErrors": "No blocking errors.",
+      "noWarnings": "No layout warnings.",
+      "noInfo": "No informational notes."
+    },
+    "levelManager": {
+      "showLevelsBelow": "Show levels below",
+      "showCurrentOnly": "Show current level only",
+      "showAllLevels": "Show all levels",
+      "groundFloor": "Ground Floor",
+      "levelPrefix": "Level",
+      "visibleInStack": "visible in stack",
+      "hiddenAboveCut": "hidden above cut",
+      "showingUpTo": "Showing up to {{name}}"
+    },
+    "topBar": {
+      "importJson": "Import JSON",
+      "resetDesign": "Reset design",
+      "moreActions": "More actions",
+      "undo": "Undo",
+      "redo": "Redo",
+      "projectName": "Project name"
+    },
+    "layerNavigator": {
+      "search": "Search",
+      "detectedSpaces": "Detected spaces",
+      "searchPlaceholder": "rack, wall, room…"
+    },
+    "toolDock": {
+      "rightClickHint": "Right-click canvas"
+    },
+    "commandPaletteUi": {
+      "searchPlaceholder": "Search commands, create objects, edit selected...",
+      "closeLabel": "Close command palette",
+      "createPalletRack": "Create pallet rack",
+      "createStorageShelf": "Create storage shelf",
+      "createEuroPallet": "Create Euro pallet",
+      "createAdaptiveStair": "Create adaptive stair",
+      "createColumn": "Create column",
+      "createNoGoZone": "Create no-go zone",
+      "createDoor": "Create door"
+    },
+    "studioDrawer": {
+      "workflowLabel": "Workflow",
+      "subtitleStructure": "Draw walls, add openings, stairs and control snapping.",
+      "subtitleObjects": "Place warehouse assets, safety zones and generate rack rows.",
+      "subtitleLevels": "Control visible floors and draw on the right elevation.",
+      "subtitleLayers": "Select spaces, groups, walls and individual objects.",
+      "tipStructure1": "Use connected walls for custom shapes.",
+      "tipStructure2": "Use rectangle room for fast boxed rooms.",
+      "tipStructure3": "Doors/windows/stairs are structure objects.",
+      "tipObjects1": "Click an item to place it at the active level.",
+      "tipObjects2": "Use rack generator only for repeated rows.",
+      "tipObjects3": "Right-click the plan to create at the cursor.",
+      "tipLevels1": "Up shows one more floor above.",
+      "tipLevels2": "Down hides the highest visible floor.",
+      "tipLevels3": "New walls are drawn on the active visible level.",
+      "tipLayers1": "Detected spaces are grouped by level.",
+      "tipLayers2": "Rack rows stay grouped for bulk actions.",
+      "tipLayers3": "Search keeps large projects manageable."
+    }
   },
   "create": {
     "newWarehouse": "New warehouse",
@@ -149,7 +212,7 @@
     "slotsOccupied": "{{occupied}} / {{total}} slots occupied",
     "manageAssignment": "Manage assignment",
     "noItemsAtSlot": "No inventory row is assigned to this warehouse slot.",
-    "itemsAtSlot": "{{count}} item{{plural}} at this slot",
+    "itemsAtSlot": "{{count}} items at this slot",
     "physicalSlot": "Physical slot #{{index}}",
     "physicalWarehouseSlot": "Physical warehouse slot",
     "placementUnassigned": "Placement unassigned",
@@ -163,7 +226,6 @@
     "slotFull": "This slot is full.",
     "noAssignedInventory": "This slot has no assigned inventory.",
     "fackSettings": "FACK settings",
-    "fackSettingsLabel": "FACK settings {{status}}",
     "fackOn": "({{capacity}} cells)",
     "fackOff": "(off)",
     "divideFack": "Divide this slot into FACK cells",
@@ -184,7 +246,8 @@
     "assign": "Assign",
     "moveHere": "Move here",
     "currentlyIn": "Currently in {{warehouseName}}",
-    "currentlyInSlot": "/ slot #{{index}}"
+    "currentlyInSlot": "/ slot #{{index}}",
+    "placementPrefix": "Placement: "
   },
   "inventoryLinks": {
     "title": "Linked inventory",
@@ -202,7 +265,8 @@
     "removeGroupLink": "Remove group link",
     "removeTableLink": "Remove table link",
     "selectGroup": "— select group —",
-    "selectTable": "— select table —"
+    "selectTable": "— select table —",
+    "itemsShareSlot": "{{count}} items share this slot"
   },
   "viewer": {
     "3dView": "3D view",

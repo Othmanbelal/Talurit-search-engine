@@ -13,11 +13,12 @@ type Props = { active: DrawerTab | null; onClose: () => void };
 type DrawerCopy = { title: string; subtitle: string; icon: React.ReactNode };
 
 function DrawerHelp({ active }: { active: DrawerTab }) {
+  const { t } = useTranslation("warehouses");
   const tips: Record<DrawerTab, string[]> = {
-    structure: ["Use connected walls for custom shapes.", "Use rectangle room for fast boxed rooms.", "Doors/windows/stairs are structure objects."],
-    objects: ["Click an item to place it at the active level.", "Use rack generator only for repeated rows.", "Right-click the plan to create at the cursor."],
-    levels: ["Up shows one more floor above.", "Down hides the highest visible floor.", "New walls are drawn on the active visible level."],
-    layers: ["Detected spaces are grouped by level.", "Rack rows stay grouped for bulk actions.", "Search keeps large projects manageable."]
+    structure: [t("designer.studioDrawer.tipStructure1"), t("designer.studioDrawer.tipStructure2"), t("designer.studioDrawer.tipStructure3")],
+    objects: [t("designer.studioDrawer.tipObjects1"), t("designer.studioDrawer.tipObjects2"), t("designer.studioDrawer.tipObjects3")],
+    levels: [t("designer.studioDrawer.tipLevels1"), t("designer.studioDrawer.tipLevels2"), t("designer.studioDrawer.tipLevels3")],
+    layers: [t("designer.studioDrawer.tipLayers1"), t("designer.studioDrawer.tipLayers2"), t("designer.studioDrawer.tipLayers3")]
   };
   return <div className="drawer-help-strip">{tips[active].map((tip) => <span key={tip}>{tip}</span>)}</div>;
 }
@@ -26,17 +27,17 @@ export function StudioDrawer({ active, onClose }: Props) {
   const { t } = useTranslation("warehouses");
 
   const drawerCopy: Record<DrawerTab, DrawerCopy> = {
-    structure: { title: t("designer.tools"), subtitle: "Draw walls, add openings, stairs and control snapping.", icon: <Building2 size={18} /> },
-    objects: { title: t("designer.objects"), subtitle: "Place warehouse assets, safety zones and generate rack rows.", icon: <Box size={18} /> },
-    levels: { title: t("designer.levels"), subtitle: "Control visible floors and draw on the right elevation.", icon: <SquareStack size={18} /> },
-    layers: { title: t("designer.layers"), subtitle: "Select spaces, groups, walls and individual objects.", icon: <Layers size={18} /> }
+    structure: { title: t("designer.tools"), subtitle: t("designer.studioDrawer.subtitleStructure"), icon: <Building2 size={18} /> },
+    objects: { title: t("designer.objects"), subtitle: t("designer.studioDrawer.subtitleObjects"), icon: <Box size={18} /> },
+    levels: { title: t("designer.levels"), subtitle: t("designer.studioDrawer.subtitleLevels"), icon: <SquareStack size={18} /> },
+    layers: { title: t("designer.layers"), subtitle: t("designer.studioDrawer.subtitleLayers"), icon: <Layers size={18} /> }
   };
 
   if (!active) return null;
   const copy = drawerCopy[active];
   return <aside className="tool-drawer glass-panel workflow-drawer organized-drawer">
     <div className="drawer-header organized-drawer-header">
-      <div className="drawer-title-row"><span className="drawer-title-icon">{copy.icon}</span><div><p className="eyebrow">Workflow</p><h2>{copy.title}</h2><span>{copy.subtitle}</span></div></div>
+      <div className="drawer-title-row"><span className="drawer-title-icon">{copy.icon}</span><div><p className="eyebrow">{t("designer.studioDrawer.workflowLabel")}</p><h2>{copy.title}</h2><span>{copy.subtitle}</span></div></div>
       <button className="mini-close" onClick={onClose} aria-label="Close panel"><X size={15} /></button>
     </div>
     <DrawerHelp active={active} />

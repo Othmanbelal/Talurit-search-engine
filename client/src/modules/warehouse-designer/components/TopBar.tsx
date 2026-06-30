@@ -58,15 +58,15 @@ export function TopBar(props: Props) {
   return <header className="topbar single-header navigation-phase-header">
     <div className="brand-block compact-brand">
       <div className="brand-icon"><Warehouse size={21} /></div>
-      <div><strong>{t("designer.title")}</strong><input className="project-name" value={projectName} onChange={(event) => setProjectName(event.target.value)} aria-label="Project name" /></div>
+      <div><strong>{t("designer.title")}</strong><input className="project-name" value={projectName} onChange={(event) => setProjectName(event.target.value)} aria-label={t("designer.topBar.projectName")} /></div>
     </div>
     <div className="mode-switcher" role="tablist" aria-label="Workspace mode">
       {(["Plan", "Split", "3D"] as WorkspaceMode[]).map((item) => <button key={item} className={props.mode === item ? "active" : ""} onClick={() => props.setMode(item)}>{item}</button>)}
     </div>
     <LevelQuickControl openLevels={props.openLevels} />
     <div className="toolbar-icon-group" aria-label="Quick actions">
-      <button className="icon-button" onClick={props.undo} title="Undo" aria-label="Undo"><Undo2 size={18} /></button>
-      <button className="icon-button" onClick={props.redo} title="Redo" aria-label="Redo"><Redo2 size={18} /></button>
+      <button className="icon-button" onClick={props.undo} title={t("designer.topBar.undo")} aria-label={t("designer.topBar.undo")}><Undo2 size={18} /></button>
+      <button className="icon-button" onClick={props.redo} title={t("designer.topBar.redo")} aria-label={t("designer.topBar.redo")}><Redo2 size={18} /></button>
       <button className="icon-button" onClick={props.toggleLayers} title={t("designer.layers")} aria-label={t("designer.layers")}><Layers size={18} /></button>
       <button className="icon-button command-icon" onClick={props.openCommands} title={t("designer.commandPalette")} aria-label={t("designer.commandPalette")}><Command size={18} /></button>
     </div>
@@ -74,17 +74,17 @@ export function TopBar(props: Props) {
     {props.onSaveProject && !props.readOnly ? <button className="ghost-button compact-save" disabled={props.isSaving} onClick={props.onSaveProject}><Save size={16} /> {props.isSaving ? t("designer.saving") : t("designer.save")}</button> : null}
     {!props.readOnly ? (
       <div className="topbar-overflow" ref={overflowRef}>
-        <button className="icon-button topbar-overflow-btn" onClick={() => setOverflowOpen((v) => !v)} title="More actions" aria-label="More actions" aria-expanded={overflowOpen}>
+        <button className="icon-button topbar-overflow-btn" onClick={() => setOverflowOpen((v) => !v)} title={t("designer.topBar.moreActions")} aria-label={t("designer.topBar.moreActions")} aria-expanded={overflowOpen}>
           <MoreHorizontal size={17} />
         </button>
         {overflowOpen ? (
           <div className="overflow-dropdown glass-panel">
             <label className="overflow-item file-button">
-              <FileInput size={15} /> Import JSON
+              <FileInput size={15} /> {t("designer.topBar.importJson")}
               <input type="file" accept="application/json" onChange={(event) => handleImport(event.target.files?.[0])} />
             </label>
             <button className="overflow-item danger" onClick={() => { resetProject(); setOverflowOpen(false); }}>
-              <RotateCcw size={15} /> Reset design
+              <RotateCcw size={15} /> {t("designer.topBar.resetDesign")}
             </button>
           </div>
         ) : null}

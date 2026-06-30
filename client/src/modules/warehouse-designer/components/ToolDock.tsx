@@ -18,6 +18,6 @@ export function ToolDock({ active, onSelect }: { active: DrawerTab | null; onSel
     <div className="dock-logo" title={t("designer.title")}><Boxes size={19} /></div>
     {dockItems.map((item) => <button key={item.id} className={active === item.id ? "dock-button active" : "dock-button"} onClick={() => onSelect(item.id)} title={item.label} aria-label={item.label}>{item.icon}<span>{item.label}</span></button>)}
     <div className="dock-spacer" />
-    <div className="dock-hint"><Settings2 size={16} /><span>Right-click canvas</span></div>
+    <div className="dock-hint"><Settings2 size={16} /><span>{t("designer.toolDock.rightClickHint")}</span></div>
   </nav>;
 }

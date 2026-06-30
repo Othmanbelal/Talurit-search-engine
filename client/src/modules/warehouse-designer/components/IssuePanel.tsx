@@ -16,16 +16,16 @@ export function IssuePanel({ issues }: { issues: ValidationIssue[] }) {
   const warnings = issues.filter((issue) => issue.severity === "warning");
   const info = issues.filter((issue) => issue.severity === "info");
   const sections = [
-    { title: "Errors", items: errors, empty: "No blocking errors." },
-    { title: "Warnings", items: warnings, empty: "No layout warnings." },
-    { title: "Info", items: info, empty: "No informational notes." }
+    { title: t("designer.issuePanel.errors"), items: errors, empty: t("designer.issuePanel.noErrors") },
+    { title: t("designer.issuePanel.warnings"), items: warnings, empty: t("designer.issuePanel.noWarnings") },
+    { title: t("designer.issuePanel.info"), items: info, empty: t("designer.issuePanel.noInfo") }
   ];
 
   return <section className="issue-section drawer-block">
     <div className="issue-summary-grid">
-      <div data-state="error"><strong>{errors.length}</strong><span>Errors</span></div>
-      <div data-state="warning"><strong>{warnings.length}</strong><span>Warnings</span></div>
-      <div data-state="ok"><strong>{issues.length === 0 ? "Clean" : info.length}</strong><span>{issues.length === 0 ? "Status" : "Info"}</span></div>
+      <div data-state="error"><strong>{errors.length}</strong><span>{t("designer.issuePanel.errors")}</span></div>
+      <div data-state="warning"><strong>{warnings.length}</strong><span>{t("designer.issuePanel.warnings")}</span></div>
+      <div data-state="ok"><strong>{issues.length === 0 ? "Clean" : info.length}</strong><span>{issues.length === 0 ? t("designer.issuePanel.status") : t("designer.issuePanel.info")}</span></div>
     </div>
     {sections.map((section) => <div key={section.title} className="drawer-section-card issue-group">
       <div className="drawer-section-title"><div><p className="eyebrow">{t("designer.issues")}</p><h3>{section.title}</h3></div></div>

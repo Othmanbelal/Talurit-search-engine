@@ -283,7 +283,7 @@ function MethodButton({ active, icon, label, onClick }: { active: boolean; icon:
 
 function placementText(locationCode: string | null | undefined, compartment: string | null | undefined, t: (key: string, opts?: Record<string, unknown>) => string) {
   const loc = locationCode ?? t("slotMap.placementUnassigned");
-  return `Placement: ${loc}${compartment ? ` / FACK ${compartment}` : ""}`;
+  return `${t("slotAssign.placementPrefix")}${loc}${compartment ? ` / FACK ${compartment}` : ""}`;
 }
 
 function physicalSlotLabel(slotIndex: number | null | undefined, t: (key: string, opts?: Record<string, unknown>) => string) {

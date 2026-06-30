@@ -36,7 +36,7 @@ export function WarehouseLinkedItemCard({ items, onClose, onOpen, screenPos }: P
             <ItemRow item={item} key={item.assignmentId} onOpen={() => onOpen(item)} single={items.length === 1} />
           ))}
           {items.length > 1 ? (
-            <p className="text-center text-xs text-slate-500">{items.length} items share this slot</p>
+            <p className="text-center text-xs text-slate-500">{t("inventoryLinks.itemsShareSlot", { count: items.length })}</p>
           ) : null}
         </div>
         <footer className="border-t border-white/10 px-4 py-2.5">

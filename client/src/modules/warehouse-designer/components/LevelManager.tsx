@@ -6,16 +6,10 @@ import { formatLength, metersToUnit, unitToMeters } from "../utils/units";
 import { sortedLevels } from "../utils/levels";
 import type { LevelViewMode } from "../types";
 
-function fallbackLevelName(index: number, elevation: number) {
-  if (Math.abs(elevation) < 0.001) return "Ground Floor";
-  return `Level ${index + 1}`;
+function fallbackLevelName(index: number, elevation: number, t: (key: string) => string) {
+  if (Math.abs(elevation) < 0.001) return t("designer.levelManager.groundFloor");
+  return `${t("designer.levelManager.levelPrefix")} ${index + 1}`;
 }
-
-const viewModes: Array<{ id: LevelViewMode; label: string; help: string }> = [
-  { id: "stack", label: "Show levels below", help: "Arrow up/down reveals or hides floors as a stack." },
-  { id: "current", label: "Show current level only", help: "Focus on the active drawing level." },
-  { id: "all", label: "Show all levels", help: "Useful for checking the whole building." }
-];
 
 export function LevelManager() {
   const { t } = useTranslation("warehouses");
@@ -40,9 +34,15 @@ export function LevelManager() {
     objects: objects.filter((object) => Math.abs((object.elevation ?? 0) - level.elevation) < 0.001).length
   })), [objects, levels]);
 
+  const viewModes: Array<{ id: LevelViewMode; label: string; help: string }> = [
+    { id: "stack", label: t("designer.levelManager.showLevelsBelow"), help: "Arrow up/down reveals or hides floors as a stack." },
+    { id: "current", label: t("designer.levelManager.showCurrentOnly"), help: "Focus on the active drawing level." },
+    { id: "all", label: t("designer.levelManager.showAllLevels"), help: "Useful for checking the whole building." }
+  ];
+
   const createLevel = () => {
     const elevationMeters = Math.max(0, unitToMeters(Number(newElevation), settings.unit));
-    addLevel(newName || fallbackLevelName(settings.levels.length, elevationMeters), elevationMeters);
+    addLevel(newName || fallbackLevelName(settings.levels.length, elevationMeters, t), elevationMeters);
     setNewName("");
     setNewElevation(metersToUnit(elevationMeters + 3, settings.unit));
   };
@@ -53,7 +53,7 @@ export function LevelManager() {
     <div className="level-manager-header"><div><p className="eyebrow">{t("designer.levels")}</p><h3><Layers size={15} /> {t("designer.levels")}</h3></div></div>
     {topLevel ? <div className="level-stepper polished-stepper">
       <button disabled={visibleTopIndex <= 0} onClick={() => stepStack(-1)} title="Hide the highest visible level"><ChevronDown size={16} /></button>
-      <div><strong>Showing up to {topLevel.name}</strong><span>{visibleTopIndex + 1} of {levels.length} levels visible · top Z {formatLength(topLevel.elevation, settings.unit, 2)}</span></div>
+      <div><strong>{t("designer.levelManager.showingUpTo", { name: topLevel.name })}</strong><span>{visibleTopIndex + 1} of {levels.length} levels visible · top Z {formatLength(topLevel.elevation, settings.unit, 2)}</span></div>
       <button disabled={visibleTopIndex >= levels.length - 1} onClick={() => stepStack(1)} title="Show one more level above"><ChevronUp size={16} /></button>
     </div> : null}
     <div className="level-view-modes">{viewModes.map((mode) => <button key={mode.id} className={settings.levelViewMode === mode.id ? "active" : ""} onClick={() => setViewMode(mode.id)}><strong>{mode.label}</strong><span>{mode.help}</span></button>)}</div>
@@ -62,7 +62,7 @@ export function LevelManager() {
     <div className="level-list">{levelStats.map((level) => {
       const isActive = level.id === settings.activeLevelId;
       return <div key={level.id} className={isActive ? "level-card active" : "level-card"}>
-        <button className="level-main" onClick={() => setActiveLevel(level.id)}><strong>{level.name}</strong><span>{formatLength(level.elevation, settings.unit, 2)} · {level.walls} walls · {level.objects} objects · {level.visible ? "visible in stack" : "hidden above cut"}</span></button>
+        <button className="level-main" onClick={() => setActiveLevel(level.id)}><strong>{level.name}</strong><span>{formatLength(level.elevation, settings.unit, 2)} · {level.walls} walls · {level.objects} objects · {level.visible ? t("designer.levelManager.visibleInStack") : t("designer.levelManager.hiddenAboveCut")}</span></button>
         <button title="Show/hide this level manually" onClick={() => toggleLevelVisibility(level.id)}>{level.visible ? <Eye size={14} /> : <EyeOff size={14} />}</button>
         {active && active.id !== level.id ? <button title="Duplicate current level walls here" onClick={() => duplicateWallsToLevel(active.elevation, level.elevation)}><Copy size={14} /></button> : null}
         <button title="Delete level definition" disabled={settings.levels.length <= 1} onClick={() => deleteLevel(level.id)}><Trash2 size={14} /></button>

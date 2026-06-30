@@ -57,12 +57,12 @@ export function LayerNavigator({ open, onClose, embedded = false }: { open: bool
       </header>
 
       <label className="layer-search">
-        <span>Search</span>
-        <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="rack, wall, room…" />
+        <span>{t("designer.layerNavigator.search")}</span>
+        <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("designer.layerNavigator.searchPlaceholder")} />
       </label>
 
       <div className="layer-section">
-        <h4><Home size={14} /> Detected spaces</h4>
+        <h4><Home size={14} /> {t("designer.layerNavigator.detectedSpaces")}</h4>
         {spaces.length === 0 ? <p className="empty-layer-note">Draw connected walls to create a warehouse or room.</p> : null}
         {spacesByLevel.map(([levelName, levelSpaces]) => (
           <div key={levelName} className="layer-level-group">

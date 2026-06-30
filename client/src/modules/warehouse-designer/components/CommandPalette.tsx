@@ -23,14 +23,14 @@ type CommandPaletteProps = {
   notify: (message: string) => void;
 };
 
-const createCommands: Array<{ type: ObjectType; title: string; hint: string; icon: ReactNode }> = [
-  { type: "pallet-rack", title: "Create pallet rack", hint: "Add a parametric warehouse rack", icon: <Warehouse size={17} /> },
-  { type: "storage-shelf", title: "Create storage shelf", hint: "Add a smaller adjustable shelf", icon: <PackagePlus size={17} /> },
-  { type: "euro-pallet", title: "Create Euro pallet", hint: "Add 800 × 1200 × 144 mm pallet", icon: <Box size={17} /> },
-  { type: "stair", title: "Create adaptive stair", hint: "Connect active level to the next level", icon: <MoveUpRight size={17} /> },
-  { type: "column", title: "Create column", hint: "Add an obstacle/pillar", icon: <Columns3 size={17} /> },
-  { type: "no-go-zone", title: "Create no-go zone", hint: "Add a restricted floor area", icon: <ShieldAlert size={17} /> },
-  { type: "door", title: "Create door", hint: "Add a door marker/opening", icon: <DoorOpen size={17} /> }
+const createCommandDefs: Array<{ type: ObjectType; titleKey: string; hint: string; icon: ReactNode }> = [
+  { type: "pallet-rack", titleKey: "designer.commandPaletteUi.createPalletRack", hint: "Add a parametric warehouse rack", icon: <Warehouse size={17} /> },
+  { type: "storage-shelf", titleKey: "designer.commandPaletteUi.createStorageShelf", hint: "Add a smaller adjustable shelf", icon: <PackagePlus size={17} /> },
+  { type: "euro-pallet", titleKey: "designer.commandPaletteUi.createEuroPallet", hint: "Add 800 × 1200 × 144 mm pallet", icon: <Box size={17} /> },
+  { type: "stair", titleKey: "designer.commandPaletteUi.createAdaptiveStair", hint: "Connect active level to the next level", icon: <MoveUpRight size={17} /> },
+  { type: "column", titleKey: "designer.commandPaletteUi.createColumn", hint: "Add an obstacle/pillar", icon: <Columns3 size={17} /> },
+  { type: "no-go-zone", titleKey: "designer.commandPaletteUi.createNoGoZone", hint: "Add a restricted floor area", icon: <ShieldAlert size={17} /> },
+  { type: "door", titleKey: "designer.commandPaletteUi.createDoor", hint: "Add a door marker/opening", icon: <DoorOpen size={17} /> }
 ];
 
 export function CommandPalette({ open, onClose, openDrawer, openInspector, notify }: CommandPaletteProps) {
@@ -57,9 +57,9 @@ export function CommandPalette({ open, onClose, openDrawer, openInspector, notif
   const commands = useMemo<Command[]>(() => {
     const center = { x: room.width / 2, y: room.depth / 2 };
     return [
-      ...createCommands.map((command) => ({
+      ...createCommandDefs.map((command) => ({
         id: command.type,
-        title: command.title,
+        title: t(command.titleKey),
         hint: command.hint,
         keywords: `create add ${command.type} object`,
         icon: command.icon,
@@ -144,7 +144,7 @@ export function CommandPalette({ open, onClose, openDrawer, openInspector, notif
         run: () => closeAfter(() => notify("Shortcuts: Ctrl+K commands · Delete remove · Ctrl+D duplicate · R rotate · E edit · Esc close"))
       }
     ];
-  }, [addObject, deleteObject, deleteRackRowGroup, duplicateObject, duplicateRackRowGroup, notify, onClose, openDrawer, openInspector, room.depth, room.width, rotateObject, selected]);
+  }, [addObject, deleteObject, deleteRackRowGroup, duplicateObject, duplicateRackRowGroup, notify, onClose, openDrawer, openInspector, room.depth, room.width, rotateObject, selected, t]);
 
   const filtered = commands.filter((command) => {
     const haystack = `${command.title} ${command.hint} ${command.keywords}`.toLowerCase();
@@ -158,8 +158,8 @@ export function CommandPalette({ open, onClose, openDrawer, openInspector, notif
       <section className="command-palette glass-panel" onMouseDown={(event) => event.stopPropagation()} role="dialog" aria-label={t("designer.commandPalette")}>
         <div className="command-search">
           <Search size={18} />
-          <input autoFocus value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search commands, create objects, edit selected..." />
-          <button onClick={onClose} aria-label="Close command palette"><X size={16} /></button>
+          <input autoFocus value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("designer.commandPaletteUi.searchPlaceholder")} />
+          <button onClick={onClose} aria-label={t("designer.commandPaletteUi.closeLabel")}><X size={16} /></button>
         </div>
         <div className="command-list">
           {filtered.length ? filtered.map((command) => (

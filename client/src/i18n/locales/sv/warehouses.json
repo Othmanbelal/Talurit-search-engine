@@ -11,8 +11,6 @@
   "confirmArchive": "Arkivera den här lagerlayouten?",
   "confirmDelete": "Ta bort \"{{name}}\" permanent? Detta kan inte ångras.",
   "archiveControls": {
-    "showArchived": "Visa arkiverade",
-    "hideArchived": "Dölj arkiverade",
     "current": "Aktuella",
     "archived": "Arkiverade",
     "all": "Alla"
@@ -71,7 +69,72 @@
     "minimap": "Minimapp",
     "readOnly": "Skrivskyddad",
     "3dDesigner": "3D-lagerdesigner",
-    "designDescription": "Designa lagret här och spara direkt till databasen."
+    "designDescription": "Designa lagret här och spara direkt till databasen.",
+    "issuePanel": {
+      "errors": "Fel",
+      "warnings": "Varningar",
+      "info": "Info",
+      "status": "Status",
+      "noErrors": "Inga blockerande fel.",
+      "noWarnings": "Inga layoutvarningar.",
+      "noInfo": "Inga informationsnoteringar."
+    },
+    "levelManager": {
+      "showLevelsBelow": "Visa nivåer nedanför",
+      "showCurrentOnly": "Visa endast aktuell nivå",
+      "showAllLevels": "Visa alla nivåer",
+      "groundFloor": "Bottenvåning",
+      "levelPrefix": "Nivå",
+      "visibleInStack": "synliga i stapeln",
+      "hiddenAboveCut": "dolda ovanför snittet",
+      "showingUpTo": "Visar upp till {{name}}"
+    },
+    "topBar": {
+      "importJson": "Importera JSON",
+      "resetDesign": "Återställ design",
+      "moreActions": "Fler åtgärder",
+      "undo": "Ångra",
+      "redo": "Gör om",
+      "projectName": "Projektnamn"
+    },
+    "layerNavigator": {
+      "search": "Sök",
+      "detectedSpaces": "Upptäckta utrymmen",
+      "searchPlaceholder": "rack, vägg, rum…"
+    },
+    "toolDock": {
+      "rightClickHint": "Högerklicka på arbetsytan"
+    },
+    "commandPaletteUi": {
+      "searchPlaceholder": "Sök kommandon, skapa objekt, redigera markerat...",
+      "closeLabel": "Stäng kommandopalett",
+      "createPalletRack": "Skapa pallställ",
+      "createStorageShelf": "Skapa lagerhylla",
+      "createEuroPallet": "Skapa Europall",
+      "createAdaptiveStair": "Skapa adaptiv trappa",
+      "createColumn": "Skapa pelare",
+      "createNoGoZone": "Skapa förbudszon",
+      "createDoor": "Skapa dörr"
+    },
+    "studioDrawer": {
+      "workflowLabel": "Arbetsflöde",
+      "subtitleStructure": "Rita väggar, lägg till öppningar, trappor och styr snäppning.",
+      "subtitleObjects": "Placera lagerresurser, säkerhetszoner och generera rackrader.",
+      "subtitleLevels": "Styr synliga våningar och rita på rätt höjd.",
+      "subtitleLayers": "Välj utrymmen, grupper, väggar och enskilda objekt.",
+      "tipStructure1": "Använd sammankopplade väggar för anpassade former.",
+      "tipStructure2": "Använd rektangulärt rum för snabba boxrum.",
+      "tipStructure3": "Dörrar/fönster/trappor är strukturobjekt.",
+      "tipObjects1": "Klicka på ett objekt för att placera det på aktiv nivå.",
+      "tipObjects2": "Använd rackgeneratorn endast för upprepade rader.",
+      "tipObjects3": "Högerklicka på planen för att skapa vid markören.",
+      "tipLevels1": "Upp visar en våning till ovanför.",
+      "tipLevels2": "Ned döljer den högst synliga våningen.",
+      "tipLevels3": "Nya väggar ritas på den aktiva synliga nivån.",
+      "tipLayers1": "Detekterade utrymmen grupperas per nivå.",
+      "tipLayers2": "Rackrader hålls grupperade för massåtgärder.",
+      "tipLayers3": "Sökning håller stora projekt hanterbara."
+    }
   },
   "create": {
     "newWarehouse": "Nytt lager",
@@ -122,7 +185,7 @@
   "rack": {
     "configuration": "Rackkonfiguration",
     "notFound": "Rack hittades inte. Spara 3D-designen först och ladda sedan om.",
-    "saveLayout": "Spara rackLayout",
+    "saveLayout": "Spara racklayout",
     "saving": "Sparar...",
     "levels": "Nivåer",
     "slot": "Plats #{{index}}",
@@ -149,7 +212,7 @@
     "slotsOccupied": "{{occupied}} / {{total}} platser upptagna",
     "manageAssignment": "Hantera tilldelning",
     "noItemsAtSlot": "Ingen inventarierad är tilldelad den här lagerplatsen.",
-    "itemsAtSlot": "{{count}} artikel{{plural}} på den här platsen",
+    "itemsAtSlot": "{{count}} artiklar på denna plats",
     "physicalSlot": "Fysisk plats #{{index}}",
     "physicalWarehouseSlot": "Fysisk lagerplats",
     "placementUnassigned": "Placering ej tilldelad",
@@ -163,7 +226,6 @@
     "slotFull": "Den här platsen är full.",
     "noAssignedInventory": "Den här platsen har ingen tilldelad inventarie.",
     "fackSettings": "FACK-inställningar",
-    "fackSettingsLabel": "FACK-inställningar {{status}}",
     "fackOn": "({{capacity}} celler)",
     "fackOff": "(av)",
     "divideFack": "Dela upp den här platsen i FACK-celler",
@@ -184,7 +246,8 @@
     "assign": "Tilldela",
     "moveHere": "Flytta hit",
     "currentlyIn": "För närvarande i {{warehouseName}}",
-    "currentlyInSlot": "/ plats #{{index}}"
+    "currentlyInSlot": "/ plats #{{index}}",
+    "placementPrefix": "Placering: "
   },
   "inventoryLinks": {
     "title": "Kopplat inventarie",
@@ -202,7 +265,8 @@
     "removeGroupLink": "Ta bort grupplänk",
     "removeTableLink": "Ta bort tabelllänk",
     "selectGroup": "— välj grupp —",
-    "selectTable": "— välj tabell —"
+    "selectTable": "— välj tabell —",
+    "itemsShareSlot": "{{count}} artiklar delar denna plats"
   },
   "viewer": {
     "3dView": "3D-vy",
@@ -218,7 +282,7 @@
   },
   "qrScanner": {
     "title": "Tilldela via QR",
-    "subtitle": "Skanna kopplad inventarieartike",
+    "subtitle": "Skanna kopplad inventarieartikel",
     "manualPlaceholder": "Eller ange QR-värde manuellt",
     "lookup": "Sök",
     "camera": "Kamera",
