@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Command, FileInput, Layers, Maximize2, Minimize2, MoreHorizontal, Redo2, RotateCcw, Save, Undo2, Warehouse } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { ProjectData } from "../types";
 import { useStudioStore } from "../store/useStudioStore";
 import { LevelQuickControl } from "./LevelQuickControl";
@@ -25,6 +26,7 @@ type Props = {
 };
 
 export function TopBar(props: Props) {
+  const { t } = useTranslation("warehouses");
   const projectName = useStudioStore((state) => state.projectName);
   const setProjectName = useStudioStore((state) => state.setProjectName);
   const importProject = useStudioStore((state) => state.importProject);
@@ -56,7 +58,7 @@ export function TopBar(props: Props) {
   return <header className="topbar single-header navigation-phase-header">
     <div className="brand-block compact-brand">
       <div className="brand-icon"><Warehouse size={21} /></div>
-      <div><strong>Warehouse Studio</strong><input className="project-name" value={projectName} onChange={(event) => setProjectName(event.target.value)} aria-label="Project name" /></div>
+      <div><strong>{t("designer.title")}</strong><input className="project-name" value={projectName} onChange={(event) => setProjectName(event.target.value)} aria-label="Project name" /></div>
     </div>
     <div className="mode-switcher" role="tablist" aria-label="Workspace mode">
       {(["Plan", "Split", "3D"] as WorkspaceMode[]).map((item) => <button key={item} className={props.mode === item ? "active" : ""} onClick={() => props.setMode(item)}>{item}</button>)}
@@ -65,11 +67,11 @@ export function TopBar(props: Props) {
     <div className="toolbar-icon-group" aria-label="Quick actions">
       <button className="icon-button" onClick={props.undo} title="Undo" aria-label="Undo"><Undo2 size={18} /></button>
       <button className="icon-button" onClick={props.redo} title="Redo" aria-label="Redo"><Redo2 size={18} /></button>
-      <button className="icon-button" onClick={props.toggleLayers} title="Layers" aria-label="Layers"><Layers size={18} /></button>
-      <button className="icon-button command-icon" onClick={props.openCommands} title="Commands" aria-label="Commands"><Command size={18} /></button>
+      <button className="icon-button" onClick={props.toggleLayers} title={t("designer.layers")} aria-label={t("designer.layers")}><Layers size={18} /></button>
+      <button className="icon-button command-icon" onClick={props.openCommands} title={t("designer.commandPalette")} aria-label={t("designer.commandPalette")}><Command size={18} /></button>
     </div>
     {props.lastSavedLabel ? <span className="status-pill compact-saved" data-state="ok">{props.lastSavedLabel}</span> : null}
-    {props.onSaveProject && !props.readOnly ? <button className="ghost-button compact-save" disabled={props.isSaving} onClick={props.onSaveProject}><Save size={16} /> {props.isSaving ? "Saving" : "Save"}</button> : null}
+    {props.onSaveProject && !props.readOnly ? <button className="ghost-button compact-save" disabled={props.isSaving} onClick={props.onSaveProject}><Save size={16} /> {props.isSaving ? t("designer.saving") : t("designer.save")}</button> : null}
     {!props.readOnly ? (
       <div className="topbar-overflow" ref={overflowRef}>
         <button className="icon-button topbar-overflow-btn" onClick={() => setOverflowOpen((v) => !v)} title="More actions" aria-label="More actions" aria-expanded={overflowOpen}>
@@ -91,7 +93,7 @@ export function TopBar(props: Props) {
     {props.onToggleFullscreen ? (
       <>
         <div className="topbar-spacer" />
-        <button className="icon-button topbar-expand-btn" onClick={props.onToggleFullscreen} title={props.isFullscreen ? "Exit fullscreen (Esc)" : "Expand to fullscreen"} aria-label={props.isFullscreen ? "Exit fullscreen" : "Expand to fullscreen"}>
+        <button className="icon-button topbar-expand-btn" onClick={props.onToggleFullscreen} title={props.isFullscreen ? t("viewer.exitFullscreen") : t("viewer.fullscreen")} aria-label={props.isFullscreen ? t("viewer.exitFullscreen") : t("viewer.fullscreen")}>
           {props.isFullscreen ? <Minimize2 size={17} /> : <Maximize2 size={17} />}
         </button>
       </>

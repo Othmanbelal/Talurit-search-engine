@@ -1,5 +1,6 @@
 import { ChevronDown, ChevronUp, Layers3 } from "lucide-react";
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useStudioStore } from "../store/useStudioStore";
 import { formatLength } from "../utils/units";
 import { levelVisibilityLabel, sortedLevels } from "../utils/levels";
@@ -7,6 +8,7 @@ import { levelVisibilityLabel, sortedLevels } from "../utils/levels";
 type Props = { openLevels: () => void };
 
 export function LevelQuickControl({ openLevels }: Props) {
+  const { t } = useTranslation("warehouses");
   const settings = useStudioStore((state) => state.settings);
   const showLevelStackToIndex = useStudioStore((state) => state.showLevelStackToIndex);
   const updateSettings = useStudioStore((state) => state.updateSettings);
@@ -21,7 +23,7 @@ export function LevelQuickControl({ openLevels }: Props) {
     <button onClick={() => go(-1)} disabled={topIndex <= 0} title="Hide the highest visible level"><ChevronDown size={15} /></button>
     <button className="level-quick-main" onClick={openLevels} title="Open level manager">
       <Layers3 size={15} />
-      <span><strong>{top ? `Up to ${top.name}` : "Levels"}</strong><em>{levelVisibilityLabel(settings)}{top ? ` · Z ${formatLength(top.elevation, settings.unit, 2)}` : ""}</em></span>
+      <span><strong>{top ? `Up to ${top.name}` : t("designer.levels")}</strong><em>{levelVisibilityLabel(settings)}{top ? ` · Z ${formatLength(top.elevation, settings.unit, 2)}` : ""}</em></span>
     </button>
     <button onClick={() => go(1)} disabled={topIndex >= levels.length - 1} title="Show one more upper level"><ChevronUp size={15} /></button>
   </div>;

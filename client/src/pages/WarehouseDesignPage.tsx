@@ -1,6 +1,7 @@
 import { ArrowLeft, Save, Warehouse } from "lucide-react";
 import { lazy, Suspense, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useIsMobile } from "../hooks/useIsMobile";
 import { useWarehouse } from "../hooks/useWarehouses";
 import { createWarehouseRequest } from "../services/warehouse.service";
@@ -21,6 +22,7 @@ export function WarehouseDesignPage() {
 function CreateDesignPage() {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+  const { t } = useTranslation("warehouses");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -35,7 +37,7 @@ function CreateDesignPage() {
 
   async function handleCreate() {
     const trimmed = name.trim();
-    if (!trimmed) { setError("Warehouse name is required."); return; }
+    if (!trimmed) { setError(t("create.nameRequired")); return; }
     setIsSaving(true);
     setError(null);
     try {
@@ -47,7 +49,7 @@ function CreateDesignPage() {
       });
       navigate(`/warehouses/${result.warehouse.id}`);
     } catch {
-      setError("Failed to create warehouse. Please try again.");
+      setError(t("create.failedToCreate"));
       setIsSaving(false);
     }
   }
@@ -56,33 +58,33 @@ function CreateDesignPage() {
     <div className="space-y-5">
       <div className="mx-auto max-w-7xl">
         <Link className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-accent" to="/warehouses">
-          <ArrowLeft size={16} /> Warehouses
+          <ArrowLeft size={16} /> {t("sectionLabel")}
         </Link>
       </div>
       <div className="mx-auto max-w-7xl space-y-5">
         <header>
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">New warehouse</p>
-          <h1 className="mt-3 text-3xl font-semibold text-white">Design a new warehouse</h1>
-          <p className="mt-2 text-sm text-slate-400">Design the layout, then save to create the warehouse entry.</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">{t("create.newWarehouseLabel")}</p>
+          <h1 className="mt-3 text-3xl font-semibold text-white">{t("create.designNew")}</h1>
+          <p className="mt-2 text-sm text-slate-400">{t("create.designDescription")}</p>
         </header>
 
         <section className="grid gap-4 rounded-lg border border-line bg-panel p-4 sm:grid-cols-2">
           <label className="block text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
-            Warehouse name <span className="text-accent">*</span>
+            {t("create.nameLabel")} <span className="text-accent">*</span>
             <input
               className="mt-2 w-full rounded-md border border-line bg-slate-950 px-3 py-2 text-sm text-white placeholder-slate-500"
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Main warehouse A"
+              placeholder={t("create.namePlaceholder")}
               type="text"
               value={name}
             />
           </label>
           <label className="block text-xs font-semibold uppercase tracking-[0.12em] text-slate-400">
-            Description
+            {t("create.descriptionOptional")}
             <input
               className="mt-2 w-full rounded-md border border-line bg-slate-950 px-3 py-2 text-sm text-white placeholder-slate-500"
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Optional"
+              placeholder={t("create.optional")}
               type="text"
               value={description}
             />
@@ -98,13 +100,13 @@ function CreateDesignPage() {
             onClick={() => void handleCreate()}
             type="button"
           >
-            <Save size={16} /> {isSaving ? "Creating…" : "Save & create warehouse"}
+            <Save size={16} /> {isSaving ? t("create.creating") : t("create.saveAndCreate")}
           </button>
         </div>
 
         <Suspense fallback={<DesignerLoading />}>
           <WarehouseDesignerStudio
-            fallbackProjectName={name.trim() || "New warehouse"}
+            fallbackProjectName={name.trim() || t("create.newWarehouse")}
             onSave={handleSave}
           />
         </Suspense>
@@ -115,6 +117,7 @@ function CreateDesignPage() {
 
 function EditDesignPage({ id }: { id: string }) {
   const navigate = useNavigate();
+  const { t } = useTranslation("warehouses");
   const warehouse = useWarehouse(id);
   const [isDone, setIsDone] = useState(false);
   const requestSaveRef = useRef<(() => Promise<void>) | null>(null);
@@ -147,7 +150,7 @@ function EditDesignPage({ id }: { id: string }) {
     <div className="space-y-5">
       <div className="mx-auto max-w-7xl flex items-center justify-between gap-4">
         <Link className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-accent" to={`/warehouses/${id}`}>
-          <ArrowLeft size={16} /> Back to warehouse
+          <ArrowLeft size={16} /> {t("create.backToWarehouse")}
         </Link>
         <button
           className="inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-slate-950 disabled:opacity-60"
@@ -155,12 +158,12 @@ function EditDesignPage({ id }: { id: string }) {
           onClick={() => void handleDoneEditing()}
           type="button"
         >
-          <ArrowLeft size={16} /> {isDone ? "Saving…" : "Done editing"}
+          <ArrowLeft size={16} /> {isDone ? t("create.savingDone") : t("create.doneEditing")}
         </button>
       </div>
       <div className="mx-auto max-w-7xl space-y-3">
         <header>
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">Editing design</p>
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">{t("create.editingDesign")}</p>
           <h1 className="mt-2 text-2xl font-semibold text-white">{warehouse.warehouse.name}</h1>
         </header>
         <Suspense fallback={<DesignerLoading />}>
@@ -177,13 +180,14 @@ function EditDesignPage({ id }: { id: string }) {
 }
 
 function MobileGate() {
+  const { t } = useTranslation("warehouses");
   return (
     <div className="mx-auto max-w-7xl">
       <div className="rounded-xl border border-line bg-panel p-10 text-center">
         <Warehouse className="mx-auto text-accent" size={40} />
-        <h2 className="mt-4 text-xl font-semibold text-white">Desktop only</h2>
+        <h2 className="mt-4 text-xl font-semibold text-white">{t("create.desktopOnly")}</h2>
         <p className="mx-auto mt-2 max-w-md text-sm text-slate-400">
-          The 3D warehouse designer requires a larger screen. Please open this page on a desktop or tablet.
+          {t("create.desktopOnlyDescription")}
         </p>
       </div>
     </div>

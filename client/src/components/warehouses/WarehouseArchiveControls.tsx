@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { WarehouseArchiveMode } from "../../types/warehouse";
 
 export function WarehouseArchiveControls({
@@ -7,6 +8,14 @@ export function WarehouseArchiveControls({
   active: WarehouseArchiveMode;
   onChange: (mode: WarehouseArchiveMode) => void;
 }) {
+  const { t } = useTranslation("warehouses");
+
+  const modeLabels: Record<WarehouseArchiveMode, string> = {
+    active: t("archiveControls.current"),
+    archived: t("archiveControls.archived"),
+    all: t("archiveControls.all"),
+  };
+
   return (
     <div className="flex flex-wrap gap-2">
       {(["active", "archived", "all"] as const).map((mode) => (
@@ -16,7 +25,7 @@ export function WarehouseArchiveControls({
           onClick={() => onChange(mode)}
           type="button"
         >
-          {mode === "active" ? "Current" : mode === "archived" ? "Archived" : "All"}
+          {modeLabels[mode]}
         </button>
       ))}
     </div>

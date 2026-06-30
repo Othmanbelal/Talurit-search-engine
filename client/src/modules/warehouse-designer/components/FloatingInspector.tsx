@@ -1,5 +1,6 @@
 import { PointerEvent, useState } from "react";
 import { GripHorizontal, Minimize2, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { InspectorPanel } from "./InspectorPanel";
 import { useStudioStore } from "../store/useStudioStore";
 
@@ -9,6 +10,7 @@ type FloatingInspectorProps = {
 };
 
 export function FloatingInspector({ open, onClose }: FloatingInspectorProps) {
+  const { t } = useTranslation("warehouses");
   const selected = useStudioStore((state) => state.selectedObject());
   const [collapsed, setCollapsed] = useState(false);
   const [position, setPosition] = useState({ x: 96, y: 88 });
@@ -38,7 +40,7 @@ export function FloatingInspector({ open, onClose }: FloatingInspectorProps) {
       <div className="floating-inspector-handle" onPointerDown={beginDrag} onPointerMove={move} onPointerUp={endDrag} onPointerCancel={endDrag}>
         <GripHorizontal size={16} />
         <div>
-          <p className="eyebrow">Floating precision editor</p>
+          <p className="eyebrow">{t("designer.inspector")}</p>
           <h2>{selected.name}</h2>
         </div>
         <button onPointerDown={(event) => event.stopPropagation()} onClick={() => setCollapsed((value) => !value)} aria-label="Collapse inspector">

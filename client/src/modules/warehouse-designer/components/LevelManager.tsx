@@ -1,5 +1,6 @@
 import { Copy, Eye, EyeOff, Layers, Plus, Trash2, ChevronUp, ChevronDown } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useStudioStore } from "../store/useStudioStore";
 import { formatLength, metersToUnit, unitToMeters } from "../utils/units";
 import { sortedLevels } from "../utils/levels";
@@ -17,6 +18,7 @@ const viewModes: Array<{ id: LevelViewMode; label: string; help: string }> = [
 ];
 
 export function LevelManager() {
+  const { t } = useTranslation("warehouses");
   const settings = useStudioStore((state) => state.settings);
   const objects = useStudioStore((state) => state.objects);
   const addLevel = useStudioStore((state) => state.addLevel);
@@ -48,7 +50,7 @@ export function LevelManager() {
   const stepStack = (direction: -1 | 1) => { setViewMode("stack"); showLevelStackToIndex(visibleTopIndex + direction); };
 
   return <section className="level-manager tool-card polished-level-manager">
-    <div className="level-manager-header"><div><p className="eyebrow">Floor visibility</p><h3><Layers size={15} /> Level stack</h3></div></div>
+    <div className="level-manager-header"><div><p className="eyebrow">{t("designer.levels")}</p><h3><Layers size={15} /> {t("designer.levels")}</h3></div></div>
     {topLevel ? <div className="level-stepper polished-stepper">
       <button disabled={visibleTopIndex <= 0} onClick={() => stepStack(-1)} title="Hide the highest visible level"><ChevronDown size={16} /></button>
       <div><strong>Showing up to {topLevel.name}</strong><span>{visibleTopIndex + 1} of {levels.length} levels visible · top Z {formatLength(topLevel.elevation, settings.unit, 2)}</span></div>
@@ -56,7 +58,7 @@ export function LevelManager() {
     </div> : null}
     <div className="level-view-modes">{viewModes.map((mode) => <button key={mode.id} className={settings.levelViewMode === mode.id ? "active" : ""} onClick={() => setViewMode(mode.id)}><strong>{mode.label}</strong><span>{mode.help}</span></button>)}</div>
     <p className="level-help">A level name is optional. Use names like Ground Floor, Mezzanine, or Office Level so stacked floors are easier to find later.</p>
-    <div className="level-create-row"><input value={newName} onChange={(event) => setNewName(event.target.value)} placeholder="Optional level name" /><input type="number" step={settings.unit === "m" ? 0.25 : 100} value={newElevation} onChange={(event) => setNewElevation(Number(event.target.value))} /><button onClick={createLevel}><Plus size={14} /> Add level</button></div>
+    <div className="level-create-row"><input value={newName} onChange={(event) => setNewName(event.target.value)} placeholder="Optional level name" /><input type="number" step={settings.unit === "m" ? 0.25 : 100} value={newElevation} onChange={(event) => setNewElevation(Number(event.target.value))} /><button onClick={createLevel}><Plus size={14} /> {t("designer.addLevel")}</button></div>
     <div className="level-list">{levelStats.map((level) => {
       const isActive = level.id === settings.activeLevelId;
       return <div key={level.id} className={isActive ? "level-card active" : "level-card"}>

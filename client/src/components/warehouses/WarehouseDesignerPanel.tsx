@@ -1,4 +1,5 @@
 import { lazy, Suspense } from "react";
+import { useTranslation } from "react-i18next";
 import type { ProjectData } from "../../modules/warehouse-designer/types";
 import type { WarehouseLayout } from "../../types/warehouse";
 
@@ -11,6 +12,8 @@ type Props = {
 };
 
 export function WarehouseDesignerPanel({ canEdit, onSaveLayout, warehouse }: Props) {
+  const { t } = useTranslation("warehouses");
+
   async function saveProject(project: ProjectData) {
     // The designer exports a normalized project object; the backend stores it as layoutData JSON.
     await onSaveLayout(project as unknown as Record<string, unknown>);
@@ -20,12 +23,12 @@ export function WarehouseDesignerPanel({ canEdit, onSaveLayout, warehouse }: Pro
     <section className="space-y-3">
       <div className="flex flex-col justify-between gap-2 lg:flex-row lg:items-end">
         <div>
-          <h2 className="text-xl font-semibold text-white">3D warehouse designer</h2>
+          <h2 className="text-xl font-semibold text-white">{t("designer.3dDesigner")}</h2>
           <p className="text-sm text-slate-400">
-            Design the warehouse here and save it directly to the database.
+            {t("designer.designDescription")}
           </p>
         </div>
-        {!canEdit ? <span className="rounded-md border border-line px-3 py-2 text-sm text-slate-300">Read only</span> : null}
+        {!canEdit ? <span className="rounded-md border border-line px-3 py-2 text-sm text-slate-300">{t("designer.readOnly")}</span> : null}
       </div>
       <Suspense fallback={<DesignerLoading />}>
         <WarehouseDesignerStudio

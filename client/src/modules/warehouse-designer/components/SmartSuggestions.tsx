@@ -1,8 +1,10 @@
 import { AlertTriangle, Move, Ruler, Wand2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { ValidationIssue } from "../types";
 import { useStudioStore } from "../store/useStudioStore";
 
 export function SmartSuggestions({ issues, openInspector, openIssues }: { issues: ValidationIssue[]; openInspector: () => void; openIssues: () => void }) {
+  const { t } = useTranslation("warehouses");
   const selected = useStudioStore((state) => state.selectedObject());
   const room = useStudioStore((state) => state.room);
   const updateObject = useStudioStore((state) => state.updateObject);
@@ -24,7 +26,7 @@ export function SmartSuggestions({ issues, openInspector, openIssues }: { issues
       <div className="suggestion-title">
         <AlertTriangle size={18} />
         <div>
-          <strong>Smart fix suggestions</strong>
+          <strong>{t("designer.suggestions")}</strong>
           <span>{selectedIssues[0].message}</span>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import { ChevronRight, Link2Off, Map as MapIcon, Package, Settings2, X } from "lucide-react";
 import { Modal } from "../Modal";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useWarehouseShelfView } from "../../hooks/useWarehouseShelfView";
 import type { ShelfViewItem, ShelfViewShelf, ShelfViewSlot } from "../../types/warehouse";
 import { WarehouseSlotCard } from "./WarehouseSlotCard";
@@ -20,6 +21,7 @@ type RackGroup = {
 };
 
 export function WarehouseSlotMapPanel({ canEdit = false, warehouseId }: Props) {
+  const { t } = useTranslation("warehouses");
   const { data, isLoading, error, reload } = useWarehouseShelfView(warehouseId);
   const [selectedSlot, setSelectedSlot] = useState<ShelfViewSlot | null>(null);
   const [assignSlot, setAssignSlot] = useState<ShelfViewSlot | null>(null);
@@ -37,14 +39,14 @@ export function WarehouseSlotMapPanel({ canEdit = false, warehouseId }: Props) {
             <MapIcon size={18} />
           </span>
           <div>
-            <h2 className="text-lg font-semibold text-white">Slot map</h2>
-            <p className="text-sm text-slate-400">An occupied slot displays the attached item's existing placement location.</p>
+            <h2 className="text-lg font-semibold text-white">{t("slotMap.title")}</h2>
+            <p className="text-sm text-slate-400">{t("slotMap.description")}</p>
           </div>
         </div>
         <div className="flex gap-4 text-xs">
-          <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm border border-emerald-400/40 bg-emerald-500/20" /> Occupied</span>
-          <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm border border-line bg-white/5" /> Free</span>
-          <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm border border-dashed border-slate-700" /> Available</span>
+          <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm border border-emerald-400/40 bg-emerald-500/20" /> {t("slotMap.occupied")}</span>
+          <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm border border-line bg-white/5" /> {t("slotMap.free")}</span>
+          <span className="flex items-center gap-1.5"><span className="h-3 w-3 rounded-sm border border-dashed border-slate-700" /> {t("slotMap.available")}</span>
         </div>
       </div>
 
@@ -53,14 +55,14 @@ export function WarehouseSlotMapPanel({ canEdit = false, warehouseId }: Props) {
       {noLinks ? (
         <div className="rounded-lg border border-dashed border-line p-8 text-center">
           <Link2Off className="mx-auto mb-3 text-slate-500" size={28} />
-          <p className="text-sm font-semibold text-slate-300">No inventory linked</p>
-          <p className="mt-1 text-sm text-slate-500">Link an inventory table or group from the Linked inventory tab to see items on shelves.</p>
+          <p className="text-sm font-semibold text-slate-300">{t("slotMap.noInventoryLinked")}</p>
+          <p className="mt-1 text-sm text-slate-500">{t("slotMap.noInventoryLinkedDescription")}</p>
         </div>
       ) : null}
 
       {!noLinks && groups.length === 0 ? (
         <p className="rounded-lg border border-dashed border-line p-8 text-center text-sm text-slate-400">
-          No shelves yet. Use the Shelves tab to add rack levels and slots.
+          {t("slotMap.noShelves")}
         </p>
       ) : null}
 
@@ -83,6 +85,7 @@ function RackCard({ group, onSelect, selectedSlot }: {
   onSelect: (slot: ShelfViewSlot) => void;
   selectedSlot: ShelfViewSlot | null;
 }) {
+  const { t } = useTranslation("warehouses");
   const [expanded, setExpanded] = useState(false);
   const occupancyPct = group.totalSlots > 0 ? Math.round((group.occupiedSlots / group.totalSlots) * 100) : 0;
 
@@ -97,7 +100,7 @@ function RackCard({ group, onSelect, selectedSlot }: {
           <ChevronRight size={16} />
         </span>
         <span className="flex-1 font-semibold text-white">{group.name}</span>
-        <span className="text-xs text-slate-400">{group.occupiedSlots} / {group.totalSlots} slots occupied</span>
+        <span className="text-xs text-slate-400">{t("slotMap.slotsOccupied", { occupied: group.occupiedSlots, total: group.totalSlots })}</span>
         <span className="ml-1 min-w-[34px] rounded-full border border-line px-2 py-0.5 text-center text-[11px] text-slate-500">
           {occupancyPct}%
         </span>
@@ -119,8 +122,9 @@ function ShelfLevelSection({ onSelect, selectedSlot, shelf }: {
   selectedSlot: ShelfViewSlot | null;
   shelf: ShelfViewShelf;
 }) {
+  const { t } = useTranslation("warehouses");
   const label = shelf.shelfKind === "rack_level" && shelf.levelNumber != null
-    ? `Level ${shelf.levelNumber}`
+    ? t("slotMap.levelLabel", { number: shelf.levelNumber })
     : shelf.displayName ?? shelf.code;
 
   const occupiedCount = shelf.slots.filter((s) => s.items.length > 0).length;
@@ -149,10 +153,11 @@ function ShelfLevelSection({ onSelect, selectedSlot, shelf }: {
 }
 
 function SlotDetailPanel({ canEdit, onAssign, onClose, slot }: { canEdit: boolean; onAssign: () => void; onClose: () => void; slot: ShelfViewSlot }) {
+  const { t } = useTranslation("warehouses");
   const firstItem = slot.items[0];
   const label = firstItem
-    ? `${firstItem.locationCode ?? "Placement unassigned"}${firstItem.compartment ? ` / FACK ${firstItem.compartment}` : ""}`
-    : slot.slotIndex ? `Physical slot #${slot.slotIndex}` : "Physical warehouse slot";
+    ? `${firstItem.locationCode ?? t("slotMap.placementUnassigned")}${firstItem.compartment ? ` / FACK ${firstItem.compartment}` : ""}`
+    : slot.slotIndex ? t("slotMap.physicalSlot", { index: slot.slotIndex }) : t("slotMap.physicalWarehouseSlot");
 
   return (
     <Modal maxWidth="max-w-2xl" onClose={onClose}>
@@ -164,7 +169,7 @@ function SlotDetailPanel({ canEdit, onAssign, onClose, slot }: { canEdit: boolea
         <div className="flex items-center gap-2">
           {canEdit ? (
             <button className="inline-flex items-center gap-2 rounded-md border border-accent/40 px-3 py-2 text-sm font-semibold text-accent hover:border-accent" onClick={onAssign} type="button">
-              <Settings2 size={15} /> Manage assignment
+              <Settings2 size={15} /> {t("slotMap.manageAssignment")}
             </button>
           ) : null}
           <button className="rounded-md p-1.5 text-slate-400 hover:bg-white/5 hover:text-white" onClick={onClose} type="button">
@@ -177,7 +182,7 @@ function SlotDetailPanel({ canEdit, onAssign, onClose, slot }: { canEdit: boolea
           <div className="rounded-lg border border-dashed border-line p-6 text-center">
             <Package className="mx-auto mb-2 text-slate-600" size={24} />
             <p className="text-sm text-slate-500">
-              No inventory row is assigned to this warehouse slot.
+              {t("slotMap.noItemsAtSlot")}
             </p>
           </div>
         ) : (

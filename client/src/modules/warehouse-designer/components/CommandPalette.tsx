@@ -1,5 +1,6 @@
 import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { Box, Columns3, Copy, DoorOpen, FileText, MoveUpRight, Keyboard, Layers, PackagePlus, RotateCw, Search, ShieldAlert, Trash2, Warehouse, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { DrawerTab } from "./ToolDock";
 import type { ObjectType } from "../types";
 import { useStudioStore } from "../store/useStudioStore";
@@ -33,6 +34,7 @@ const createCommands: Array<{ type: ObjectType; title: string; hint: string; ico
 ];
 
 export function CommandPalette({ open, onClose, openDrawer, openInspector, notify }: CommandPaletteProps) {
+  const { t } = useTranslation("warehouses");
   const [query, setQuery] = useState("");
   const selected = useStudioStore((state) => state.selectedObject());
   const room = useStudioStore((state) => state.room);
@@ -153,7 +155,7 @@ export function CommandPalette({ open, onClose, openDrawer, openInspector, notif
 
   return (
     <div className="command-backdrop" onMouseDown={onClose}>
-      <section className="command-palette glass-panel" onMouseDown={(event) => event.stopPropagation()} role="dialog" aria-label="Command palette">
+      <section className="command-palette glass-panel" onMouseDown={(event) => event.stopPropagation()} role="dialog" aria-label={t("designer.commandPalette")}>
         <div className="command-search">
           <Search size={18} />
           <input autoFocus value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search commands, create objects, edit selected..." />

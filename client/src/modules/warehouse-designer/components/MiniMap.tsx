@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import type { ValidationIssue } from "../types";
 import { useStudioStore } from "../store/useStudioStore";
 import { objectCorners, polygonBounds, roomBoundary } from "../utils/geometry";
@@ -7,6 +8,7 @@ function points(points: Array<{ x: number; y: number }>) {
 }
 
 export function MiniMap({ issues }: { issues: ValidationIssue[] }) {
+  const { t } = useTranslation("warehouses");
   const room = useStudioStore((state) => state.room);
   const objects = useStudioStore((state) => state.objects);
   const selectedId = useStudioStore((state) => state.selectedId);
@@ -19,7 +21,7 @@ export function MiniMap({ issues }: { issues: ValidationIssue[] }) {
   return (
     <section className="mini-map glass-panel" aria-label="Warehouse overview mini map">
       <div className="mini-map-header">
-        <span>Overview</span>
+        <span>{t("designer.minimap")}</span>
         <small>{objects.length} objects</small>
       </div>
       <svg viewBox={viewBox}>

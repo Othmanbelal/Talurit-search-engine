@@ -2,6 +2,7 @@ import { BrowserQRCodeReader, type IScannerControls } from "@zxing/browser";
 import { DecodeHintType } from "@zxing/library";
 import { Camera, Search, X } from "lucide-react";
 import { FormEvent, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   onClose: () => void;
@@ -9,6 +10,7 @@ type Props = {
 };
 
 export function WarehouseSlotQrScanner({ onClose, onCode }: Props) {
+  const { t } = useTranslation("warehouses");
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const controlsRef = useRef<IScannerControls | null>(null);
   const scannedRef = useRef(false);
@@ -39,7 +41,7 @@ export function WarehouseSlotQrScanner({ onClose, onCode }: Props) {
         },
       );
     } catch {
-      setError("Camera could not be opened. Enter the QR value manually.");
+      setError(t("qrScanner.cameraError"));
     }
   }
 
@@ -56,7 +58,7 @@ export function WarehouseSlotQrScanner({ onClose, onCode }: Props) {
       onClose();
     } catch (caught) {
       scannedRef.current = false;
-      setError(caught instanceof Error ? caught.message : "QR lookup failed.");
+      setError(caught instanceof Error ? caught.message : t("qrScanner.qrLookupFailed"));
     } finally {
       setIsBusy(false);
     }
@@ -74,8 +76,8 @@ export function WarehouseSlotQrScanner({ onClose, onCode }: Props) {
       <section className="w-full max-w-2xl overflow-hidden rounded-xl border border-line bg-slate-950 shadow-2xl">
         <header className="flex items-start justify-between gap-4 border-b border-line p-5">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">Assign by QR</p>
-            <h2 className="mt-2 text-xl font-semibold text-white">Scan linked inventory item</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-accent">{t("qrScanner.title")}</p>
+            <h2 className="mt-2 text-xl font-semibold text-white">{t("qrScanner.subtitle")}</h2>
           </div>
           <button className="rounded-md border border-line bg-white/5 p-2 text-slate-300 hover:text-white" onClick={onClose} type="button">
             <X size={18} />
@@ -85,13 +87,13 @@ export function WarehouseSlotQrScanner({ onClose, onCode }: Props) {
           <div className="relative overflow-hidden rounded-lg border border-line bg-black">
             <video className="aspect-video w-full object-cover" muted playsInline ref={videoRef} />
             <span className="absolute left-3 top-3 inline-flex items-center gap-2 rounded-full border border-emerald-400/40 bg-black/60 px-3 py-1 text-xs text-emerald-100">
-              <Camera size={14} /> Camera
+              <Camera size={14} /> {t("qrScanner.camera")}
             </span>
           </div>
           <form className="flex gap-2" onSubmit={submitManual}>
-            <input className="min-w-0 flex-1 rounded-md border border-line bg-slate-900 px-3 py-2 text-sm text-white" onChange={(event) => setManualCode(event.target.value)} placeholder="Or enter QR value manually" value={manualCode} />
+            <input className="min-w-0 flex-1 rounded-md border border-line bg-slate-900 px-3 py-2 text-sm text-white" onChange={(event) => setManualCode(event.target.value)} placeholder={t("qrScanner.manualPlaceholder")} value={manualCode} />
             <button className="inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-semibold text-slate-950 disabled:opacity-60" disabled={isBusy || !manualCode.trim()} type="submit">
-              <Search size={15} /> Lookup
+              <Search size={15} /> {t("qrScanner.lookup")}
             </button>
           </form>
           {error ? <p className="rounded-md border border-red-400/30 bg-red-500/10 p-3 text-sm text-red-100">{error}</p> : null}

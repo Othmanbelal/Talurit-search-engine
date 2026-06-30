@@ -1,11 +1,13 @@
 import { Pencil, Warehouse } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { WarehouseArchiveControls } from "../components/warehouses/WarehouseArchiveControls";
 import { WarehouseCard } from "../components/warehouses/WarehouseCard";
 import { usePermissions } from "../hooks/usePermissions";
 import { useWarehouses } from "../hooks/useWarehouses";
 
 export function WarehousesPage() {
+  const { t } = useTranslation("warehouses");
   const warehouses = useWarehouses();
   const { canManageWarehouses } = usePermissions();
   const canCreate = canManageWarehouses;
@@ -16,10 +18,10 @@ export function WarehousesPage() {
     <div className="mx-auto max-w-7xl space-y-5">
       <header className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">Warehouses</p>
-          <h1 className="mt-3 text-3xl font-semibold text-white md:text-4xl">Warehouse layouts</h1>
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">{t("sectionLabel")}</p>
+          <h1 className="mt-3 text-3xl font-semibold text-white md:text-4xl">{t("title")}</h1>
           <p className="mt-2 max-w-3xl text-sm text-slate-400">
-            Saved warehouse layouts will connect shelves, slots, and 3D pallet placement to inventory rows.
+            {t("subtitle")}
           </p>
         </div>
         {canCreate ? (
@@ -27,7 +29,7 @@ export function WarehousesPage() {
             className="inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2.5 text-sm font-semibold text-slate-950 hover:opacity-90"
             to="/warehouses/new"
           >
-            <Pencil size={16} /> Design new warehouse
+            <Pencil size={16} /> {t("designNew")}
           </Link>
         ) : null}
       </header>
@@ -43,8 +45,8 @@ export function WarehousesPage() {
             <WarehouseCard
               key={warehouse.id}
               warehouse={warehouse}
-              onArchive={(target) => canArchive && window.confirm("Archive this warehouse layout?") && void warehouses.archive(target.id)}
-              onDelete={(target) => canDelete && window.confirm(`Permanently delete "${target.name}"? This cannot be undone.`) && void warehouses.remove(target.id)}
+              onArchive={(target) => canArchive && window.confirm(t("confirmArchive")) && void warehouses.archive(target.id)}
+              onDelete={(target) => canDelete && window.confirm(t("confirmDelete", { name: target.name })) && void warehouses.remove(target.id)}
               onRestore={(target) => canArchive && void warehouses.restore(target.id)}
             />
           ))}
@@ -55,11 +57,12 @@ export function WarehousesPage() {
 }
 
 function EmptyState() {
+  const { t } = useTranslation("warehouses");
   return (
     <section className="rounded-lg border border-line bg-panel p-8 text-center">
       <Warehouse className="mx-auto text-accent" size={32} />
-      <h2 className="mt-4 text-xl font-semibold text-white">No warehouse layouts yet</h2>
-      <p className="mt-2 text-sm text-slate-400">Create a warehouse layout before connecting shelves and slots to inventory.</p>
+      <h2 className="mt-4 text-xl font-semibold text-white">{t("empty.title")}</h2>
+      <p className="mt-2 text-sm text-slate-400">{t("empty.description")}</p>
     </section>
   );
 }

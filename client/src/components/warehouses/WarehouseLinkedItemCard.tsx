@@ -1,4 +1,5 @@
 import { Boxes, ExternalLink, Package, Warehouse, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { buildApiUrl } from "../../services/http";
 import type { ShelfViewItem } from "../../types/warehouse";
 
@@ -14,6 +15,7 @@ type Props = {
  * highlighted container by a leader line that follows the projected 3D point.
  */
 export function WarehouseLinkedItemCard({ items, onClose, onOpen, screenPos }: Props) {
+  const { t } = useTranslation("warehouses");
   if (items.length === 0) return null;
   const primary = items[0];
 
@@ -23,7 +25,7 @@ export function WarehouseLinkedItemCard({ items, onClose, onOpen, screenPos }: P
       <div className="pointer-events-auto absolute left-4 top-4 z-20 w-[min(20rem,calc(100%-2rem))] overflow-hidden rounded-xl border border-accent/40 bg-slate-900/90 shadow-industrial backdrop-blur-md">
         <header className="flex items-center justify-between gap-3 border-b border-white/10 bg-accent/10 px-4 py-2.5">
           <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-accent">
-            <Warehouse size={14} /> Stored here
+            <Warehouse size={14} /> {t("viewer.storedHere")}
           </span>
           <button className="rounded p-1 text-slate-400 hover:bg-white/10 hover:text-white" onClick={onClose} type="button" aria-label="Dismiss">
             <X size={15} />
@@ -43,7 +45,7 @@ export function WarehouseLinkedItemCard({ items, onClose, onOpen, screenPos }: P
             onClick={() => onOpen(primary)}
             type="button"
           >
-            <ExternalLink size={14} /> Open inventory row
+            <ExternalLink size={14} /> {t("viewer.openInventoryRow")}
           </button>
         </footer>
       </div>

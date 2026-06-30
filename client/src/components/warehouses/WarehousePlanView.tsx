@@ -1,5 +1,6 @@
 import { Maximize2, X } from "lucide-react";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { LevelDefinition, SceneObject } from "../../modules/warehouse-designer/types";
 import type { WarehouseSceneObject } from "../../types/warehouse";
 
@@ -20,6 +21,7 @@ const DIM_TEXT = "#4a7898";
 const LEVEL_EPS = 0.001;
 
 export function WarehousePlanView({ layoutData, onRackSelect, sceneObjects, selectedRackId, warehouseName }: Props) {
+  const { t } = useTranslation("warehouses");
   const { room, objects, levels } = parseLayout(layoutData);
   const wt = room.wallThickness ?? 0.12;
   const linkedMap = new Map(sceneObjects.map((o) => [o.externalObjectId, o.linkedShelfCount]));
@@ -244,15 +246,15 @@ export function WarehousePlanView({ layoutData, onRackSelect, sceneObjects, sele
   const header = (
     <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/10 bg-slate-900/80 px-4 py-2.5 backdrop-blur">
       <div className="flex items-center gap-3">
-        <span className="text-xs font-bold uppercase tracking-widest text-slate-400">Floor plan</span>
+        <span className="text-xs font-bold uppercase tracking-widest text-slate-400">{t("viewer.floorPlan")}</span>
         {warehouseName ? <span className="text-sm font-semibold text-white">{warehouseName}</span> : null}
         <span className="rounded-full border border-white/10 px-2 py-0.5 text-[10px] text-slate-500">{sceneW.toFixed(1)} × {sceneD.toFixed(1)} m</span>
       </div>
       <div className="flex items-center gap-2">
-        {onRackSelect ? <span className="text-[11px] text-accent/70">Click rack to configure</span> : null}
-        <span className="hidden text-[11px] text-slate-600 sm:block">Scroll · Drag</span>
-        <button className="rounded border border-white/10 px-2 py-0.5 text-[11px] text-slate-500 hover:text-white" onClick={() => setVb(initVB())} type="button">Reset</button>
-        <button className="rounded border border-white/10 p-1.5 text-slate-400 hover:border-accent/50 hover:text-accent" onClick={() => setFullscreen((f) => !f)} title={fullscreen ? "Exit fullscreen" : "Fullscreen"} type="button">
+        {onRackSelect ? <span className="text-[11px] text-accent/70">{t("viewer.clickRackToConfigure")}</span> : null}
+        <span className="hidden text-[11px] text-slate-600 sm:block">{t("viewer.scrollDrag")}</span>
+        <button className="rounded border border-white/10 px-2 py-0.5 text-[11px] text-slate-500 hover:text-white" onClick={() => setVb(initVB())} type="button">{t("viewer.reset")}</button>
+        <button className="rounded border border-white/10 p-1.5 text-slate-400 hover:border-accent/50 hover:text-accent" onClick={() => setFullscreen((f) => !f)} title={fullscreen ? t("viewer.exitFullscreen") : t("viewer.fullscreen")} type="button">
           {fullscreen ? <X size={14} /> : <Maximize2 size={14} />}
         </button>
       </div>

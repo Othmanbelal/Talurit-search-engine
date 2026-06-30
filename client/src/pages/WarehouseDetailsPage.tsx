@@ -2,6 +2,7 @@ import type React from "react";
 import { ArrowLeft, Archive, Boxes, Link2, Map, Pencil, RotateCcw, Trash2, Warehouse } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { InlineManagerStrip } from "../components/InlineManagerStrip";
 import { WarehouseDetailsPanel } from "../components/warehouses/WarehouseDetailsPanel";
 import { WarehouseInventoryLinksPanel } from "../components/warehouses/WarehouseInventoryLinksPanel";
@@ -30,6 +31,7 @@ export function WarehouseDetailsPage() {
   const canArchive = canManageWarehouses;
   const canDelete = canManageWarehouses;
   const focusSlotId = searchParams.get("slot");
+  const { t } = useTranslation("warehouses");
 
   useEffect(() => {
     if (!focusSlotId) return;
@@ -55,7 +57,7 @@ export function WarehouseDetailsPage() {
     <div className="space-y-5">
       <div className="mx-auto max-w-7xl">
         <Link className="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-accent" to="/warehouses">
-          <ArrowLeft size={16} /> Warehouses
+          <ArrowLeft size={16} /> {t("sectionLabel")}
         </Link>
       </div>
       {warehouse.error ? <ErrorMessage message={warehouse.error} /> : null}
@@ -64,9 +66,9 @@ export function WarehouseDetailsPage() {
         <div className="mx-auto max-w-7xl space-y-5">
           <header className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">Warehouse layout</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">{t("details.sectionLabel")}</p>
               <h1 className="mt-3 text-3xl font-semibold text-white md:text-4xl">{warehouse.warehouse.name}</h1>
-              <p className="mt-2 text-sm text-slate-400">{warehouse.warehouse.description || "No description recorded."}</p>
+              <p className="mt-2 text-sm text-slate-400">{warehouse.warehouse.description || t("noDescription")}</p>
               <div className="mt-3">
                 <InlineManagerStrip canEdit={canEdit} resourceId={warehouse.warehouse.id} resourceType="warehouse" />
               </div>
@@ -78,7 +80,7 @@ export function WarehouseDetailsPage() {
                   onClick={() => navigate(`/warehouses/${warehouse.warehouse!.id}/design`)}
                   type="button"
                 >
-                  <Pencil size={16} /> Edit design
+                  <Pencil size={16} /> {t("details.editDesign")}
                 </button>
               ) : null}
               {canArchive ? (
@@ -92,13 +94,13 @@ export function WarehouseDetailsPage() {
                 <button
                   className="inline-flex items-center gap-2 rounded-md border border-red-400/40 bg-red-500/10 px-3 py-2 text-sm font-semibold text-red-100 hover:border-red-400"
                   onClick={() => {
-                    if (window.confirm(`Permanently delete "${warehouse.warehouse!.name}"? This cannot be undone.`)) {
+                    if (window.confirm(t("confirmDelete", { name: warehouse.warehouse!.name }))) {
                       void warehouse.remove().then(() => navigate("/warehouses"));
                     }
                   }}
                   type="button"
                 >
-                  <Trash2 size={16} /> Delete
+                  <Trash2 size={16} /> {t("details.delete")}
                 </button>
               ) : null}
             </div>
@@ -138,11 +140,12 @@ export function WarehouseDetailsPage() {
 }
 
 function TabBar({ activeTab, onSelect }: { activeTab: Tab; onSelect: (tab: Tab) => void }) {
+  const { t } = useTranslation("warehouses");
   return (
     <nav className="flex gap-1 rounded-lg border border-line bg-white/[0.03] p-1">
-      <TabButton active={activeTab === "shelves"} icon={<Boxes size={15} />} label="Shelves" onClick={() => onSelect("shelves")} />
-      <TabButton active={activeTab === "map"} icon={<Map size={15} />} label="Slot map" onClick={() => onSelect("map")} />
-      <TabButton active={activeTab === "inventory"} icon={<Link2 size={15} />} label="Linked inventory" onClick={() => onSelect("inventory")} />
+      <TabButton active={activeTab === "shelves"} icon={<Boxes size={15} />} label={t("details.tabShelves")} onClick={() => onSelect("shelves")} />
+      <TabButton active={activeTab === "map"} icon={<Map size={15} />} label={t("details.tabSlotMap")} onClick={() => onSelect("map")} />
+      <TabButton active={activeTab === "inventory"} icon={<Link2 size={15} />} label={t("details.tabLinkedInventory")} onClick={() => onSelect("inventory")} />
     </nav>
   );
 }
@@ -160,20 +163,22 @@ function TabButton({ active, icon, label, onClick }: { active: boolean; icon: Re
 }
 
 function ArchiveButton({ archived, onArchive, onRestore }: { archived: boolean; onArchive: () => Promise<void>; onRestore: () => Promise<void> }) {
+  const { t } = useTranslation("warehouses");
   if (archived) {
-    return <button className="inline-flex items-center gap-2 rounded-md border border-line px-3 py-2 text-sm font-semibold text-slate-200" onClick={() => void onRestore()} type="button"><RotateCcw size={16} /> Restore</button>;
+    return <button className="inline-flex items-center gap-2 rounded-md border border-line px-3 py-2 text-sm font-semibold text-slate-200" onClick={() => void onRestore()} type="button"><RotateCcw size={16} /> {t("details.restore")}</button>;
   }
-  return <button className="inline-flex items-center gap-2 rounded-md border border-line px-3 py-2 text-sm font-semibold text-slate-200" onClick={() => window.confirm("Archive this warehouse layout?") && void onArchive()} type="button"><Archive size={16} /> Archive</button>;
+  return <button className="inline-flex items-center gap-2 rounded-md border border-line px-3 py-2 text-sm font-semibold text-slate-200" onClick={() => window.confirm(t("confirmArchive")) && void onArchive()} type="button"><Archive size={16} /> {t("details.archive")}</button>;
 }
 
 function WarehouseStats({ warehouse }: { warehouse: { counts: { objects: number; shelves: number; slots: number; assignments: number }; version: number } }) {
+  const { t } = useTranslation("warehouses");
   return (
     <section className="grid gap-3 md:grid-cols-5">
-      <Metric icon={<Warehouse size={16} />} label="Objects" value={warehouse.counts.objects} />
-      <Metric icon={<Boxes size={16} />} label="Shelves" value={warehouse.counts.shelves} />
-      <Metric label="Slots" value={warehouse.counts.slots} />
-      <Metric label="Assigned" value={warehouse.counts.assignments} />
-      <Metric label="Version" value={warehouse.version} />
+      <Metric icon={<Warehouse size={16} />} label={t("details.objects")} value={warehouse.counts.objects} />
+      <Metric icon={<Boxes size={16} />} label={t("details.shelves")} value={warehouse.counts.shelves} />
+      <Metric label={t("details.slots")} value={warehouse.counts.slots} />
+      <Metric label={t("details.assigned")} value={warehouse.counts.assignments} />
+      <Metric label={t("details.version")} value={warehouse.version} />
     </section>
   );
 }

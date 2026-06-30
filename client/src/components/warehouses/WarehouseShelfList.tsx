@@ -1,5 +1,6 @@
 import { Edit3, Plus, Save, Trash2, X } from "lucide-react";
 import { FormEvent, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { UpdateWarehouseShelfInput, UpdateWarehouseSlotInput, WarehouseShelf, WarehouseSlot } from "../../types/warehouse";
 
 type Props = {
@@ -13,8 +14,9 @@ type Props = {
 };
 
 export function WarehouseShelfList(props: Props) {
+  const { t } = useTranslation("warehouses");
   if (props.shelves.length === 0) {
-    return <div className="rounded-lg border border-dashed border-line p-8 text-center text-sm text-slate-400">No warehouse shelves yet.</div>;
+    return <div className="rounded-lg border border-dashed border-line p-8 text-center text-sm text-slate-400">{t("shelf.noShelves")}</div>;
   }
 
   return (
@@ -25,6 +27,7 @@ export function WarehouseShelfList(props: Props) {
 }
 
 function ShelfCard({ canEdit, onAddSlot, onDeleteShelf, onDeleteSlot, onUpdateShelf, onUpdateSlot, shelf }: Props & { shelf: WarehouseShelf }) {
+  const { t } = useTranslation("warehouses");
   const [editing, setEditing] = useState(false);
   const [slotInput, setSlotInput] = useState("");
 
@@ -42,14 +45,14 @@ function ShelfCard({ canEdit, onAddSlot, onDeleteShelf, onDeleteSlot, onUpdateSh
         {canEdit ? (
           <div className="flex shrink-0 items-center gap-2">
             <button className="rounded-md border border-line p-2 text-slate-300 hover:text-white" onClick={() => setEditing(true)} title="Edit shelf" type="button"><Edit3 size={15} /></button>
-            <button className="rounded-md border border-red-400/40 p-2 text-red-100 hover:bg-red-500/10" onClick={() => confirmDeleteShelf(shelf, onDeleteShelf)} title="Delete shelf" type="button"><Trash2 size={15} /></button>
+            <button className="rounded-md border border-red-400/40 p-2 text-red-100 hover:bg-red-500/10" onClick={() => confirmDeleteShelf(shelf, onDeleteShelf, t)} title="Delete shelf" type="button"><Trash2 size={15} /></button>
           </div>
         ) : null}
       </div>
       {canEdit && shelf.shelfKind !== "rack_level" ? (
         <form className="mt-3 flex gap-2" onSubmit={addSlot}>
-          <input className="min-w-0 flex-1 rounded-md border border-line bg-slate-950 px-3 py-2 text-sm text-white" onChange={(event) => setSlotInput(event.target.value)} placeholder="Add FACK" value={slotInput} />
-          <button className="inline-flex items-center gap-2 rounded-md border border-line px-3 py-2 text-sm font-semibold text-slate-200" type="submit"><Plus size={15} /> Slot</button>
+          <input className="min-w-0 flex-1 rounded-md border border-line bg-slate-950 px-3 py-2 text-sm text-white" onChange={(event) => setSlotInput(event.target.value)} placeholder={t("shelf.addFack")} value={slotInput} />
+          <button className="inline-flex items-center gap-2 rounded-md border border-line px-3 py-2 text-sm font-semibold text-slate-200" type="submit"><Plus size={15} /> {t("shelf.addSlot")}</button>
         </form>
       ) : null}
       <div className="mt-4 flex flex-wrap gap-2">
@@ -69,11 +72,12 @@ function ShelfCard({ canEdit, onAddSlot, onDeleteShelf, onDeleteSlot, onUpdateSh
 }
 
 function ShelfHeader({ shelf }: { shelf: WarehouseShelf }) {
+  const { t } = useTranslation("warehouses");
   const title = shelf.shelfKind === "rack_level" && shelf.levelNumber ? `${shelf.warehouseObject?.name ?? "Rack"} / Level ${shelf.levelNumber}` : shelf.code;
   return (
     <div>
       <h3 className="text-lg font-semibold text-white">{title}</h3>
-      <p className="text-sm text-slate-400">{shelf.shelfKind === "rack_level" ? "Physical rack shelf level" : shelf.displayName || shelf.storageLocation?.displayName || "Warehouse shelf"}</p>
+      <p className="text-sm text-slate-400">{shelf.shelfKind === "rack_level" ? t("shelf.rackLevel") : shelf.displayName || shelf.storageLocation?.displayName || t("shelf.warehouseShelf")}</p>
       <div className="mt-2 flex flex-wrap gap-2 text-xs">
         <span className="rounded-full border border-line px-2 py-1 text-slate-300">{shelf.shelfKind}</span>
         <span className="rounded-full border border-line px-2 py-1 text-slate-300">{shelf.counts.slots} slots</span>
@@ -84,12 +88,13 @@ function ShelfHeader({ shelf }: { shelf: WarehouseShelf }) {
 }
 
 function ShelfEditForm({ onCancel, onSave, shelf }: { onCancel: () => void; onSave: (input: UpdateWarehouseShelfInput) => Promise<void>; shelf: WarehouseShelf }) {
+  const { t } = useTranslation("warehouses");
   const [code, setCode] = useState(shelf.code);
   const [displayName, setDisplayName] = useState(shelf.displayName ?? "");
   return (
     <form className="grid flex-1 gap-2 md:grid-cols-[1fr_1fr_auto_auto]" onSubmit={(event) => { event.preventDefault(); void onSave({ code, displayName: displayName || null }); }}>
       <input className="rounded-md border border-line bg-slate-950 px-3 py-2 text-sm text-white" onChange={(event) => setCode(event.target.value)} value={code} />
-      <input className="rounded-md border border-line bg-slate-950 px-3 py-2 text-sm text-white" onChange={(event) => setDisplayName(event.target.value)} placeholder="Display name" value={displayName} />
+      <input className="rounded-md border border-line bg-slate-950 px-3 py-2 text-sm text-white" onChange={(event) => setDisplayName(event.target.value)} placeholder={t("shelf.displayNamePlaceholder")} value={displayName} />
       <button className="rounded-md border border-emerald-400/40 p-2 text-emerald-100" title="Save" type="submit"><Save size={15} /></button>
       <button className="rounded-md border border-line p-2 text-slate-300" onClick={onCancel} title="Cancel" type="button"><X size={15} /></button>
     </form>
@@ -103,9 +108,10 @@ function SlotChip({ canEdit, isRackLevel, onDeleteSlot, onUpdateSlot, slot }: {
   onUpdateSlot: (slotId: string, input: UpdateWarehouseSlotInput) => Promise<void>;
   slot: WarehouseSlot;
 }) {
+  const { t } = useTranslation("warehouses");
   const [editing, setEditing] = useState(false);
   const [compartment, setCompartment] = useState(slot.compartment);
-  const label = isRackLevel ? rackSlotLabel(slot) : slot.locationAssigned ? `${slot.code} / FACK ${slot.compartment}` : "No location ID assigned";
+  const label = isRackLevel ? rackSlotLabel(slot, t) : slot.locationAssigned ? `${slot.code} / FACK ${slot.compartment}` : t("shelf.placementUnassigned");
   if (editing) {
     return (
       <form className="inline-flex items-center gap-1 rounded-md border border-line bg-slate-950 p-1" onSubmit={(event) => { event.preventDefault(); void onUpdateSlot(slot.id, { compartment }).then(() => setEditing(false)); }}>
@@ -120,21 +126,21 @@ function SlotChip({ canEdit, isRackLevel, onDeleteSlot, onUpdateSlot, slot }: {
       {slot.slotIndex ? `Slot ${slot.slotIndex}: ` : null}{label}
       {slot.assignmentCount ? <span className="text-xs text-emerald-200">{slot.assignmentCount}</span> : null}
       {canEdit && !isRackLevel ? <button className="text-slate-400 hover:text-white" onClick={() => setEditing(true)} title="Rename slot" type="button"><Edit3 size={13} /></button> : null}
-      {canEdit ? <button className="text-red-200 hover:text-red-100" onClick={() => confirmDeleteSlot(slot, onDeleteSlot)} title="Delete slot" type="button"><Trash2 size={13} /></button> : null}
+      {canEdit ? <button className="text-red-200 hover:text-red-100" onClick={() => confirmDeleteSlot(slot, onDeleteSlot, t)} title="Delete slot" type="button"><Trash2 size={13} /></button> : null}
     </span>
   );
 }
 
-function rackSlotLabel(slot: WarehouseSlot) {
+function rackSlotLabel(slot: WarehouseSlot, t: (key: string) => string) {
   const placement = slot.assignedPlacement;
-  if (!placement) return "Available";
-  return `${placement.locationCode ?? "Placement unassigned"}${placement.compartment ? ` / FACK ${placement.compartment}` : ""}`;
+  if (!placement) return t("shelf.available");
+  return `${placement.locationCode ?? t("shelf.placementUnassigned")}${placement.compartment ? ` / FACK ${placement.compartment}` : ""}`;
 }
 
-function confirmDeleteShelf(shelf: WarehouseShelf, onDelete: (id: string) => Promise<void>) {
-  if (window.confirm(`Delete shelf ${shelf.code}? This is only allowed when it has no assigned stock.`)) void onDelete(shelf.id);
+function confirmDeleteShelf(shelf: WarehouseShelf, onDelete: (id: string) => Promise<void>, t: (key: string, opts?: Record<string, unknown>) => string) {
+  if (window.confirm(t("shelf.deleteShelfConfirm", { code: shelf.code }))) void onDelete(shelf.id);
 }
 
-function confirmDeleteSlot(slot: WarehouseSlot, onDelete: (id: string) => Promise<void>) {
-  if (window.confirm(`Delete FACK ${slot.compartment}? This is only allowed when it has no assigned stock.`)) void onDelete(slot.id);
+function confirmDeleteSlot(slot: WarehouseSlot, onDelete: (id: string) => Promise<void>, t: (key: string, opts?: Record<string, unknown>) => string) {
+  if (window.confirm(t("shelf.deleteSlotConfirm", { compartment: slot.compartment }))) void onDelete(slot.id);
 }

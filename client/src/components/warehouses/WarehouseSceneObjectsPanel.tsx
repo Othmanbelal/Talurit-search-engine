@@ -1,5 +1,6 @@
 import { Box, ChevronDown, ChevronUp, Link2 } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useWarehouseSceneObjects } from "../../hooks/useWarehouseSceneObjects";
 import type { WarehouseSceneObject, WarehouseShelf } from "../../types/warehouse";
 import { WarehouseRackSlotDesigner } from "./WarehouseRackSlotDesigner";
@@ -12,6 +13,7 @@ type Props = {
 };
 
 export function WarehouseSceneObjectsPanel({ canEdit, onGenerated, shelves, warehouseId }: Props) {
+  const { t } = useTranslation("warehouses");
   const scene = useWarehouseSceneObjects(warehouseId);
   const [expanded, setExpanded] = useState<string | null>(null);
 
@@ -21,16 +23,16 @@ export function WarehouseSceneObjectsPanel({ canEdit, onGenerated, shelves, ware
     <section className="space-y-3 rounded-lg border border-line bg-slate-950/40 p-4">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h3 className="font-semibold text-white">Rack slot configuration</h3>
-          <p className="text-sm text-slate-400">Click a rack to configure its shelf levels and physical pallet slots.</p>
+          <h3 className="font-semibold text-white">{t("rack.slotConfigTitle")}</h3>
+          <p className="text-sm text-slate-400">{t("rack.slotConfigDescription")}</p>
         </div>
-        <span className="rounded-full border border-line px-3 py-1 text-xs text-slate-300">{scene.sceneObjects.length} racks</span>
+        <span className="rounded-full border border-line px-3 py-1 text-xs text-slate-300">{t("rack.racksCount", { count: scene.sceneObjects.length })}</span>
       </div>
 
       {scene.error ? <p className="rounded-md border border-red-400/30 bg-red-500/10 p-3 text-sm text-red-100">{scene.error}</p> : null}
       {scene.sceneObjects.length === 0 ? (
         <p className="rounded-md border border-line bg-white/[0.03] p-3 text-sm text-slate-400">
-          Design the warehouse in the 3D editor and save it — racks will appear here for slot configuration.
+          {t("rack.noRacks")}
         </p>
       ) : null}
 

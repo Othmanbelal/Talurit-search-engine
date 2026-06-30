@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { Maximize2, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import type { LevelDefinition, SceneObject } from "../../modules/warehouse-designer/types";
 import type { ShelfViewItem, WarehouseLayout } from "../../types/warehouse";
 import { useWarehouseShelfView } from "../../hooks/useWarehouseShelfView";
@@ -22,6 +23,7 @@ type Props = {
 };
 
 export function WarehouseViewerPanel({ focusSlotId, onRackSelect, reloadSignal, warehouse }: Props) {
+  const { t } = useTranslation("warehouses");
   const shelfView = useWarehouseShelfView(warehouse.id);
   const scene = useWarehouseSceneObjects(warehouse.id);
   const navigate = useNavigate();
@@ -111,15 +113,15 @@ export function WarehouseViewerPanel({ focusSlotId, onRackSelect, reloadSignal, 
   const header = (
     <div className="flex shrink-0 items-center justify-between gap-3 border-b border-white/10 bg-slate-900/80 px-4 py-2.5 backdrop-blur">
       <div className="flex items-center gap-3">
-        <span className="text-xs font-bold uppercase tracking-widest text-slate-400">3D view</span>
+        <span className="text-xs font-bold uppercase tracking-widest text-slate-400">{t("viewer.3dView")}</span>
         <span className="text-sm font-semibold text-white">{warehouse.name}</span>
-        <span className="rounded-full border border-white/10 px-2 py-0.5 text-[10px] text-slate-500">{occupiedCount} occupied slots</span>
-        {onRackSelect ? <span className="text-[11px] text-accent/70">Click rack to configure</span> : null}
+        <span className="rounded-full border border-white/10 px-2 py-0.5 text-[10px] text-slate-500">{t("viewer.occupiedSlots", { count: occupiedCount })}</span>
+        {onRackSelect ? <span className="text-[11px] text-accent/70">{t("viewer.clickRackToConfigure")}</span> : null}
       </div>
       <button
         className="rounded border border-white/10 p-1.5 text-slate-400 hover:border-accent/50 hover:text-accent"
         onClick={() => setExpanded((e) => !e)}
-        title={expanded ? "Exit fullscreen" : "Fullscreen"}
+        title={expanded ? t("viewer.exitFullscreen") : t("viewer.fullscreen")}
         type="button"
       >
         {expanded ? <X size={14} /> : <Maximize2 size={14} />}

@@ -1,5 +1,6 @@
 import { Save, X } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { SaveRackSlotLayoutFromSceneObjectInput, WarehouseSceneObject, WarehouseShelf } from "../../types/warehouse";
 
 type Props = {
@@ -13,6 +14,7 @@ type EditableSlot = { slotIndex: number };
 type EditableLevel = { levelNumber: number; slotCount: number; slots: EditableSlot[] };
 
 export function WarehouseRackSlotDesigner({ existingShelves, object, onCancel, onSave }: Props) {
+  const { t } = useTranslation("warehouses");
   const defaultSlotCount = Math.max(1, Math.round((object.width || 2.4) / 1.2));
   const [levels, setLevels] = useState(() => buildInitialLevels(object, existingShelves, defaultSlotCount));
   const [isSaving, setIsSaving] = useState(false);
@@ -65,7 +67,7 @@ export function WarehouseRackSlotDesigner({ existingShelves, object, onCancel, o
           </p>
         </div>
         <label className="flex items-center gap-2 text-sm text-slate-300">
-          Levels
+          {t("rack.levels")}
           <input
             className="w-16 rounded-md border border-line bg-slate-950 px-2 py-1.5 text-sm text-white"
             min={1}
@@ -77,7 +79,7 @@ export function WarehouseRackSlotDesigner({ existingShelves, object, onCancel, o
       </header>
 
       <p className="rounded-md border border-line bg-white/[0.02] p-3 text-sm text-slate-400">
-        Location IDs are assigned automatically from the placement of the inventory item attached to each slot.
+        {t("rack.locationIdsAutoAssigned")}
       </p>
 
       <div className="overflow-x-auto rounded-lg border border-line bg-slate-950/50 p-3">
@@ -91,8 +93,8 @@ export function WarehouseRackSlotDesigner({ existingShelves, object, onCancel, o
           {[...levels].reverse().map((level) => (
             <div className="flex items-start gap-2" key={level.levelNumber}>
               <div className="flex w-16 shrink-0 flex-col items-end pt-3">
-                <span className="text-xs font-semibold text-slate-300">Level {level.levelNumber}</span>
-                <span className="text-[10px] text-slate-500">{level.slotCount} slots</span>
+                <span className="text-xs font-semibold text-slate-300">{t("rack.levelLabel", { number: level.levelNumber })}</span>
+                <span className="text-[10px] text-slate-500">{t("rack.slotsCount", { count: level.slotCount })}</span>
               </div>
               <div className="flex-1">
                 <div className="flex flex-wrap gap-1.5">
@@ -101,14 +103,14 @@ export function WarehouseRackSlotDesigner({ existingShelves, object, onCancel, o
                       className="flex h-16 w-20 flex-col justify-center rounded-md border border-line bg-white/[0.03] p-2 text-center"
                       key={slot.slotIndex}
                     >
-                      <span className="text-xs font-semibold text-slate-200">Slot #{slot.slotIndex}</span>
-                      <span className="mt-1 text-[10px] text-slate-500">Item placement</span>
+                      <span className="text-xs font-semibold text-slate-200">{t("rack.slot", { index: slot.slotIndex })}</span>
+                      <span className="mt-1 text-[10px] text-slate-500">{t("rack.itemPlacement")}</span>
                     </div>
                   ))}
                   <button
                     className="flex h-16 w-10 items-center justify-center rounded-md border border-dashed border-line text-lg text-slate-500 hover:border-accent hover:text-accent"
                     onClick={() => setSlotCount(level.levelNumber, level.slotCount + 1)}
-                    title="Add slot"
+                    title={t("rack.addSlot")}
                     type="button"
                   >
                     +
@@ -117,7 +119,7 @@ export function WarehouseRackSlotDesigner({ existingShelves, object, onCancel, o
                     <button
                       className="flex h-16 w-10 items-center justify-center rounded-md border border-dashed border-line text-lg text-slate-500 hover:border-red-400 hover:text-red-300"
                       onClick={() => setSlotCount(level.levelNumber, level.slotCount - 1)}
-                      title="Remove last slot"
+                      title={t("rack.removeLastSlot")}
                       type="button"
                     >
                       −
@@ -136,7 +138,7 @@ export function WarehouseRackSlotDesigner({ existingShelves, object, onCancel, o
           onClick={onCancel}
           type="button"
         >
-          <X size={16} /> Cancel
+          <X size={16} /> {t("inventoryLinks.cancel")}
         </button>
         <button
           className="inline-flex items-center gap-2 rounded-md bg-accent px-3 py-2 text-sm font-semibold text-slate-950 disabled:opacity-60"
@@ -144,7 +146,7 @@ export function WarehouseRackSlotDesigner({ existingShelves, object, onCancel, o
           onClick={() => void save()}
           type="button"
         >
-          <Save size={16} /> {isSaving ? "Saving…" : "Save rack layout"}
+          <Save size={16} /> {isSaving ? t("rack.saving") : t("rack.saveLayout")}
         </button>
       </div>
     </div>

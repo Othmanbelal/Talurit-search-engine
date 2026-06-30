@@ -1,4 +1,5 @@
 import { Package, PackageX } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { ShelfViewItem, ShelfViewSlot } from "../../types/warehouse";
 
 type Props = {
@@ -9,8 +10,9 @@ type Props = {
 };
 
 export function WarehouseSlotCard({ items, isSelected, onSelect, slot }: Props) {
+  const { t } = useTranslation("warehouses");
   const occupied = items.length > 0;
-  const label = occupied ? itemPlacementLabel(items[0]) : physicalSlotLabel(slot.slotIndex);
+  const label = occupied ? itemPlacementLabel(items[0], t) : physicalSlotLabel(slot.slotIndex, t);
 
   return (
     <button
@@ -35,7 +37,7 @@ export function WarehouseSlotCard({ items, isSelected, onSelect, slot }: Props) 
           {items.length === 1 ? items[0].itemName : `${items.length} items`}
         </span>
       ) : (
-        <span className="mt-1 block text-[10px] text-slate-600">Free</span>
+        <span className="mt-1 block text-[10px] text-slate-600">{t("slotMap.free")}</span>
       )}
     </button>
   );
@@ -48,10 +50,10 @@ function slotClass(isSelected: boolean, occupied: boolean) {
   return `${base} border-dashed border-slate-700 bg-white/[0.01] hover:border-line`;
 }
 
-function itemPlacementLabel(item: ShelfViewItem) {
-  return `${item.locationCode ?? "Placement unassigned"}${item.compartment ? ` / FACK ${item.compartment}` : ""}`;
+function itemPlacementLabel(item: ShelfViewItem, t: (key: string) => string) {
+  return `${item.locationCode ?? t("slotMap.placementUnassigned")}${item.compartment ? ` / FACK ${item.compartment}` : ""}`;
 }
 
-function physicalSlotLabel(slotIndex?: number | null) {
-  return slotIndex ? `Slot #${slotIndex}` : "Available slot";
+function physicalSlotLabel(slotIndex: number | null | undefined, t: (key: string, opts?: Record<string, unknown>) => string) {
+  return slotIndex ? t("slotMap.physicalSlot", { index: slotIndex }) : t("slotMap.available");
 }

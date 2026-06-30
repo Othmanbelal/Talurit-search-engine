@@ -1,8 +1,10 @@
 import { Plus, Warehouse, X } from "lucide-react";
 import { FormEvent, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { CreateWarehouseInput } from "../../types/warehouse";
 
 export function WarehouseCreatePanel({ onCreate }: { onCreate: (input: CreateWarehouseInput) => Promise<void> }) {
+  const { t } = useTranslation("warehouses");
   const [isOpen, setIsOpen] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -35,7 +37,7 @@ export function WarehouseCreatePanel({ onCreate }: { onCreate: (input: CreateWar
         onClick={() => setIsOpen(true)}
         type="button"
       >
-        <Plus size={15} /> New warehouse
+        <Plus size={15} /> {t("create.newWarehouse")}
       </button>
     );
   }
@@ -50,7 +52,7 @@ export function WarehouseCreatePanel({ onCreate }: { onCreate: (input: CreateWar
           <span className="flex h-8 w-8 items-center justify-center rounded-md border border-accent/30 text-accent">
             <Warehouse size={16} />
           </span>
-          <span className="text-sm font-semibold text-white">New warehouse</span>
+          <span className="text-sm font-semibold text-white">{t("create.newWarehouse")}</span>
         </div>
         <button className="rounded p-1 text-slate-500 hover:text-white" onClick={cancel} type="button">
           <X size={15} />
@@ -61,13 +63,13 @@ export function WarehouseCreatePanel({ onCreate }: { onCreate: (input: CreateWar
           autoFocus
           className="min-w-0 flex-1 rounded-md border border-line bg-slate-950/60 px-3 py-2 text-sm text-white placeholder-slate-500 outline-none focus:border-accent"
           onChange={(e) => setName(e.target.value)}
-          placeholder="Warehouse name"
+          placeholder={t("create.warehouseName")}
           value={name}
         />
         <input
           className="min-w-0 flex-1 rounded-md border border-line bg-slate-950/60 px-3 py-2 text-sm text-white placeholder-slate-500 outline-none focus:border-accent"
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Description (optional)"
+          placeholder={t("create.descriptionOptional")}
           value={description}
         />
         <button
@@ -75,7 +77,7 @@ export function WarehouseCreatePanel({ onCreate }: { onCreate: (input: CreateWar
           disabled={isSaving || !name.trim()}
           type="submit"
         >
-          {isSaving ? "Creating…" : "Create"}
+          {isSaving ? t("create.creating") : t("create.create")}
         </button>
       </div>
     </form>

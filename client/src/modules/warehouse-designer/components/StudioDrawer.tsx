@@ -1,5 +1,6 @@
 import type React from "react";
 import { Box, Layers, SquareStack, X, Building2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { LayerNavigator } from "./LayerNavigator";
 import { LevelManager } from "./LevelManager";
 import { ObjectLibrary } from "./ObjectLibrary";
@@ -9,12 +10,7 @@ import type { DrawerTab } from "./ToolDock";
 
 type Props = { active: DrawerTab | null; onClose: () => void };
 
-const drawerCopy: Record<DrawerTab, { title: string; subtitle: string; icon: React.ReactNode }> = {
-  structure: { title: "Structure", subtitle: "Draw walls, add openings, stairs and control snapping.", icon: <Building2 size={18} /> },
-  objects: { title: "Objects", subtitle: "Place warehouse assets, safety zones and generate rack rows.", icon: <Box size={18} /> },
-  levels: { title: "Levels", subtitle: "Control visible floors and draw on the right elevation.", icon: <SquareStack size={18} /> },
-  layers: { title: "Layers", subtitle: "Select spaces, groups, walls and individual objects.", icon: <Layers size={18} /> }
-};
+type DrawerCopy = { title: string; subtitle: string; icon: React.ReactNode };
 
 function DrawerHelp({ active }: { active: DrawerTab }) {
   const tips: Record<DrawerTab, string[]> = {
@@ -27,6 +23,15 @@ function DrawerHelp({ active }: { active: DrawerTab }) {
 }
 
 export function StudioDrawer({ active, onClose }: Props) {
+  const { t } = useTranslation("warehouses");
+
+  const drawerCopy: Record<DrawerTab, DrawerCopy> = {
+    structure: { title: t("designer.tools"), subtitle: "Draw walls, add openings, stairs and control snapping.", icon: <Building2 size={18} /> },
+    objects: { title: t("designer.objects"), subtitle: "Place warehouse assets, safety zones and generate rack rows.", icon: <Box size={18} /> },
+    levels: { title: t("designer.levels"), subtitle: "Control visible floors and draw on the right elevation.", icon: <SquareStack size={18} /> },
+    layers: { title: t("designer.layers"), subtitle: "Select spaces, groups, walls and individual objects.", icon: <Layers size={18} /> }
+  };
+
   if (!active) return null;
   const copy = drawerCopy[active];
   return <aside className="tool-drawer glass-panel workflow-drawer organized-drawer">

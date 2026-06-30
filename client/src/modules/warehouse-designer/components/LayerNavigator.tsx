@@ -1,5 +1,6 @@
 import { Copy, Eye, Home, Layers, Lock, Trash2, Unlock, X } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { SceneObject } from "../types";
 import { useStudioStore } from "../store/useStudioStore";
 import { detectRoomLoops } from "../utils/roomDetection";
@@ -10,6 +11,7 @@ function typeLabel(type: SceneObject["type"]) {
 }
 
 export function LayerNavigator({ open, onClose, embedded = false }: { open: boolean; onClose: () => void; embedded?: boolean }) {
+  const { t } = useTranslation("warehouses");
   const [query, setQuery] = useState("");
   const objects = useStudioStore((state) => state.objects);
   const spaceNames = useStudioStore((state) => state.spaceNames);
@@ -50,7 +52,7 @@ export function LayerNavigator({ open, onClose, embedded = false }: { open: bool
   return (
     <aside className={embedded ? "layer-navigator embedded-layer-panel" : "layer-navigator glass-panel"}>
       <header>
-        <div><p className="eyebrow">Layer navigator</p><h3>Objects and groups</h3></div>
+        <div><p className="eyebrow">{t("designer.layers")}</p><h3>{t("designer.objects")}</h3></div>
         {embedded ? null : <button onClick={onClose} aria-label="Close layer navigator"><X size={15} /></button>}
       </header>
 
