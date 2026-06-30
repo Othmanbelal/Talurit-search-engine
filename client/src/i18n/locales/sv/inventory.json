@@ -5,6 +5,7 @@
   "tables": "Tabeller",
   "confirmRemoveGroup": "Ta bort den här gruppen? Tabeller blir fristående.",
   "confirmRemoveTable": "Ta bort den här tabellen och dess rader?",
+  "confirmRemoveItem": "Ta bort denna artikel från tabellen?",
   "confirmRemoveTableRows": "Ta bort den här tabellen och dess rader?",
   "importExcel": "Importera Excel",
   "empty": {
@@ -89,6 +90,9 @@
     "previous": "Föregående",
     "next": "Nästa",
     "page": "Sida {{page}} / {{total}}"
+  },
+  "urgentIssue": {
+    "placeholder": "Vad är fel? Ange plats, allvarlighetsgrad och eventuella säkerhetsrisker…"
   },
   "details": {
     "back": "Inventarier",
@@ -263,7 +267,8 @@
       "belowLevel_other": "{{count}} artiklar under lågt-lager-nivå",
       "clickToView": "Klicka för att visa och beställa",
       "allAbove": "Alla artiklar är över sin gräns",
-      "lowStockTitle": "Lågt lager — {{count}} artikel",
+      "lowStockTitle_one": "Lågt lager — {{count}} artikel",
+      "lowStockTitle_other": "Lågt lager — {{count}} artiklar",
       "loadingRows": "Laddar…",
       "noItemsBelow": "Inga artiklar är under sin lågt-lager-nivå.",
       "orderLink": "Beställningslänk",

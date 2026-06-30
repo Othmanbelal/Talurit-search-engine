@@ -5,6 +5,7 @@
   "tables": "Tables",
   "confirmRemoveGroup": "Remove this group? Tables will become standalone.",
   "confirmRemoveTable": "Remove this table and its rows?",
+  "confirmRemoveItem": "Remove this item from this table?",
   "confirmRemoveTableRows": "Remove this table and its table rows?",
   "importExcel": "Import Excel",
   "empty": {
@@ -89,6 +90,9 @@
     "previous": "Previous",
     "next": "Next",
     "page": "Page {{page}} / {{total}}"
+  },
+  "urgentIssue": {
+    "placeholder": "What's wrong? Include location, severity, and any safety concerns…"
   },
   "details": {
     "back": "Inventory",
@@ -263,7 +267,8 @@
       "belowLevel_other": "{{count}} items below low-stock level",
       "clickToView": "Click to view and reorder",
       "allAbove": "All items are above their threshold",
-      "lowStockTitle": "Low stock — {{count}} item",
+      "lowStockTitle_one": "Low stock — {{count}} item",
+      "lowStockTitle_other": "Low stock — {{count}} items",
       "loadingRows": "Loading…",
       "noItemsBelow": "No items are below their low-stock level.",
       "orderLink": "Order link",

@@ -71,7 +71,7 @@ export function StockRowMovementModal({
         {error ? <div className="mt-4 rounded border border-red-400/30 bg-red-500/10 p-3 text-sm text-red-100">{error}</div> : null}
         <div className="mt-5 grid gap-3">
           <ModeTabs mode={mode} onChange={setMode} />
-          <NumberField label="Quantity" onChange={setQuantity} value={quantity} />
+          <NumberField label={t("movement.quantity")} onChange={setQuantity} value={quantity} />
           {mode === "use_in" ? <CardFields cards={cards} cardId={cardId} emptySpots={emptySpots} quantity={quantity} selected={spotIds} setCardId={setCardId} setSelected={setSpotIds} /> : null}
         </div>
         <footer className="mt-5 flex justify-end gap-2">

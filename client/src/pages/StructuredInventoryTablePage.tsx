@@ -198,7 +198,7 @@ export function StructuredInventoryTablePage() {
             rows={inventory.rows.items}
             table={inventory.table}
             onArchive={canManageInventory ? (row) => void inventory.archiveRow(row.id) : undefined}
-            onDelete={canManageInventory ? (row) => window.confirm(t("confirmRemoveTable")) && void inventory.deleteRow(row.id) : undefined}
+            onDelete={canManageInventory ? (row) => window.confirm(t("confirmRemoveItem")) && void inventory.deleteRow(row.id) : undefined}
             onMove={canTakeReturn ? setMovingRow : undefined}
             onOpen={setSelectedRow}
             onRestore={canManageInventory ? (row) => void inventory.restoreRow(row.id) : undefined}
