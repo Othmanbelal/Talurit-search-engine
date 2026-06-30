@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../hooks/useAuth";
 import { useToast } from "../components/feedback/ToastProvider";
 import { getProfileRequest, type ProfileData } from "../services/profile.service";
@@ -6,17 +7,19 @@ import { AvatarSection } from "../components/profile/AvatarSection";
 import { ProfileForm } from "../components/profile/ProfileForm";
 import { PasswordForm } from "../components/profile/PasswordForm";
 import { LandingPagePicker } from "../components/profile/LandingPagePicker";
+import { LanguagePicker } from "../components/profile/LanguagePicker";
 
 export function ProfilePage() {
   const { refreshUser } = useAuth();
   const toast = useToast();
+  const { t } = useTranslation("profile");
   const [profile, setProfile] = useState<ProfileData | null>(null);
 
   const loadProfile = useCallback(() => {
     getProfileRequest()
       .then((result) => setProfile(result.profile))
-      .catch((err) => toast.error(err instanceof Error ? err.message : "Could not load profile"));
-  }, [toast]);
+      .catch((err) => toast.error(err instanceof Error ? err.message : t("loadError")));
+  }, [toast, t]);
 
   useEffect(loadProfile, [loadProfile]);
 
@@ -30,9 +33,9 @@ export function ProfilePage() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <header>
-        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">Account</p>
-        <h1 className="mt-3 text-3xl font-semibold text-white md:text-4xl">Profile settings</h1>
-        <p className="mt-2 text-sm text-slate-400">Manage your personal information, security, and landing page.</p>
+        <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">{t("sectionLabel")}</p>
+        <h1 className="mt-3 text-3xl font-semibold text-white md:text-4xl">{t("title")}</h1>
+        <p className="mt-2 text-sm text-slate-400">{t("subtitle")}</p>
       </header>
 
       {profile ? (
@@ -41,6 +44,7 @@ export function ProfilePage() {
           <ProfileForm profile={profile} onSaved={handleSaved} />
           <PasswordForm onSaved={toast.success} onError={toast.error} />
           <LandingPagePicker profile={profile} onSaved={handleSaved} onError={toast.error} />
+          <LanguagePicker profile={profile} onSaved={handleSaved} onError={toast.error} />
         </>
       ) : null}
     </div>

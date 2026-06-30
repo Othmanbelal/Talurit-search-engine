@@ -1,0 +1,96 @@
+{
+  "sectionLabel": "Account",
+  "title": "Profile settings",
+  "subtitle": "Manage your personal information, security, and landing page.",
+  "loadError": "Could not load profile",
+  "form": {
+    "title": "Personal information",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "displayName": "Display name",
+    "email": "Email",
+    "phone": "Phone number",
+    "phonePlaceholder": "+46 70 000 00 00",
+    "save": "Save changes",
+    "saving": "Saving...",
+    "saved": "Profile updated.",
+    "error": "Could not save profile"
+  },
+  "password": {
+    "title": "Change password",
+    "current": "Current password",
+    "new": "New password",
+    "confirm": "Confirm new password",
+    "submit": "Change password",
+    "submitting": "Changing...",
+    "saved": "Password changed.",
+    "strength": "Strength:",
+    "strengthLabel": {
+      "veryWeak": "Very weak",
+      "weak": "Weak",
+      "fair": "Fair",
+      "good": "Good",
+      "strong": "Strong"
+    },
+    "requirement": {
+      "length": "At least 8 characters",
+      "case": "Upper & lower case",
+      "number": "A number",
+      "symbol": "A symbol"
+    },
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "error": {
+      "mismatch": "New passwords do not match.",
+      "requirements": "Please meet all password requirements.",
+      "incorrect": "Current password is incorrect.",
+      "generic": "Could not change password"
+    }
+  },
+  "avatar": {
+    "heading": "Profile picture",
+    "alt": "Profile",
+    "change": "Change photo",
+    "uploading": "Uploading...",
+    "hint": "Drag & drop or click · PNG, JPG, WEBP, GIF · max 3 MB",
+    "saved": "Profile picture updated.",
+    "error": {
+      "invalidType": "Please choose an image file.",
+      "tooLarge": "Image must be 3 MB or smaller.",
+      "uploadFailed": "Upload failed"
+    },
+    "crop": {
+      "title": "Adjust photo",
+      "cancel": "Cancel",
+      "cancelLabel": "Cancel",
+      "save": "Save photo",
+      "saving": "Saving...",
+      "error": {
+        "process": "Could not process image.",
+        "export": "Could not export image.",
+        "load": "Could not load image."
+      }
+    }
+  },
+  "landing": {
+    "title": "Landing page",
+    "description": "Choose where the app opens after you sign in.",
+    "defaultDescription": " Currently defaulting to the Dashboard.",
+    "appPages": "App pages",
+    "groups": "Inventory groups",
+    "tables": "Inventory tables",
+    "reset": "Reset to Dashboard",
+    "saved": "Landing page set to {{name}}.",
+    "resetSaved": "Landing page reset to Dashboard.",
+    "error": "Could not save landing page"
+  },
+  "language": {
+    "title": "Language",
+    "description": "Choose your preferred language for the interface.",
+    "sv": "Svenska",
+    "en": "English",
+    "savedSv": "Language changed to Swedish.",
+    "savedEn": "Language changed to English.",
+    "error": "Could not save language preference."
+  }
+}

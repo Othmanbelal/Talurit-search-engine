@@ -2,6 +2,7 @@ import { useCallback, useState, type ReactElement } from "react";
 import CropperDefault from "react-easy-crop";
 import type { Area } from "react-easy-crop";
 import { Check, X, ZoomIn } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 // react-easy-crop ships its value default only in the ESM `.d.mts`; under the
 // project's classic "Node" module resolution TS resolves the type-only `.d.ts`,
@@ -26,6 +27,7 @@ type Props = {
 };
 
 export function AvatarCropModal({ imageSrc, onCancel, onCropped }: Props) {
+  const { t } = useTranslation("profile");
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [areaPixels, setAreaPixels] = useState<Area | null>(null);
@@ -37,7 +39,7 @@ export function AvatarCropModal({ imageSrc, onCancel, onCropped }: Props) {
     if (!areaPixels) return;
     setBusy(true);
     try {
-      const blob = await cropToBlob(imageSrc, areaPixels);
+      const blob = await cropToBlob(imageSrc, areaPixels, t);
       await onCropped(blob);
     } finally {
       setBusy(false);
@@ -48,8 +50,8 @@ export function AvatarCropModal({ imageSrc, onCancel, onCropped }: Props) {
     <div className="fixed inset-0 z-[9998] flex items-center justify-center bg-black/70 p-4" role="dialog" aria-modal>
       <div className="w-full max-w-md overflow-hidden rounded-xl border border-line bg-slate-900 shadow-industrial">
         <header className="flex items-center justify-between border-b border-line px-5 py-3">
-          <h3 className="text-sm font-semibold uppercase tracking-[0.14em] text-slate-300">Adjust photo</h3>
-          <button className="rounded-md p-1 text-slate-400 hover:text-white" onClick={onCancel} type="button" aria-label="Cancel">
+          <h3 className="text-sm font-semibold uppercase tracking-[0.14em] text-slate-300">{t("avatar.crop.title")}</h3>
+          <button className="rounded-md p-1 text-slate-400 hover:text-white" onClick={onCancel} type="button" aria-label={t("avatar.crop.cancelLabel")}>
             <X size={18} />
           </button>
         </header>
@@ -83,7 +85,7 @@ export function AvatarCropModal({ imageSrc, onCancel, onCropped }: Props) {
 
         <footer className="flex justify-end gap-2 border-t border-line px-5 py-3">
           <button className="rounded-md border border-line px-3 py-2 text-sm font-semibold text-slate-200 hover:border-accent" onClick={onCancel} type="button">
-            Cancel
+            {t("avatar.crop.cancel")}
           </button>
           <button
             className="inline-flex items-center gap-2 rounded-md bg-accent px-3 py-2 text-sm font-semibold text-slate-950 disabled:opacity-50"
@@ -91,7 +93,7 @@ export function AvatarCropModal({ imageSrc, onCancel, onCropped }: Props) {
             onClick={() => void confirm()}
             type="button"
           >
-            <Check size={15} /> {busy ? "Saving..." : "Save photo"}
+            <Check size={15} /> {busy ? t("avatar.crop.saving") : t("avatar.crop.save")}
           </button>
         </footer>
       </div>
@@ -99,30 +101,30 @@ export function AvatarCropModal({ imageSrc, onCancel, onCropped }: Props) {
   );
 }
 
-/** Crop the source image to the selected square and export a JPEG blob. */
-async function cropToBlob(imageSrc: string, area: Area): Promise<Blob> {
-  const image = await loadImage(imageSrc);
+/** Crop the source image to the selected square and export a JPEG blob. `t` translates failure messages. */
+async function cropToBlob(imageSrc: string, area: Area, t: (key: string) => string): Promise<Blob> {
+  const image = await loadImage(imageSrc, t);
   const canvas = document.createElement("canvas");
   const size = Math.max(1, Math.round(area.width));
   canvas.width = size;
   canvas.height = size;
   const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("Could not process image.");
+  if (!ctx) throw new Error(t("avatar.crop.error.process"));
   ctx.drawImage(image, area.x, area.y, area.width, area.height, 0, 0, size, size);
   return await new Promise<Blob>((resolve, reject) => {
     canvas.toBlob(
-      (blob) => (blob ? resolve(blob) : reject(new Error("Could not export image."))),
+      (blob) => (blob ? resolve(blob) : reject(new Error(t("avatar.crop.error.export")))),
       "image/jpeg",
       0.9,
     );
   });
 }
 
-function loadImage(src: string): Promise<HTMLImageElement> {
+function loadImage(src: string, t: (key: string) => string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const image = new Image();
     image.addEventListener("load", () => resolve(image));
-    image.addEventListener("error", () => reject(new Error("Could not load image.")));
+    image.addEventListener("error", () => reject(new Error(t("avatar.crop.error.load"))));
     image.src = src;
   });
 }

@@ -1,0 +1,96 @@
+{
+  "sectionLabel": "Konto",
+  "title": "Profilinställningar",
+  "subtitle": "Hantera din personliga information, säkerhet och startsida.",
+  "loadError": "Kunde inte läsa in profilen",
+  "form": {
+    "title": "Personlig information",
+    "firstName": "Förnamn",
+    "lastName": "Efternamn",
+    "displayName": "Visningsnamn",
+    "email": "E-post",
+    "phone": "Telefonnummer",
+    "phonePlaceholder": "+46 70 000 00 00",
+    "save": "Spara ändringar",
+    "saving": "Sparar...",
+    "saved": "Profil uppdaterad.",
+    "error": "Kunde inte spara profilen"
+  },
+  "password": {
+    "title": "Byt lösenord",
+    "current": "Nuvarande lösenord",
+    "new": "Nytt lösenord",
+    "confirm": "Bekräfta nytt lösenord",
+    "submit": "Byt lösenord",
+    "submitting": "Byter...",
+    "saved": "Lösenordet har ändrats.",
+    "strength": "Styrka:",
+    "strengthLabel": {
+      "veryWeak": "Mycket svagt",
+      "weak": "Svagt",
+      "fair": "Okej",
+      "good": "Bra",
+      "strong": "Starkt"
+    },
+    "requirement": {
+      "length": "Minst 8 tecken",
+      "case": "Versaler & gemener",
+      "number": "En siffra",
+      "symbol": "Ett specialtecken"
+    },
+    "showPassword": "Visa lösenord",
+    "hidePassword": "Dölj lösenord",
+    "error": {
+      "mismatch": "De nya lösenorden matchar inte.",
+      "requirements": "Uppfyll alla lösenordskrav.",
+      "incorrect": "Nuvarande lösenord är felaktigt.",
+      "generic": "Kunde inte byta lösenord"
+    }
+  },
+  "avatar": {
+    "heading": "Profilbild",
+    "alt": "Profil",
+    "change": "Byt foto",
+    "uploading": "Laddar upp...",
+    "hint": "Dra och släpp eller klicka · PNG, JPG, WEBP, GIF · max 3 MB",
+    "saved": "Profilbilden har uppdaterats.",
+    "error": {
+      "invalidType": "Välj en bildfil.",
+      "tooLarge": "Bilden måste vara 3 MB eller mindre.",
+      "uploadFailed": "Uppladdningen misslyckades"
+    },
+    "crop": {
+      "title": "Justera foto",
+      "cancel": "Avbryt",
+      "cancelLabel": "Avbryt",
+      "save": "Spara foto",
+      "saving": "Sparar...",
+      "error": {
+        "process": "Kunde inte bearbeta bilden.",
+        "export": "Kunde inte exportera bilden.",
+        "load": "Kunde inte läsa in bilden."
+      }
+    }
+  },
+  "landing": {
+    "title": "Startsida",
+    "description": "Välj var appen öppnas efter inloggning.",
+    "defaultDescription": " Standardinställning är Instrumentpanel.",
+    "appPages": "Appsidor",
+    "groups": "Inventariegrupper",
+    "tables": "Inventarietabeller",
+    "reset": "Återställ till Instrumentpanel",
+    "saved": "Startsida satt till {{name}}.",
+    "resetSaved": "Startsida återställd till Instrumentpanel.",
+    "error": "Kunde inte spara startsida"
+  },
+  "language": {
+    "title": "Språk",
+    "description": "Välj ditt föredragna språk för gränssnittet.",
+    "sv": "Svenska",
+    "en": "English",
+    "savedSv": "Språket ändrades till svenska.",
+    "savedEn": "Språket ändrades till engelska.",
+    "error": "Kunde inte spara språkinställning."
+  }
+}

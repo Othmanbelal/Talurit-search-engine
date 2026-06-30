@@ -1,5 +1,6 @@
 import { Camera, User } from "lucide-react";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { uploadProfilePictureRequest, type ProfileData } from "../../services/profile.service";
 import { buildApiUrl } from "../../services/http";
 import { AvatarCropModal } from "./AvatarCropModal";
@@ -11,6 +12,7 @@ export function AvatarSection({ onUpdated, onError, profile }: {
   onError: (message: string) => void;
   profile: ProfileData;
 }) {
+  const { t } = useTranslation("profile");
   const fileRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -19,8 +21,8 @@ export function AvatarSection({ onUpdated, onError, profile }: {
 
   function openFile(file: File | undefined) {
     if (!file) return;
-    if (!file.type.startsWith("image/")) { onError("Please choose an image file."); return; }
-    if (file.size > MAX_BYTES) { onError("Image must be 3 MB or smaller."); return; }
+    if (!file.type.startsWith("image/")) { onError(t("avatar.error.invalidType")); return; }
+    if (file.size > MAX_BYTES) { onError(t("avatar.error.tooLarge")); return; }
     const reader = new FileReader();
     reader.onload = () => setCropSrc(reader.result as string);
     reader.readAsDataURL(file);
@@ -32,9 +34,9 @@ export function AvatarSection({ onUpdated, onError, profile }: {
       const file = new File([blob], "avatar.jpg", { type: "image/jpeg" });
       await uploadProfilePictureRequest(file);
       setCropSrc(null);
-      await onUpdated("Profile picture updated.");
-    } catch (err) {
-      onError(err instanceof Error ? err.message : "Upload failed");
+      await onUpdated(t("avatar.saved"));
+    } catch {
+      onError(t("avatar.error.uploadFailed"));
     } finally {
       setUploading(false);
     }
@@ -42,7 +44,7 @@ export function AvatarSection({ onUpdated, onError, profile }: {
 
   return (
     <section className="rounded-lg border border-line bg-panel p-5">
-      <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-slate-400">Profile picture</h2>
+      <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.14em] text-slate-400">{t("avatar.heading")}</h2>
       <div
         className={`flex items-center gap-5 rounded-lg border border-dashed p-4 transition-colors ${dragging ? "border-accent bg-accent/5" : "border-transparent"}`}
         onDragOver={(event) => { event.preventDefault(); setDragging(true); }}
@@ -51,7 +53,7 @@ export function AvatarSection({ onUpdated, onError, profile }: {
       >
         <div className="relative">
           {pictureUrl ? (
-            <img alt="Profile" className="h-20 w-20 rounded-full border border-line object-cover" src={buildApiUrl(pictureUrl)} />
+            <img alt={t("avatar.alt")} className="h-20 w-20 rounded-full border border-line object-cover" src={buildApiUrl(pictureUrl)} />
           ) : (
             <div className="flex h-20 w-20 items-center justify-center rounded-full border border-line bg-white/[0.06]">
               <User className="text-slate-400" size={32} />
@@ -65,9 +67,9 @@ export function AvatarSection({ onUpdated, onError, profile }: {
             onClick={() => fileRef.current?.click()}
             type="button"
           >
-            <Camera size={15} /> {uploading ? "Uploading..." : "Change photo"}
+            <Camera size={15} /> {uploading ? t("avatar.uploading") : t("avatar.change")}
           </button>
-          <p className="text-xs text-slate-500">Drag &amp; drop or click · PNG, JPG, WEBP, GIF · max 3 MB</p>
+          <p className="text-xs text-slate-500">{t("avatar.hint")}</p>
         </div>
         <input
           accept="image/*"

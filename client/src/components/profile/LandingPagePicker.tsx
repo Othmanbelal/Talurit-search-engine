@@ -1,5 +1,6 @@
 import { Boxes, Check, Compass, RotateCcw, Table2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { LANDING_PAGE_OPTIONS } from "../../constants/landing";
 import { listStructuredInventoriesRequest } from "../../services/structured-inventory.service";
 import { updateProfileRequest, type ProfileData, type ProfileUpdateInput } from "../../services/profile.service";
@@ -11,6 +12,7 @@ export function LandingPagePicker({ onSaved, onError, profile }: {
   onError: (message: string) => void;
   profile: ProfileData;
 }) {
+  const { t } = useTranslation("profile");
   const [groups, setGroups] = useState<Choice[]>([]);
   const [tables, setTables] = useState<Choice[]>([]);
   const [saving, setSaving] = useState(false);
@@ -42,8 +44,8 @@ export function LandingPagePicker({ onSaved, onError, profile }: {
     try {
       await updateProfileRequest(input);
       await onSaved(message);
-    } catch (err) {
-      onError(err instanceof Error ? err.message : "Could not save landing page");
+    } catch {
+      onError(t("landing.error"));
     } finally {
       setSaving(false);
     }
@@ -53,48 +55,48 @@ export function LandingPagePicker({ onSaved, onError, profile }: {
     <section className="rounded-lg border border-line bg-panel p-5">
       <div className="mb-1 flex items-center gap-2">
         <Compass className="text-accent" size={16} />
-        <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-slate-400">Landing page</h2>
+        <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-slate-400">{t("landing.title")}</h2>
       </div>
       <p className="mb-4 text-xs text-slate-500">
-        Choose where the app opens after you sign in.
-        {activeKey ? "" : " Currently defaulting to the Dashboard."}
+        {t("landing.description")}
+        {activeKey ? "" : t("landing.defaultDescription")}
       </p>
 
-      <Group title="App pages" icon={<Compass size={13} />}>
+      <Group title={t("landing.appPages")} icon={<Compass size={13} />}>
         {LANDING_PAGE_OPTIONS.map((option) => (
           <Chip
             key={option.path}
             active={activeKey === `page:${option.path}`}
             disabled={saving}
             label={option.label}
-            onClick={() => save({ landingType: "page", landingPath: option.path, landingTargetId: null }, `Landing page set to ${option.label}.`)}
+            onClick={() => save({ landingType: "page", landingPath: option.path, landingTargetId: null }, t("landing.saved", { name: option.label }))}
           />
         ))}
       </Group>
 
       {groups.length > 0 ? (
-        <Group title="Inventory groups" icon={<Boxes size={13} />}>
+        <Group title={t("landing.groups")} icon={<Boxes size={13} />}>
           {groups.map((group) => (
             <Chip
               key={group.id}
               active={activeKey === `group:${group.id}`}
               disabled={saving}
               label={group.name}
-              onClick={() => save({ landingType: "group", landingTargetId: group.id, landingPath: null }, `Landing page set to ${group.name}.`)}
+              onClick={() => save({ landingType: "group", landingTargetId: group.id, landingPath: null }, t("landing.saved", { name: group.name }))}
             />
           ))}
         </Group>
       ) : null}
 
       {tables.length > 0 ? (
-        <Group title="Inventory tables" icon={<Table2 size={13} />}>
+        <Group title={t("landing.tables")} icon={<Table2 size={13} />}>
           {tables.map((table) => (
             <Chip
               key={table.id}
               active={activeKey === `table:${table.id}`}
               disabled={saving}
               label={table.name}
-              onClick={() => save({ landingType: "table", landingTargetId: table.id, landingPath: null }, `Landing page set to ${table.name}.`)}
+              onClick={() => save({ landingType: "table", landingTargetId: table.id, landingPath: null }, t("landing.saved", { name: table.name }))}
             />
           ))}
         </Group>
@@ -104,10 +106,10 @@ export function LandingPagePicker({ onSaved, onError, profile }: {
         <button
           className="mt-4 inline-flex items-center gap-1.5 rounded-md border border-line px-3 py-1.5 text-xs font-semibold text-slate-300 hover:border-accent hover:text-accent disabled:opacity-50"
           disabled={saving}
-          onClick={() => save({ landingType: null }, "Landing page reset to Dashboard.")}
+          onClick={() => save({ landingType: null }, t("landing.resetSaved"))}
           type="button"
         >
-          <RotateCcw size={13} /> Reset to Dashboard
+          <RotateCcw size={13} /> {t("landing.reset")}
         </button>
       ) : null}
     </section>
