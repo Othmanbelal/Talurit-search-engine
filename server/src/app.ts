@@ -28,6 +28,7 @@ import { resourceManagerRoutes } from "./modules/resource-managers/resource-mana
 import { itemNotesRoutes } from "./modules/item-notes/item-notes.routes";
 import { qrScanRoutes } from "./modules/qr-scan/qr-scan.routes";
 import { urgentIssueRoutes } from "./modules/urgent-issues/urgent-issues.routes";
+import { borrowRequestRoutes } from "./modules/borrow-requests/borrow-requests.routes";
 import { lowStockRoutes } from "./modules/low-stock/low-stock.routes";
 import { rejectDuringDatabaseMaintenance } from "./middleware/database-maintenance.middleware";
 
@@ -63,6 +64,7 @@ export function createApp() {
   app.use(`${API_PREFIX}/warehouses`, warehouseRoutes);
   app.use(`${API_PREFIX}/item-notes`, itemNotesRoutes);
   app.use(`${API_PREFIX}/urgent-issues`, urgentIssueRoutes);
+  app.use(`${API_PREFIX}/borrow-requests`, borrowRequestRoutes);
   app.use(`${API_PREFIX}/low-stock`, lowStockRoutes);
 
   // Root health-check for Render and load-balancers.
