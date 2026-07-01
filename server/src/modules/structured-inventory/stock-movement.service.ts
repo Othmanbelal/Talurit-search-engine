@@ -148,6 +148,25 @@ export async function returnBorrowedItem(id: string, quantity: number | undefine
   void evaluateLowStock(record.sourceStockBalanceId);
 }
 
+export async function returnUsedInAssignment(id: string, userId?: string) {
+  const assignment = await findUsedInAssignment(id);
+  if (!assignment || assignment.returnedAt) throw new AppError("Used In assignment was not found.", 404);
+  await prisma.$transaction(async (tx) => {
+    await incrementStock(tx, assignment.sourceStockBalance, assignment.quantity, "return", userId);
+    await tx.usedInStockAssignment.update({ where: { id }, data: { returnedAt: new Date() } });
+  });
+  await logInteraction({
+    action: "return_used",
+    stockBalanceId: assignment.sourceStockBalanceId,
+    inventoryTableId: assignment.sourceInventoryTableId,
+    itemId: assignment.itemId,
+    userId,
+    quantity: assignment.quantity.toString(),
+    itemName: assignment.item?.name,
+  }).catch((err: unknown) => console.error("[logInteraction:return_used]", err));
+  void evaluateLowStock(assignment.sourceStockBalanceId);
+}
+
 async function loadAvailableRow(tableId: string, rowId: string, quantity: number) {
   const row = await findStockRowForMovement(tableId, rowId);
   if (!row || !row.inventoryTableId) throw new AppError("Inventory row not found.", 404);

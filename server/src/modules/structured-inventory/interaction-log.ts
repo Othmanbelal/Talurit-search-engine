@@ -9,7 +9,8 @@ export type InteractionAction =
   | "consume"
   | "borrow"
   | "return"
-  | "use_in";
+  | "use_in"
+  | "return_used";
 
 export interface LogInteractionArgs {
   action: InteractionAction;
