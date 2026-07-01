@@ -6,10 +6,10 @@ export type InteractionAction =
   | "archive"
   | "restore"
   | "delete"
-  | "take"
+  | "consume"
+  | "borrow"
   | "return"
-  | "use_in"
-  | "return_used";
+  | "use_in";
 
 export interface LogInteractionArgs {
   action: InteractionAction;

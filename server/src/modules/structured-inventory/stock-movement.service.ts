@@ -1,25 +1,24 @@
-import type { Prisma } from "@prisma/client";
 import { prisma } from "../../db/prisma";
 import { AppError } from "../../utils/AppError";
 import type { StockMovementActionInput, UseInCardInput } from "./structured-inventory.schemas";
 import {
   decrementStock,
+  findBorrowRecord,
   findStockRowForMovement,
-  findTakenItem,
   findUsedInAssignment,
   findUsedInCardWithSpots,
   incrementStock,
-  listActiveTakenItems,
+  listActiveBorrowRecords,
 } from "./stock-movement-records";
-import { serializeTakenItem } from "./stock-movement.serializer";
+import { serializeBorrowRecord } from "./stock-movement.serializer";
 import { logInteraction } from "./interaction-log";
 import { evaluateLowStock } from "../low-stock/low-stock.service";
 
-export async function takeStockItem(tableId: string, rowId: string, input: StockMovementActionInput, userId?: string) {
+export async function consumeStockItem(tableId: string, rowId: string, input: StockMovementActionInput, userId?: string) {
   const row = await loadAvailableRow(tableId, rowId, input.quantity);
   await prisma.$transaction(async (tx) => {
-    await decrementStock(tx, row, input.quantity, "take_out", userId);
-    await tx.takenStockItem.create({
+    await decrementStock(tx, row, input.quantity, "consume", userId);
+    await tx.consumedStockItem.create({
       data: {
         sourceStockBalanceId: row.id,
         sourceInventoryTableId: row.inventoryTableId!,
@@ -31,7 +30,7 @@ export async function takeStockItem(tableId: string, rowId: string, input: Stock
     });
   });
   await logInteraction({
-    action: "take",
+    action: "consume",
     stockBalanceId: row.id,
     inventoryTableId: row.inventoryTableId,
     itemId: row.itemId,
@@ -39,7 +38,35 @@ export async function takeStockItem(tableId: string, rowId: string, input: Stock
     quantity: input.quantity,
     notes: input.notes,
     itemName: row.item?.name,
-  }).catch((err: unknown) => console.error("[logInteraction:take]", err));
+  }).catch((err: unknown) => console.error("[logInteraction:consume]", err));
+  void evaluateLowStock(row.id);
+}
+
+export async function borrowStockItem(tableId: string, rowId: string, input: StockMovementActionInput, userId?: string) {
+  const row = await loadAvailableRow(tableId, rowId, input.quantity);
+  await prisma.$transaction(async (tx) => {
+    await decrementStock(tx, row, input.quantity, "borrow", userId);
+    await tx.borrowRecord.create({
+      data: {
+        sourceStockBalanceId: row.id,
+        sourceInventoryTableId: row.inventoryTableId!,
+        itemId: row.itemId,
+        quantity: input.quantity,
+        notes: input.notes,
+        currentHolderId: userId,
+      },
+    });
+  });
+  await logInteraction({
+    action: "borrow",
+    stockBalanceId: row.id,
+    inventoryTableId: row.inventoryTableId,
+    itemId: row.itemId,
+    userId,
+    quantity: input.quantity,
+    notes: input.notes,
+    itemName: row.item?.name,
+  }).catch((err: unknown) => console.error("[logInteraction:borrow]", err));
   void evaluateLowStock(row.id);
 }
 
@@ -79,47 +106,46 @@ export async function useStockItemInCard(tableId: string, rowId: string, input: 
   void evaluateLowStock(row.id);
 }
 
-export async function getTakenItems() {
-  const items = await listActiveTakenItems();
-  return items.map(serializeTakenItem);
+export async function getBorrowedItems() {
+  const records = await listActiveBorrowRecords();
+  return records.map(serializeBorrowRecord);
 }
 
-export async function returnTakenItem(id: string, userId?: string) {
-  const item = await findTakenItem(id);
-  if (!item || item.returnedAt) throw new AppError("Taken item was not found.", 404);
+export async function returnBorrowedItem(id: string, quantity: number | undefined, userId?: string) {
+  const record = await findBorrowRecord(id);
+  if (!record || record.status !== "active") throw new AppError("Borrowed item was not found.", 404);
+  if (record.currentHolderId !== userId) throw new AppError("Only the current holder can return this item.", 403);
+
+  const heldQuantity = record.quantity.toNumber();
+  const returnQuantity = quantity ?? heldQuantity;
+  if (returnQuantity <= 0 || returnQuantity > heldQuantity) {
+    throw new AppError(`Enter a quantity between 1 and ${record.quantity.toString()}.`, 400);
+  }
+  const fullyReturned = returnQuantity === heldQuantity;
+
   await prisma.$transaction(async (tx) => {
-    await incrementStock(tx, item.sourceStockBalance, item.quantity, "return", userId);
-    await tx.takenStockItem.update({ where: { id }, data: { returnedAt: new Date() } });
+    await incrementStock(tx, record.sourceStockBalance, returnQuantity, "return", userId);
+    if (fullyReturned) {
+      await tx.borrowRecord.update({ where: { id }, data: { status: "returned", closedAt: new Date(), quantity: 0 } });
+      await tx.borrowRequest.updateMany({
+        where: { borrowRecordId: id, status: "pending" },
+        data: { status: "cancelled", resolvedAt: new Date() },
+      });
+    } else {
+      await tx.borrowRecord.update({ where: { id }, data: { quantity: record.quantity.minus(returnQuantity) } });
+    }
   });
+
   await logInteraction({
     action: "return",
-    stockBalanceId: item.sourceStockBalanceId,
-    inventoryTableId: item.sourceInventoryTableId,
-    itemId: item.itemId,
+    stockBalanceId: record.sourceStockBalanceId,
+    inventoryTableId: record.sourceInventoryTableId,
+    itemId: record.itemId,
     userId,
-    quantity: item.quantity.toString(),
-    itemName: item.item?.name,
+    quantity: String(returnQuantity),
+    itemName: record.item?.name,
   }).catch((err: unknown) => console.error("[logInteraction:return]", err));
-  void evaluateLowStock(item.sourceStockBalanceId);
-}
-
-export async function returnUsedInAssignment(id: string, userId?: string) {
-  const assignment = await findUsedInAssignment(id);
-  if (!assignment || assignment.returnedAt) throw new AppError("Used In assignment was not found.", 404);
-  await prisma.$transaction(async (tx) => {
-    await incrementStock(tx, assignment.sourceStockBalance, assignment.quantity, "return", userId);
-    await tx.usedInStockAssignment.update({ where: { id }, data: { returnedAt: new Date() } });
-  });
-  await logInteraction({
-    action: "return_used",
-    stockBalanceId: assignment.sourceStockBalanceId,
-    inventoryTableId: assignment.sourceInventoryTableId,
-    itemId: assignment.itemId,
-    userId,
-    quantity: assignment.quantity.toString(),
-    itemName: assignment.item?.name,
-  }).catch((err: unknown) => console.error("[logInteraction:return_used]", err));
-  void evaluateLowStock(assignment.sourceStockBalanceId);
+  void evaluateLowStock(record.sourceStockBalanceId);
 }
 
 async function loadAvailableRow(tableId: string, rowId: string, quantity: number) {
