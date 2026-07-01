@@ -5,20 +5,24 @@ import { listUsedInCardsRequest } from "../../services/used-in.service";
 import type { StockMovementInput, StructuredStockRow, UseInCardInput } from "../../types/structured-inventory";
 import type { UsedInCard } from "../../types/used-in";
 
+type Mode = "consume" | "borrow" | "use_in";
+
 export function StockRowMovementModal({
   onClose,
-  onTake,
+  onConsume,
+  onBorrow,
   onUseIn,
   row,
 }: {
   onClose: () => void;
-  onTake: (rowId: string, input: StockMovementInput) => Promise<void>;
+  onConsume: (rowId: string, input: StockMovementInput) => Promise<void>;
+  onBorrow: (rowId: string, input: StockMovementInput) => Promise<void>;
   onUseIn: (rowId: string, input: UseInCardInput) => Promise<void>;
   row: StructuredStockRow | null;
 }) {
   const { t } = useTranslation("inventory");
   const [cards, setCards] = useState<UsedInCard[]>([]);
-  const [mode, setMode] = useState<"take" | "use_in">("take");
+  const [mode, setMode] = useState<Mode>("consume");
   const [quantity, setQuantity] = useState(1);
   const [cardId, setCardId] = useState("");
   const [spotIds, setSpotIds] = useState<string[]>([]);
@@ -47,7 +51,8 @@ export function StockRowMovementModal({
     }
     setIsSaving(true);
     try {
-      if (mode === "take") await onTake(activeRow.id, { quantity });
+      if (mode === "consume") await onConsume(activeRow.id, { quantity });
+      if (mode === "borrow") await onBorrow(activeRow.id, { quantity });
       if (mode === "use_in") await onUseIn(activeRow.id, { quantity, cardId, spotIds });
       onClose();
     } catch (requestError) {
@@ -77,7 +82,7 @@ export function StockRowMovementModal({
         <footer className="mt-5 flex justify-end gap-2">
           <button className="rounded-md border border-line px-4 py-2 text-sm font-semibold text-slate-200" onClick={onClose} type="button">{t("movement.cancel")}</button>
           <button className="rounded-md bg-accent px-4 py-2 text-sm font-semibold text-slate-950 disabled:opacity-60" disabled={isSaving} onClick={() => void submit()} type="button">
-            {mode === "take" ? t("movement.take") : t("movement.useIn")}
+            {modeLabel(mode, t)}
           </button>
         </footer>
       </section>
@@ -85,13 +90,19 @@ export function StockRowMovementModal({
   );
 }
 
-function ModeTabs({ mode, onChange }: { mode: "take" | "use_in"; onChange: (mode: "take" | "use_in") => void }) {
+function modeLabel(mode: Mode, t: (key: string) => string) {
+  if (mode === "consume") return t("movement.consume");
+  if (mode === "borrow") return t("movement.borrow");
+  return t("movement.useIn");
+}
+
+function ModeTabs({ mode, onChange }: { mode: Mode; onChange: (mode: Mode) => void }) {
   const { t } = useTranslation("inventory");
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-      {(["take", "use_in"] as const).map((option) => (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+      {(["consume", "borrow", "use_in"] as const).map((option) => (
         <button className={`rounded-md border px-3 py-2 text-sm font-semibold ${mode === option ? "border-accent bg-accent/15 text-accent" : "border-line text-slate-300"}`} key={option} onClick={() => onChange(option)} type="button">
-          {option === "take" ? t("movement.take") : t("movement.useIn")}
+          {modeLabel(option, t)}
         </button>
       ))}
     </div>
