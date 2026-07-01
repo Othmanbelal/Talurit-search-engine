@@ -34,6 +34,19 @@ enum UrgentIssueStatus {
   resolved
 }
 
+enum BorrowRecordStatus {
+  active
+  returned
+  transferred
+}
+
+enum BorrowRequestStatus {
+  pending
+  accepted
+  declined
+  cancelled
+}
+
 enum ImportStatus {
   PREVIEWED
   IMPORTED
@@ -194,27 +207,71 @@ model UsedInStockAssignment {
   @@map("used_in_stock_assignments")
 }
 
-model TakenStockItem {
+model ConsumedStockItem {
   id                     String         @id @default(cuid())
   sourceStockBalanceId   String
   sourceInventoryTableId String
   itemId                 String
   quantity               Decimal
   notes                  String?
-  returnedAt             DateTime?
   createdByUserId        String?
   sourceStockBalance     StockBalance   @relation(fields: [sourceStockBalanceId], references: [id], onDelete: Cascade)
   sourceInventoryTable   InventoryTable @relation(fields: [sourceInventoryTableId], references: [id], onDelete: Cascade)
   item                   InventoryItem  @relation(fields: [itemId], references: [id], onDelete: Cascade)
-  createdByUser          User?          @relation("TakenStockItemUser", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  createdByUser          User?          @relation("ConsumedStockItemUser", fields: [createdByUserId], references: [id], onDelete: SetNull)
   createdAt              DateTime       @default(now())
-  updatedAt              DateTime       @updatedAt
 
   @@index([sourceStockBalanceId])
   @@index([sourceInventoryTableId])
   @@index([itemId])
-  @@index([returnedAt])
-  @@map("taken_stock_items")
+  @@map("consumed_stock_items")
+}
+
+model BorrowRecord {
+  id                     String             @id @default(cuid())
+  sourceStockBalanceId   String
+  sourceInventoryTableId String
+  itemId                 String
+  quantity               Decimal
+  notes                  String?
+  status                 BorrowRecordStatus @default(active)
+  currentHolderId        String?
+  previousBorrowRecordId String?            @unique
+  closedAt               DateTime?
+  sourceStockBalance     StockBalance       @relation(fields: [sourceStockBalanceId], references: [id], onDelete: Cascade)
+  sourceInventoryTable   InventoryTable     @relation(fields: [sourceInventoryTableId], references: [id], onDelete: Cascade)
+  item                   InventoryItem      @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  currentHolder          User?              @relation("BorrowRecordHolder", fields: [currentHolderId], references: [id], onDelete: SetNull)
+  previousBorrowRecord   BorrowRecord?      @relation("BorrowChain", fields: [previousBorrowRecordId], references: [id], onDelete: SetNull)
+  nextBorrowRecord       BorrowRecord?      @relation("BorrowChain")
+  requests               BorrowRequest[]
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+
+  @@index([sourceStockBalanceId])
+  @@index([sourceInventoryTableId])
+  @@index([itemId])
+  @@index([currentHolderId])
+  @@index([status])
+  @@map("borrow_records")
+}
+
+model BorrowRequest {
+  id             String              @id @default(cuid())
+  borrowRecordId String
+  requesterId    String
+  status         BorrowRequestStatus @default(pending)
+  resolvedById   String?
+  resolvedAt     DateTime?
+  borrowRecord   BorrowRecord        @relation(fields: [borrowRecordId], references: [id], onDelete: Cascade)
+  requester      User                @relation("BorrowRequestRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  resolvedBy     User?               @relation("BorrowRequestResolver", fields: [resolvedById], references: [id], onDelete: SetNull)
+  createdAt      DateTime            @default(now())
+
+  @@index([borrowRecordId])
+  @@index([requesterId])
+  @@index([status])
+  @@map("borrow_requests")
 }
 
 model User {
@@ -234,7 +291,10 @@ model User {
   historyChanges           ToolHistory[]             @relation("ToolHistoryUser")
   stockMovements           StockMovement[]           @relation("StockMovementUser")
   usedInStockAssignments   UsedInStockAssignment[]   @relation("UsedInStockAssignmentUser")
-  takenStockItems          TakenStockItem[]          @relation("TakenStockItemUser")
+  consumedStockItems       ConsumedStockItem[]       @relation("ConsumedStockItemUser")
+  currentBorrowRecords     BorrowRecord[]            @relation("BorrowRecordHolder")
+  borrowRequestsMade       BorrowRequest[]           @relation("BorrowRequestRequester")
+  borrowRequestsResolved   BorrowRequest[]           @relation("BorrowRequestResolver")
   createdWarehouses        WarehouseLayout[]         @relation("WarehouseCreatedByUser")
   assignedWarehouseSlots   WarehouseSlotAssignment[] @relation("WarehouseSlotAssignedByUser")
   unassignedWarehouseSlots WarehouseSlotAssignment[] @relation("WarehouseSlotUnassignedByUser")
@@ -396,7 +456,8 @@ model InventoryItem {
   stockBalances            StockBalance[]
   stockMovements           StockMovement[]
   usedInStockAssignments   UsedInStockAssignment[]
-  takenStockItems          TakenStockItem[]
+  consumedStockItems       ConsumedStockItem[]
+  borrowRecords            BorrowRecord[]
   warehouseSlotAssignments WarehouseSlotAssignment[]
   interactionLogs          ItemInteractionLog[]
   stagingRows              ImportStagingRow[]        @relation("DetectedImportItem")
@@ -507,7 +568,8 @@ model InventoryTable {
   urgentIssues             UrgentIssue[]
   targetSheets             StructuredImportSheet[]
   usedInStockAssignments   UsedInStockAssignment[]
-  takenStockItems          TakenStockItem[]
+  consumedStockItems       ConsumedStockItem[]
+  borrowRecords            BorrowRecord[]
   warehouseLinks           WarehouseInventoryTableLink[]
   warehouseSlotAssignments WarehouseSlotAssignment[]
   interactionLogs          ItemInteractionLog[]
@@ -668,7 +730,8 @@ model StockBalance {
   sourceImportRow          ImportStagingRow?         @relation(fields: [sourceImportRowId], references: [id], onDelete: SetNull)
   movements                StockMovement[]
   usedInAssignments        UsedInStockAssignment[]
-  takenItems               TakenStockItem[]
+  consumedItems            ConsumedStockItem[]
+  borrowRecords            BorrowRecord[]
   warehouseSlotAssignments WarehouseSlotAssignment[]
   interactionLogs          ItemInteractionLog[]
   itemNotes                ItemNote[]
