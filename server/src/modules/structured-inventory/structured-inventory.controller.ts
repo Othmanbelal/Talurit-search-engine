@@ -7,6 +7,7 @@ import {
   idParamSchema,
   listStockRowsQuerySchema,
   mergeDuplicateRowsSchema,
+  returnBorrowInputSchema,
   stockMovementActionSchema,
   tableColumnSettingsSchema,
   updateStockRowSchema,
@@ -34,9 +35,10 @@ import {
   updateStructuredStockRow,
 } from "./structured-inventory.service";
 import {
-  getTakenItems,
-  returnTakenItem,
-  takeStockItem,
+  borrowStockItem,
+  consumeStockItem,
+  getBorrowedItems,
+  returnBorrowedItem,
   useStockItemInCard,
 } from "./stock-movement.service";
 
@@ -146,9 +148,15 @@ export async function deleteStructuredStockRowController(request: Request, respo
   return response.status(204).send();
 }
 
-export async function takeStockItemController(request: Request, response: Response) {
+export async function consumeStockItemController(request: Request, response: Response) {
   const { id, rowId } = rowParams(request.params);
-  await takeStockItem(id, rowId, stockMovementActionSchema.parse(request.body), request.user?.id);
+  await consumeStockItem(id, rowId, stockMovementActionSchema.parse(request.body), request.user?.id);
+  return response.status(204).send();
+}
+
+export async function borrowStockItemController(request: Request, response: Response) {
+  const { id, rowId } = rowParams(request.params);
+  await borrowStockItem(id, rowId, stockMovementActionSchema.parse(request.body), request.user?.id);
   return response.status(204).send();
 }
 
@@ -158,14 +166,15 @@ export async function useStockItemInCardController(request: Request, response: R
   return response.status(204).send();
 }
 
-export async function listTakenItemsController(_request: Request, response: Response) {
-  const items = await getTakenItems();
+export async function listBorrowedItemsController(_request: Request, response: Response) {
+  const items = await getBorrowedItems();
   return response.json(successResponse({ items }));
 }
 
-export async function returnTakenItemController(request: Request, response: Response) {
+export async function returnBorrowedItemController(request: Request, response: Response) {
   const { id } = idParamSchema.parse(request.params);
-  await returnTakenItem(id, request.user?.id);
+  const input = returnBorrowInputSchema.parse(request.body ?? {});
+  await returnBorrowedItem(id, input.quantity, request.user?.id);
   return response.status(204).send();
 }
 

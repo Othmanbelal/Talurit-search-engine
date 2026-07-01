@@ -16,15 +16,16 @@ import {
   getStructuredStockRowController,
   getStructuredStockRowHistoryController,
   getStructuredInventoryTableController,
-  listTakenItemsController,
+  listBorrowedItemsController,
   listStructuredDuplicatesController,
   listStructuredInventoriesController,
   listStructuredInventoryRowsController,
   listTableLowStockRowsController,
   mergeStructuredDuplicatesController,
-  returnTakenItemController,
+  returnBorrowedItemController,
   restoreStructuredStockRowController,
-  takeStockItemController,
+  borrowStockItemController,
+  consumeStockItemController,
   updateStructuredInventoryTableColumnsController,
   updateStructuredStockRowController,
   useStockItemInCardController,
@@ -39,8 +40,8 @@ const canTakeReturn = requireRoles(UserRole.admin, UserRole.manager, UserRole.em
 structuredInventoryRoutes.use(requireAuth);
 
 structuredInventoryRoutes.get("/", asyncHandler(listStructuredInventoriesController));
-structuredInventoryRoutes.get("/taken-items", asyncHandler(listTakenItemsController));
-structuredInventoryRoutes.post("/taken-items/:id/return", canTakeReturn, asyncHandler(returnTakenItemController));
+structuredInventoryRoutes.get("/borrowed-items", asyncHandler(listBorrowedItemsController));
+structuredInventoryRoutes.post("/borrowed-items/:id/return", canTakeReturn, asyncHandler(returnBorrowedItemController));
 structuredInventoryRoutes.post("/groups", canManageData, asyncHandler(createStructuredInventoryGroupController));
 structuredInventoryRoutes.post("/tables", canManageData, asyncHandler(createStructuredInventoryTableController));
 structuredInventoryRoutes.get("/groups/:id", asyncHandler(getStructuredInventoryGroupController));
@@ -59,5 +60,6 @@ structuredInventoryRoutes.patch("/tables/:id/rows/:rowId", requireResourceAccess
 structuredInventoryRoutes.delete("/tables/:id/rows/:rowId", requireResourceAccess("inventory_table", (req) => req.params.id), asyncHandler(deleteStructuredStockRowController));
 structuredInventoryRoutes.post("/tables/:id/rows/:rowId/archive", requireResourceAccess("inventory_table", (req) => req.params.id), asyncHandler(archiveStructuredStockRowController));
 structuredInventoryRoutes.post("/tables/:id/rows/:rowId/restore", requireResourceAccess("inventory_table", (req) => req.params.id), asyncHandler(restoreStructuredStockRowController));
-structuredInventoryRoutes.post("/tables/:id/rows/:rowId/take", canTakeReturn, asyncHandler(takeStockItemController));
+structuredInventoryRoutes.post("/tables/:id/rows/:rowId/consume", canTakeReturn, asyncHandler(consumeStockItemController));
+structuredInventoryRoutes.post("/tables/:id/rows/:rowId/borrow", canTakeReturn, asyncHandler(borrowStockItemController));
 structuredInventoryRoutes.post("/tables/:id/rows/:rowId/use-in", canTakeReturn, asyncHandler(useStockItemInCardController));

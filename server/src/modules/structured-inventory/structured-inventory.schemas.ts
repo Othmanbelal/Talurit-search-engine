@@ -98,6 +98,10 @@ export const useInCardSchema = stockMovementActionSchema.extend({
   spotIds: z.array(z.string().min(1)).optional().default([]),
 });
 
+export const returnBorrowInputSchema = z.object({
+  quantity: z.coerce.number().int().min(1).optional(),
+});
+
 export const mergeDuplicateRowsSchema = z.object({
   primaryRowId: z.string().min(1),
   rowIds: z.array(z.string().min(1)).min(2),
@@ -111,4 +115,5 @@ export type TableColumnSettingsInput = z.infer<typeof tableColumnSettingsSchema>
 export type UpdateStockRowInput = z.infer<typeof updateStockRowSchema>;
 export type StockMovementActionInput = z.infer<typeof stockMovementActionSchema>;
 export type UseInCardInput = z.infer<typeof useInCardSchema>;
+export type ReturnBorrowInput = z.infer<typeof returnBorrowInputSchema>;
 export type MergeDuplicateRowsInput = z.infer<typeof mergeDuplicateRowsSchema>;
