@@ -2,7 +2,7 @@ import type { Prisma } from "@prisma/client";
 import { normalizeColumnSettings } from "./column-settings";
 import { serializeStockRow } from "./structured-inventory.serializer";
 
-type TakenItemRecord = Prisma.TakenStockItemGetPayload<{
+type BorrowRecordWithRelations = Prisma.BorrowRecordGetPayload<{
   include: {
     sourceStockBalance: {
       include: {
@@ -14,21 +14,33 @@ type TakenItemRecord = Prisma.TakenStockItemGetPayload<{
     };
     sourceInventoryTable: true;
     item: { include: { manufacturer: true; category: true; identifiers: true; attributes: true } };
+    currentHolder: { select: { id: true; name: true } };
+    requests: { include: { requester: { select: { id: true; name: true } } } };
   };
 }>;
 
-export function serializeTakenItem(item: TakenItemRecord) {
+export function serializeBorrowRecord(record: BorrowRecordWithRelations) {
+  const pendingRequest = record.requests[0];
   return {
-    id: item.id,
-    quantity: toNumber(item.quantity),
-    notes: item.notes,
-    createdAt: item.createdAt,
+    id: record.id,
+    quantity: toNumber(record.quantity),
+    notes: record.notes,
+    createdAt: record.createdAt,
+    currentHolder: record.currentHolder,
     sourceTable: {
-      id: item.sourceInventoryTable.id,
-      name: item.sourceInventoryTable.name,
-      columnSettings: normalizeColumnSettings(item.sourceInventoryTable.columnSettings),
+      id: record.sourceInventoryTable.id,
+      name: record.sourceInventoryTable.name,
+      columnSettings: normalizeColumnSettings(record.sourceInventoryTable.columnSettings),
     },
-    sourceRow: serializeStockRow(item.sourceStockBalance),
+    sourceRow: serializeStockRow(record.sourceStockBalance),
+    pendingRequest: pendingRequest
+      ? {
+          id: pendingRequest.id,
+          requesterId: pendingRequest.requesterId,
+          requesterName: pendingRequest.requester.name,
+          createdAt: pendingRequest.createdAt,
+        }
+      : null,
   };
 }
 

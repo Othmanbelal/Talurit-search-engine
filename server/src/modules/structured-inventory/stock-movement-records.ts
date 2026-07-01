@@ -10,16 +10,16 @@ export function findStockRowForMovement(tableId: string, rowId: string) {
   });
 }
 
-export function listActiveTakenItems() {
-  return prisma.takenStockItem.findMany({
-    where: { returnedAt: null },
+export function listActiveBorrowRecords() {
+  return prisma.borrowRecord.findMany({
+    where: { status: "active" },
     orderBy: { createdAt: "desc" },
-    include: stockMovementInclude(),
+    include: borrowRecordInclude(),
   });
 }
 
-export function findTakenItem(id: string) {
-  return prisma.takenStockItem.findUnique({ where: { id }, include: stockMovementInclude() });
+export function findBorrowRecord(id: string) {
+  return prisma.borrowRecord.findUnique({ where: { id }, include: borrowRecordInclude() });
 }
 
 export function findUsedInAssignment(id: string) {
@@ -57,7 +57,7 @@ export function decrementStock(
           quantityChange: -quantity,
           quantityBefore: row.quantity,
           quantityAfter: row.quantity.minus(quantity),
-          reason: movementType === "use_in" ? "Assigned to Used In card" : "Taken out from inventory",
+          reason: movementReason(movementType),
           createdByUserId: userId,
         },
       },
@@ -68,7 +68,7 @@ export function decrementStock(
 export function incrementStock(
   tx: Prisma.TransactionClient,
   row: { id: string; itemId: string; locationId: string | null; quantity: Prisma.Decimal },
-  quantity: Prisma.Decimal,
+  quantity: Prisma.Decimal | number,
   movementType: string,
   userId?: string,
 ) {
@@ -92,7 +92,14 @@ export function incrementStock(
   });
 }
 
-function stockMovementInclude() {
+function movementReason(movementType: string) {
+  if (movementType === "use_in") return "Assigned to Used In card";
+  if (movementType === "consume") return "Consumed from inventory";
+  if (movementType === "borrow") return "Borrowed from inventory";
+  return "Taken out from inventory";
+}
+
+function borrowRecordInclude() {
   return {
     sourceStockBalance: {
       include: {
@@ -104,7 +111,9 @@ function stockMovementInclude() {
     },
     sourceInventoryTable: true,
     item: { include: { manufacturer: true, category: true, identifiers: true, attributes: true } },
-  } satisfies Prisma.TakenStockItemInclude;
+    currentHolder: { select: { id: true, name: true } },
+    requests: { where: { status: "pending" as const }, include: { requester: { select: { id: true, name: true } } } },
+  } satisfies Prisma.BorrowRecordInclude;
 }
 
 export type MovementStockRow = NonNullable<Awaited<ReturnType<typeof findStockRowForMovement>>>;
