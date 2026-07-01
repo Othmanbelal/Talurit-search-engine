@@ -9,7 +9,7 @@ const duplicateInclude = {
   item: { include: { manufacturer: true, category: true, identifiers: true, attributes: true } },
   location: true,
   usedInAssignments: { where: { returnedAt: null }, include: { card: true } },
-  takenItems: { where: { returnedAt: null } },
+  borrowRecords: { where: { status: "active" } },
 } satisfies Prisma.StockBalanceInclude;
 
 export async function findDuplicateGroups(tableId: string) {
@@ -88,8 +88,8 @@ function assertMergeCompatible(rows: DuplicateRow[]) {
   const first = rows[0];
   for (const row of rows) {
     if (row.unit !== first.unit || row.currency !== first.currency) throw new AppError("Rows with different units or currencies cannot be merged.", 400);
-    if (row.usedInAssignments.length > 0 || row.takenItems.length > 0) {
-      throw new AppError("Return used/taken duplicate rows before merging.", 400);
+    if (row.usedInAssignments.length > 0 || row.borrowRecords.length > 0) {
+      throw new AppError("Return used/borrowed duplicate rows before merging.", 400);
     }
   }
 }

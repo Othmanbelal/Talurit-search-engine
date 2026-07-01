@@ -74,7 +74,7 @@ export function findStockRows(tableId: string, query: ListStockRowsQuery) {
         item: { include: { manufacturer: true, category: true, identifiers: true, attributes: true } },
         location: true,
         usedInAssignments: { where: { returnedAt: null }, include: { card: true, createdByUser: userNameSelect() } },
-        takenItems: { where: { returnedAt: null }, include: { createdByUser: userNameSelect() } },
+        borrowRecords: { where: { status: "active" }, include: { currentHolder: userNameSelect() } },
         warehouseSlotAssignments: { where: { unassignedAt: null }, include: warehousePlacementInclude() },
       },
       orderBy: [{ location: { code: "asc" } }, { compartment: "asc" }, { item: { name: "asc" } }],
@@ -134,7 +134,7 @@ export function findStockRow(tableId: string, rowId: string) {
       item: { include: { manufacturer: true, category: true, identifiers: true, attributes: true } },
       location: true,
       usedInAssignments: { where: { returnedAt: null }, include: { card: true, createdByUser: userNameSelect() } },
-      takenItems: { where: { returnedAt: null }, include: { createdByUser: userNameSelect() } },
+      borrowRecords: { where: { status: "active" }, include: { currentHolder: userNameSelect() } },
       warehouseSlotAssignments: { where: { unassignedAt: null }, include: warehousePlacementInclude() },
     },
   });
@@ -144,7 +144,7 @@ const stockRowFullInclude = {
   item: { include: { manufacturer: true, category: true, identifiers: true, attributes: true } },
   location: true,
   usedInAssignments: { where: { returnedAt: null }, include: { card: true, createdByUser: userNameSelect() } },
-  takenItems: { where: { returnedAt: null }, include: { createdByUser: userNameSelect() } },
+  borrowRecords: { where: { status: "active" }, include: { currentHolder: userNameSelect() } },
   warehouseSlotAssignments: { where: { unassignedAt: null }, include: warehousePlacementInclude() },
 } satisfies Prisma.StockBalanceInclude;
 

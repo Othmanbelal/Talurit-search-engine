@@ -225,13 +225,13 @@ function ItemCell({ row }: { row: StructuredStockRow }) {
 }
 
 function ActivityTagPill({ tag }: { tag: NonNullable<StructuredStockRow["activityTags"]>[number] }) {
-  const isTaken = tag.type === "taken";
-  const tone = isTaken ? "border-orange-400/40 bg-orange-500/10 text-orange-200" : "border-accent/40 bg-accent/10 text-accent";
+  const isBorrowed = tag.type === "borrow";
+  const tone = isBorrowed ? "border-orange-400/40 bg-orange-500/10 text-orange-200" : "border-accent/40 bg-accent/10 text-accent";
   return <span className={`rounded border px-2 py-0.5 text-[11px] ${tone}`}>{activityTagLabel(tag)}</span>;
 }
 
 function activityTagLabel(tag: NonNullable<StructuredStockRow["activityTags"]>[number]) {
-  if (tag.type === "taken") return `x${formatNumber(tag.quantity)} taken by ${tag.userName}`;
+  if (tag.type === "borrow") return `x${formatNumber(tag.quantity)} borrowed by ${tag.userName}`;
   return `x${formatNumber(tag.quantity)} used in ${tag.cardName ?? "card"} by ${tag.userName}`;
 }
 

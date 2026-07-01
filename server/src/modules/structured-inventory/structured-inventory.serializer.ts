@@ -39,8 +39,8 @@ type UsedInAssignmentRecord = Prisma.UsedInStockAssignmentGetPayload<{ include: 
   createdByUser?: { name: string } | null;
 };
 
-type TakenItemRecord = Prisma.TakenStockItemGetPayload<{}> & {
-  createdByUser?: { name: string } | null;
+type BorrowRecordActivityRecord = Prisma.BorrowRecordGetPayload<{}> & {
+  currentHolder?: { name: string } | null;
 };
 
 type WarehousePlacementRecord = Prisma.WarehouseSlotAssignmentGetPayload<{}> & {
@@ -50,7 +50,7 @@ type WarehousePlacementRecord = Prisma.WarehouseSlotAssignmentGetPayload<{}> & {
 
 type StockRowRecord = Omit<BaseStockRowRecord, "usedInAssignments"> & {
   usedInAssignments: UsedInAssignmentRecord[];
-  takenItems?: TakenItemRecord[];
+  borrowRecords?: BorrowRecordActivityRecord[];
   warehouseSlotAssignments?: WarehousePlacementRecord[];
 };
 
@@ -206,11 +206,11 @@ function activityTags(row: StockRowRecord) {
     tags.set(key, current);
   }
 
-  for (const taken of row.takenItems ?? []) {
-    const userName = displayUserName(taken.createdByUser?.name);
-    const key = `taken:${userName}`;
-    const current = tags.get(key) ?? { type: "taken" as const, quantity: 0, userName };
-    current.quantity += toNumber(taken.quantity);
+  for (const borrowed of row.borrowRecords ?? []) {
+    const userName = displayUserName(borrowed.currentHolder?.name);
+    const key = `borrow:${userName}`;
+    const current = tags.get(key) ?? { type: "borrow" as const, quantity: 0, userName };
+    current.quantity += toNumber(borrowed.quantity);
     tags.set(key, current);
   }
 
@@ -222,7 +222,7 @@ function displayUserName(name?: string | null) {
 }
 
 type ActivityTag = {
-  type: "used_in" | "taken";
+  type: "used_in" | "borrow";
   quantity: number;
   userName: string;
   cardId?: string;

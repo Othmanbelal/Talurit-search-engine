@@ -124,7 +124,7 @@ export type StructuredStockRow = {
 };
 
 export type ActivityTag = {
-  type: "used_in" | "taken";
+  type: "used_in" | "borrow";
   quantity: number;
   userName: string;
   cardId?: string;
