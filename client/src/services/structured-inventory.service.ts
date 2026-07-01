@@ -1,5 +1,6 @@
 import type {
   AddStockRowInput,
+  BorrowedItem,
   ColumnSettingsInput,
   CreateInventoryGroupInput,
   CreateInventoryTableInput,
@@ -12,7 +13,6 @@ import type {
   StructuredStockRow,
   StructuredTableFilters,
   StockMovementInput,
-  TakenStockItem,
   UpdateStockRowInput,
   UseInCardInput,
 } from "../types/structured-inventory";
@@ -121,8 +121,15 @@ export function deleteStructuredInventoryGroupRequest(id: string) {
   return emptyRequest(`/api/structured-inventory/groups/${id}`, "DELETE");
 }
 
-export function takeStructuredStockRowRequest(tableId: string, rowId: string, input: StockMovementInput) {
-  return apiRequest<unknown>(`/api/structured-inventory/tables/${tableId}/rows/${rowId}/take`, {
+export function consumeStructuredStockRowRequest(tableId: string, rowId: string, input: StockMovementInput) {
+  return apiRequest<unknown>(`/api/structured-inventory/tables/${tableId}/rows/${rowId}/consume`, {
+    method: "POST",
+    body: JSON.stringify(input),
+  });
+}
+
+export function borrowStructuredStockRowRequest(tableId: string, rowId: string, input: StockMovementInput) {
+  return apiRequest<unknown>(`/api/structured-inventory/tables/${tableId}/rows/${rowId}/borrow`, {
     method: "POST",
     body: JSON.stringify(input),
   });
@@ -135,12 +142,15 @@ export function useStructuredStockRowInCardRequest(tableId: string, rowId: strin
   });
 }
 
-export function listTakenItemsRequest() {
-  return apiRequest<{ items: TakenStockItem[] }>("/api/structured-inventory/taken-items");
+export function listBorrowedItemsRequest() {
+  return apiRequest<{ items: BorrowedItem[] }>("/api/structured-inventory/borrowed-items");
 }
 
-export function returnTakenItemRequest(id: string) {
-  return apiRequest<unknown>(`/api/structured-inventory/taken-items/${id}/return`, { method: "POST" });
+export function returnBorrowedItemRequest(id: string, quantity?: number) {
+  return apiRequest<unknown>(`/api/structured-inventory/borrowed-items/${id}/return`, {
+    method: "POST",
+    body: quantity ? JSON.stringify({ quantity }) : undefined,
+  });
 }
 
 export function getStockRowHistoryRequest(rowId: string) {

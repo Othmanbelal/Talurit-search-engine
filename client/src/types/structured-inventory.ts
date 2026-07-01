@@ -176,13 +176,15 @@ export type UseInCardInput = StockMovementInput & {
   spotIds?: string[];
 };
 
-export type TakenStockItem = {
+export type BorrowedItem = {
   id: string;
   quantity: number;
   notes?: string | null;
   createdAt: string;
+  currentHolder: { id: string; name: string } | null;
   sourceTable: { id: string; name: string; columnSettings: TableColumnSettings };
   sourceRow: StructuredStockRow;
+  pendingRequest: { id: string; requesterId: string; requesterName: string; createdAt: string } | null;
 };
 
 export type StructuredDuplicateGroup = {
