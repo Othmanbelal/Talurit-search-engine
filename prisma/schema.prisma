@@ -256,6 +256,10 @@ model BorrowRecord {
   @@map("borrow_records")
 }
 
+// NOTE: migration 20260702113820 adds a partial unique index
+// ("borrow_requests_one_pending_per_record": UNIQUE on borrowRecordId WHERE status = 'pending')
+// that Prisma cannot model here. It race-proofs the one-pending-request-per-record rule;
+// concurrent duplicate inserts surface as P2002 and are handled in borrow-requests.service.ts.
 model BorrowRequest {
   id             String              @id @default(cuid())
   borrowRecordId String
