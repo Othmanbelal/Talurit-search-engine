@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "../../db/prisma";
 import { AppError } from "../../utils/AppError";
 import { isTableManager } from "../managers/manager-access";
@@ -16,7 +17,15 @@ export async function requestBorrow(borrowRecordId: string, requesterId: string)
   if (record.currentHolderId === requesterId) throw new AppError("You already have this item.", 400);
   const pending = await findPendingRequestForRecord(borrowRecordId);
   if (pending) throw new AppError("This item already has a pending request.", 400);
-  return createRequest(borrowRecordId, requesterId);
+
+  try {
+    return await createRequest(borrowRecordId, requesterId);
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      throw new AppError("This item already has a pending request.", 400);
+    }
+    throw error;
+  }
 }
 
 export async function acceptRequest(requestId: string, actorId: string, actorRole: string) {
@@ -24,7 +33,15 @@ export async function acceptRequest(requestId: string, actorId: string, actorRol
   if (!request || request.status !== "pending") throw new AppError("Request not found.", 404);
   await authorizeResolver(request.borrowRecord, actorId, actorRole);
 
-  return acceptRequestAndTransfer(requestId, request.borrowRecord, request.requesterId, actorId);
+  const result = await acceptRequestAndTransfer(requestId, request.borrowRecord, request.requesterId, actorId);
+  switch (result.outcome) {
+    case "request_already_resolved":
+      throw new AppError("This request was already resolved.", 409);
+    case "record_not_active":
+      throw new AppError("This borrowed item is no longer active.", 409);
+    case "transferred":
+      return result.newRecord;
+  }
 }
 
 export async function declineRequest(requestId: string, actorId: string, actorRole: string) {

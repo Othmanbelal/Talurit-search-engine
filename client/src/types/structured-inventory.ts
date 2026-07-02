@@ -185,6 +185,7 @@ export type BorrowedItem = {
   sourceTable: { id: string; name: string; columnSettings: TableColumnSettings };
   sourceRow: StructuredStockRow;
   pendingRequest: { id: string; requesterId: string; requesterName: string; createdAt: string } | null;
+  viewerCanResolve: boolean;
 };
 
 export type StructuredDuplicateGroup = {

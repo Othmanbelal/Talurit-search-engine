@@ -166,8 +166,8 @@ export async function useStockItemInCardController(request: Request, response: R
   return response.status(204).send();
 }
 
-export async function listBorrowedItemsController(_request: Request, response: Response) {
-  const items = await getBorrowedItems();
+export async function listBorrowedItemsController(request: Request, response: Response) {
+  const items = await getBorrowedItems(request.user?.id, request.user?.role);
   return response.json(successResponse({ items }));
 }
 

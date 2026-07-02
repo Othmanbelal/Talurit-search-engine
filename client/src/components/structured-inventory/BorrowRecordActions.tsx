@@ -18,7 +18,7 @@ export function BorrowRecordActions({ item, onChanged }: { item: BorrowedItem; o
   const [error, setError] = useState<string | null>(null);
 
   const isHolder = item.currentHolder?.id === user?.id;
-  const canResolve = isHolder || user?.role === "admin" || user?.role === "manager";
+  const canResolve = item.viewerCanResolve;
 
   async function run(action: () => Promise<unknown>) {
     setBusy(true);

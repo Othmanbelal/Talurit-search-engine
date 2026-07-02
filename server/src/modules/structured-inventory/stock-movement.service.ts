@@ -13,6 +13,7 @@ import {
 import { serializeBorrowRecord } from "./stock-movement.serializer";
 import { logInteraction } from "./interaction-log";
 import { evaluateLowStock } from "../low-stock/low-stock.service";
+import { resolveManagerTableIds } from "../managers/manager-access";
 
 export async function consumeStockItem(tableId: string, rowId: string, input: StockMovementActionInput, userId?: string) {
   const row = await loadAvailableRow(tableId, rowId, input.quantity);
@@ -106,9 +107,11 @@ export async function useStockItemInCard(tableId: string, rowId: string, input: 
   void evaluateLowStock(row.id);
 }
 
-export async function getBorrowedItems() {
+export async function getBorrowedItems(userId?: string, role?: string) {
   const records = await listActiveBorrowRecords();
-  return records.map(serializeBorrowRecord);
+  const managedTableIds = new Set(role === "manager" && userId ? await resolveManagerTableIds(userId) : []);
+  const viewer = { userId, role, managedTableIds };
+  return records.map((record) => serializeBorrowRecord(record, viewer));
 }
 
 export async function returnBorrowedItem(id: string, quantity: number | undefined, userId?: string) {
@@ -158,7 +161,7 @@ export async function returnBorrowedItem(id: string, quantity: number | undefine
     inventoryTableId: record.sourceInventoryTableId,
     itemId: record.itemId,
     userId,
-    quantity: String(returnQuantity),
+    quantity: returnQuantity,
     itemName: record.item?.name,
   }).catch((err: unknown) => console.error("[logInteraction:return]", err));
   void evaluateLowStock(record.sourceStockBalanceId);

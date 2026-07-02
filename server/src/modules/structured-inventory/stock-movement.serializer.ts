@@ -19,7 +19,13 @@ type BorrowRecordWithRelations = Prisma.BorrowRecordGetPayload<{
   };
 }>;
 
-export function serializeBorrowRecord(record: BorrowRecordWithRelations) {
+export type BorrowRecordViewer = {
+  userId?: string;
+  role?: string;
+  managedTableIds: ReadonlySet<string>;
+};
+
+export function serializeBorrowRecord(record: BorrowRecordWithRelations, viewer: BorrowRecordViewer) {
   const pendingRequest = record.requests[0];
   return {
     id: record.id,
@@ -41,6 +47,10 @@ export function serializeBorrowRecord(record: BorrowRecordWithRelations) {
           createdAt: pendingRequest.createdAt,
         }
       : null,
+    viewerCanResolve:
+      viewer.role === "admin" ||
+      (record.currentHolder?.id != null && record.currentHolder.id === viewer.userId) ||
+      viewer.managedTableIds.has(record.sourceInventoryTableId),
   };
 }
 
