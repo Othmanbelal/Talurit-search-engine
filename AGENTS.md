@@ -127,9 +127,11 @@ Rules:
 - Uploaded files must use Supabase Storage or another real object-storage provider; do not use Render/local disk or database base64 fields for production uploads.
 - PostgreSQL stores only storage references or metadata, not image binary/base64 payloads.
 - Image display must go through authenticated backend media routes that create short-lived signed storage URLs.
-- Taking stock out creates a TakenStockItem record, decreases the source StockBalance quantity, and can be returned later.
+- Consuming stock creates a ConsumedStockItem record and decreases the source StockBalance quantity permanently; consume has no return path.
+- Borrowing stock creates a BorrowRecord with a current holder, decreases the source StockBalance quantity, and supports partial or full return by the holder.
+- Another user can request a borrowed item; the current holder, table manager, or admin can accept (transferring custody through a linked BorrowRecord chain) or decline, and only one pending request per borrow record is allowed.
 - Assigning stock to a Used In card creates a UsedInStockAssignment, decreases the source StockBalance quantity, and shows usage tags on the source row.
-- Returning taken or used stock must increase the original StockBalance quantity and mark the movement record returned.
+- Returning borrowed or used stock must increase the original StockBalance quantity and mark the movement record returned.
 - Used In cards may have named spots. If a card has spots, each used unit must choose one empty spot.
 - One Used In spot may hold only one active item assignment at a time.
 - Used In card details must group assigned structured rows by their original InventoryTable and use that table's visible-column settings.

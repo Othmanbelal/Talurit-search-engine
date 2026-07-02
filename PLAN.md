@@ -1266,6 +1266,44 @@ Verification:
 - Backend health returned database ok.
 - Client returned HTTP 200 on port 5173.
 
+### Consume, Borrow & Borrow Requests
+
+Created:
+- server/src/modules/borrow-requests/ (schemas, repository, service, controller, routes)
+- client/src/services/borrow-requests.service.ts
+- client/src/components/structured-inventory/BorrowRecordActions.tsx
+- client/src/components/dashboard/BorrowedItemsWidget.tsx
+- client/src/pages/BorrowedItemsPage.tsx
+- client/src/i18n/locales/en/borrowed.json and sv/borrowed.json
+- prisma/migrations/20260701112050_consume_borrow_requests/
+
+Changed:
+- prisma/schema.prisma - retired TakenStockItem; added ConsumedStockItem, BorrowRecord (custody chain via previousBorrowRecordId), BorrowRequest
+- server/src/modules/structured-inventory/* - take replaced by consume + borrow; /taken-items replaced by /borrowed-items; row activity pills renamed taken -> borrow
+- server/src/app.ts - mounted /api/borrow-requests
+- server/src/modules/profile/landing.ts and client/src/constants/landing.ts - landing-page allowlist updated to /borrowed-items
+- client/src/app/router.tsx and client/src/components/layout/Sidebar.tsx - /taken-items -> /borrowed-items
+- client/src/components/structured-inventory/StockRowMovementModal.tsx - Take tab split into Consume + Borrow tabs
+- client/src/hooks/useStructuredInventory.ts and client/src/pages/StructuredInventoryTablePage.tsx - takeRow -> consumeRow/borrowRow (modal wiring on the table page)
+- client/src/pages/DashboardPage.tsx - Borrowed Items widget now visible to all roles (was employee-only)
+- i18n: dashboard.json, inventory.json, navigation.json (en + sv); i18n.ts namespace taken -> borrowed
+
+Completed:
+- Consume: permanent stock decrement with a ConsumedStockItem record; no return path.
+- Borrow: temporary decrement with a named current holder; partial or full self-return; multiple concurrent borrows per stock row.
+- Borrow requests: request / accept / decline / cancel; accepting transfers the whole record to the requester with a linked custody chain.
+- Race safety: accept/decline resolve atomically (single-winner updateMany on pending status) before any transfer.
+- Approval rights: current holder, table manager (direct or via group), or admin; past holders lose rights after transfer.
+- Full self-return auto-cancels any pending request on that record.
+- Data migration: every historical TakenStockItem row (open and returned) preserved as a BorrowRecord; open loans stay active under their original holder.
+
+Verification:
+- npm run lint passed (client and server).
+- npm run build passed (client and server).
+- npm run check:lines passed (after dropping three dead inventory.json keys).
+- docker compose up -d --build server client passed.
+- Migration verified against live database: 5 taken_stock_items backfilled into borrow_records, old table dropped.
+
 ## QR Scan Workflow - Completed
 
 Completed:
