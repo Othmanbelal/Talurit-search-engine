@@ -12,7 +12,8 @@ import {
   listStructuredInventoryRowsRequest,
   archiveStructuredStockRowRequest,
   restoreStructuredStockRowRequest,
-  takeStructuredStockRowRequest,
+  borrowStructuredStockRowRequest,
+  consumeStructuredStockRowRequest,
   updateStructuredInventoryColumnsRequest,
   updateStructuredStockRowRequest,
   useStructuredStockRowInCardRequest,
@@ -178,9 +179,15 @@ export function useStructuredInventoryTable(id?: string) {
     loadRows();
   }
 
-  async function takeRow(rowId: string, input: StockMovementInput) {
+  async function consumeRow(rowId: string, input: StockMovementInput) {
     if (!id) return;
-    await takeStructuredStockRowRequest(id, rowId, input);
+    await consumeStructuredStockRowRequest(id, rowId, input);
+    await loadRows();
+  }
+
+  async function borrowRow(rowId: string, input: StockMovementInput) {
+    if (!id) return;
+    await borrowStructuredStockRowRequest(id, rowId, input);
     await loadRows();
   }
 
@@ -195,7 +202,7 @@ export function useStructuredInventoryTable(id?: string) {
     await deleteStructuredInventoryTableRequest(id);
   }
 
-  return { addRow, archiveRow, archived, deleteRow, deleteTable, error, filters, isLoading, loadRows, restoreRow, rows, table, takeRow, updateColumns, updateRow, useRowInCard };
+  return { addRow, archiveRow, archived, borrowRow, consumeRow, deleteRow, deleteTable, error, filters, isLoading, loadRows, restoreRow, rows, table, updateColumns, updateRow, useRowInCard };
 }
 
 function getErrorMessage(error: unknown, fallback: string) {

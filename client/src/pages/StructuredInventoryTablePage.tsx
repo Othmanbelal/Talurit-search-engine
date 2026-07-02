@@ -237,8 +237,12 @@ export function StructuredInventoryTablePage() {
       <StockRowMovementModal
         row={movingRow}
         onClose={() => setMovingRow(null)}
-        onTake={async (rowId, input) => {
-          await inventory.takeRow(rowId, input);
+        onConsume={async (rowId, input) => {
+          await inventory.consumeRow(rowId, input);
+          setMovementVersion((v) => v + 1);
+        }}
+        onBorrow={async (rowId, input) => {
+          await inventory.borrowRow(rowId, input);
           setMovementVersion((v) => v + 1);
         }}
         onUseIn={async (rowId, input) => {
