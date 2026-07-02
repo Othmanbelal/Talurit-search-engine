@@ -6,15 +6,16 @@ import { ManagerTablesWidget } from "../components/dashboard/ManagerTablesWidget
 import { MyReportedIssuesWidget } from "../components/dashboard/MyReportedIssuesWidget";
 import { RecentNotesWidget } from "../components/dashboard/RecentNotesWidget";
 import { StatusPanel } from "../components/dashboard/StatusPanel";
-import { TakenItemsWidget } from "../components/dashboard/TakenItemsWidget";
+import { BorrowedItemsWidget } from "../components/dashboard/BorrowedItemsWidget";
 import { UrgentIssuesWidget } from "../components/dashboard/UrgentIssuesWidget";
 import { StockRowDetailsDrawer } from "../components/structured-inventory/StockRowDetailsDrawer";
 import { StockRowMovementModal } from "../components/structured-inventory/StockRowMovementModal";
 import { useAdminDashboard } from "../hooks/useAdminDashboard";
 import { useAuth } from "../hooks/useAuth";
 import {
+  borrowStructuredStockRowRequest,
+  consumeStructuredStockRowRequest,
   getStructuredStockRowRequest,
-  takeStructuredStockRowRequest,
   updateStructuredStockRowRequest,
   useStructuredStockRowInCardRequest,
 } from "../services/structured-inventory.service";
@@ -126,11 +127,10 @@ export function DashboardPage() {
         </>
       )}
 
-      {isEmployee && (
-        <Widget>
-          <TakenItemsWidget />
-        </Widget>
-      )}
+      {/* Visible to every role — matches "members can see borrowed items" requirement. */}
+      <Widget>
+        <BorrowedItemsWidget />
+      </Widget>
 
       {/* Visible to every role; self-hides when the user has no reported issues. */}
       <MyReportedIssuesWidget onIssueClick={handleIssueClick} />
@@ -156,9 +156,13 @@ export function DashboardPage() {
           setMovingRow(null);
           setMovingTableId(null);
         }}
-        onTake={(rowId, input) => {
+        onConsume={(rowId, input) => {
           if (!movingTableId) return Promise.resolve();
-          return takeStructuredStockRowRequest(movingTableId, rowId, input).then(() => undefined);
+          return consumeStructuredStockRowRequest(movingTableId, rowId, input).then(() => undefined);
+        }}
+        onBorrow={(rowId, input) => {
+          if (!movingTableId) return Promise.resolve();
+          return borrowStructuredStockRowRequest(movingTableId, rowId, input).then(() => undefined);
         }}
         onUseIn={(rowId, input) => {
           if (!movingTableId) return Promise.resolve();
