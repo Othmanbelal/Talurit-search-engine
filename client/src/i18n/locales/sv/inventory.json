@@ -53,7 +53,6 @@
     "archive": "Arkivera",
     "restore": "Återställ",
     "delete": "Ta bort",
-    "take": "Ta ut",
     "useIn": "Använd i",
     "history": "Historik",
     "tableLayout": "Tabelllayout",
@@ -76,7 +75,6 @@
     "totalItems": "Totalt antal artiklar",
     "totalValue": "Totalt värde",
     "lowStock": "Lågt lager",
-    "taken": "Uttagna",
     "items": "Artiklar",
     "inventoryBalance": "Inventarievärde"
   },
@@ -167,7 +165,6 @@
     "selectCard": "Välj ett Används i-kort.",
     "selectSpots": "Välj {{count}} tomma platser.",
     "movementFailed": "Rörelse misslyckades",
-    "selectUsedInCard": "Välj Används i-kort",
     "select": "Välj"
   },
   "addItem": {

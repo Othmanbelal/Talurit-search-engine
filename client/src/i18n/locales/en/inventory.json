@@ -53,7 +53,6 @@
     "archive": "Archive",
     "restore": "Restore",
     "delete": "Delete",
-    "take": "Take",
     "useIn": "Use in",
     "history": "History",
     "tableLayout": "Table layout",
@@ -76,7 +75,6 @@
     "totalItems": "Total items",
     "totalValue": "Total value",
     "lowStock": "Low stock",
-    "taken": "Taken",
     "items": "Items",
     "inventoryBalance": "Inventory balance"
   },
@@ -167,7 +165,6 @@
     "selectCard": "Select a Used In card.",
     "selectSpots": "Select {{count}} empty spots.",
     "movementFailed": "Movement failed",
-    "selectUsedInCard": "Select Used In card",
     "select": "Select"
   },
   "addItem": {
