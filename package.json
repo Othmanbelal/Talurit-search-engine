@@ -17,6 +17,7 @@
     "deployment:prepare-data": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/prepare-deployment-data.ps1",
     "build": "npm --workspace server run build && npm --workspace client run build",
     "lint": "npm --workspace server run lint && npm --workspace client run lint",
+    "test": "npm run test --workspace server",
     "check:lines": "node scripts/check-file-lines.mjs",
     "backup:db": "bash scripts/backup-database.sh",
     "restore:db": "bash scripts/restore-database.sh"

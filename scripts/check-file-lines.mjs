@@ -15,7 +15,9 @@ const ignoredDirectories = new Set([
 
 const ignoredFiles = new Set([
   "AGENTS.md",
+  // Both casings: git tracks Claude.md, but Windows tooling may surface it as CLAUDE.md.
   "Claude.md",
+  "CLAUDE.md",
   "package-lock.json",
   "PLAN.md",
 ]);
