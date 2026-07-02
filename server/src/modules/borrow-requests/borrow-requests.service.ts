@@ -3,11 +3,11 @@ import { AppError } from "../../utils/AppError";
 import { isTableManager } from "../managers/manager-access";
 import type { BorrowRecord } from "@prisma/client";
 import {
+  acceptRequestAndTransfer,
   createRequest,
   findPendingRequestForRecord,
   findRequestWithRecord,
   resolveRequestAtomic,
-  transferBorrowRecord,
 } from "./borrow-requests.repository";
 
 export async function requestBorrow(borrowRecordId: string, requesterId: string) {
@@ -24,10 +24,7 @@ export async function acceptRequest(requestId: string, actorId: string, actorRol
   if (!request || request.status !== "pending") throw new AppError("Request not found.", 404);
   await authorizeResolver(request.borrowRecord, actorId, actorRole);
 
-  const resolved = await resolveRequestAtomic(requestId, "accepted", actorId);
-  if (!resolved) throw new AppError("This request was already resolved.", 409);
-
-  return transferBorrowRecord(request.borrowRecord, request.requesterId);
+  return acceptRequestAndTransfer(requestId, request.borrowRecord, request.requesterId, actorId);
 }
 
 export async function declineRequest(requestId: string, actorId: string, actorRole: string) {

@@ -123,17 +123,33 @@ export async function returnBorrowedItem(id: string, quantity: number | undefine
   }
   const fullyReturned = returnQuantity === heldQuantity;
 
+  if (!fullyReturned) {
+    const pending = await prisma.borrowRequest.findFirst({ where: { borrowRecordId: id, status: "pending" } });
+    if (pending) throw new AppError("Resolve the pending request before making a partial return.", 400);
+  }
+
   await prisma.$transaction(async (tx) => {
-    await incrementStock(tx, record.sourceStockBalance, returnQuantity, "return", userId);
     if (fullyReturned) {
-      await tx.borrowRecord.update({ where: { id }, data: { status: "returned", closedAt: new Date(), quantity: 0 } });
+      const flipped = await tx.borrowRecord.updateMany({
+        where: { id, status: "active" },
+        data: { status: "returned", closedAt: new Date(), quantity: 0 },
+      });
+      if (flipped.count !== 1) throw new AppError("This borrowed item was already returned or transferred.", 409);
       await tx.borrowRequest.updateMany({
         where: { borrowRecordId: id, status: "pending" },
         data: { status: "cancelled", resolvedAt: new Date() },
       });
     } else {
-      await tx.borrowRecord.update({ where: { id }, data: { quantity: record.quantity.minus(returnQuantity) } });
+      const adjusted = await tx.borrowRecord.updateMany({
+        where: { id, status: "active", quantity: record.quantity },
+        data: { quantity: record.quantity.minus(returnQuantity) },
+      });
+      if (adjusted.count !== 1) throw new AppError("This borrowed item changed — reload and try again.", 409);
     }
+
+    const freshStock = await tx.stockBalance.findUnique({ where: { id: record.sourceStockBalanceId } });
+    if (!freshStock) throw new AppError("Source stock row not found.", 404);
+    await incrementStock(tx, freshStock, returnQuantity, "return", userId);
   });
 
   await logInteraction({
