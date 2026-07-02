@@ -1,0 +1,18 @@
+{
+  "sectionLabel": "Borrowed items",
+  "title": "Borrowed items",
+  "search": "Search by table, item name, holder, location...",
+  "empty": {
+    "noItems": "No items are currently borrowed.",
+    "noMatch": "No items match your search."
+  },
+  "table": {
+    "quantity": "Quantity",
+    "holder": "Holder",
+    "unknownHolder": "Unknown",
+    "action": "Action"
+  },
+  "error": {
+    "unavailable": "Borrowed items unavailable"
+  }
+}

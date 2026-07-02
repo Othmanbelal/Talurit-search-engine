@@ -14,7 +14,7 @@ import importSv from "./locales/sv/import.json";
 import adminSv from "./locales/sv/admin.json";
 import profileSv from "./locales/sv/profile.json";
 import usedInSv from "./locales/sv/usedIn.json";
-import takenSv from "./locales/sv/taken.json";
+import borrowedSv from "./locales/sv/borrowed.json";
 
 import commonEn from "./locales/en/common.json";
 import navigationEn from "./locales/en/navigation.json";
@@ -29,7 +29,7 @@ import importEn from "./locales/en/import.json";
 import adminEn from "./locales/en/admin.json";
 import profileEn from "./locales/en/profile.json";
 import usedInEn from "./locales/en/usedIn.json";
-import takenEn from "./locales/en/taken.json";
+import borrowedEn from "./locales/en/borrowed.json";
 
 void i18n.use(initReactI18next).init({
   lng: "sv",
@@ -49,7 +49,7 @@ void i18n.use(initReactI18next).init({
       admin: adminSv,
       profile: profileSv,
       usedIn: usedInSv,
-      taken: takenSv,
+      borrowed: borrowedSv,
     },
     en: {
       common: commonEn,
@@ -65,7 +65,7 @@ void i18n.use(initReactI18next).init({
       admin: adminEn,
       profile: profileEn,
       usedIn: usedInEn,
-      taken: takenEn,
+      borrowed: borrowedEn,
     },
   },
   interpolation: { escapeValue: false },

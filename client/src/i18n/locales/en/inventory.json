@@ -154,9 +154,10 @@
     "unassigned": "Unassigned"
   },
   "movement": {
-    "sectionLabel": "Take out / Use in",
+    "sectionLabel": "Consume / Borrow / Use in",
     "available": "Available: {{qty}} {{unit}}",
-    "take": "Take",
+    "consume": "Consume",
+    "borrow": "Borrow",
     "useIn": "Use in",
     "quantity": "Quantity",
     "usedInCard": "Used In card",
@@ -288,6 +289,8 @@
       "restore": "Restored",
       "delete": "Deleted",
       "take": "Taken out",
+      "consume": "Consumed",
+      "borrow": "Borrowed",
       "return": "Returned",
       "use_in": "Used in card",
       "return_used": "Returned from card"

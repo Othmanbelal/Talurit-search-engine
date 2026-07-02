@@ -154,9 +154,10 @@
     "unassigned": "Ej tilldelad"
   },
   "movement": {
-    "sectionLabel": "Ta ut / Använd i",
+    "sectionLabel": "Förbruka / Låna / Använd i",
     "available": "Tillgängligt: {{qty}} {{unit}}",
-    "take": "Ta ut",
+    "consume": "Förbruka",
+    "borrow": "Låna",
     "useIn": "Använd i",
     "quantity": "Antal",
     "usedInCard": "Används i-kort",
@@ -288,6 +289,8 @@
       "restore": "Återställd",
       "delete": "Borttagen",
       "take": "Uttagen",
+      "consume": "Förbrukad",
+      "borrow": "Lånad",
       "return": "Återlämnad",
       "use_in": "Används i kort",
       "return_used": "Återlämnad från kort"

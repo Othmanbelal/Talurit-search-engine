@@ -33,14 +33,22 @@
     "loadingNotes": "Loading notes…",
     "on": "on"
   },
-  "takenItems": {
-    "title": "Items I've Taken Out",
-    "empty": "No items currently taken out.",
+  "borrowedItems": {
+    "title": "Borrowed Items",
+    "empty": "No items currently borrowed.",
     "viewAll": "View all →",
     "viewAllLink": "view all",
     "more": "+{{count}} more —",
     "qty": "Qty:",
-    "return": "Return"
+    "holder": "Held by {{name}}",
+    "unknownHolder": "Unknown",
+    "return": "Return",
+    "request": "Request",
+    "requestedBy": "Requested by {{name}}",
+    "accept": "Accept",
+    "decline": "Decline",
+    "cancelRequest": "Cancel request",
+    "actionFailed": "Action failed"
   },
   "myReportedIssues": {
     "title": "My Reported Issues",

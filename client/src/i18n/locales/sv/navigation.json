@@ -4,7 +4,7 @@
   "dashboard": "Instrumentpanel",
   "inventory": "Inventarier",
   "usedIn": "Används i",
-  "takenItems": "Uttagna artiklar",
+  "borrowedItems": "Lånade artiklar",
   "warehouses": "Lager",
   "locations": "Platser",
   "import": "Importera",

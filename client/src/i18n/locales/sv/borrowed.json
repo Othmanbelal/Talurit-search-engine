@@ -1,0 +1,18 @@
+{
+  "sectionLabel": "Lånade artiklar",
+  "title": "Lånade artiklar",
+  "search": "Sök efter tabell, artikelnamn, innehavare, plats...",
+  "empty": {
+    "noItems": "Inga artiklar är för tillfället lånade.",
+    "noMatch": "Inga artiklar matchar din sökning."
+  },
+  "table": {
+    "quantity": "Antal",
+    "holder": "Innehavare",
+    "unknownHolder": "Okänd",
+    "action": "Åtgärd"
+  },
+  "error": {
+    "unavailable": "Lånade artiklar är inte tillgängliga"
+  }
+}

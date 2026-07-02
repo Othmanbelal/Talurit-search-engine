@@ -4,7 +4,7 @@
   "dashboard": "Dashboard",
   "inventory": "Inventory",
   "usedIn": "Used In",
-  "takenItems": "Taken Items",
+  "borrowedItems": "Borrowed Items",
   "warehouses": "Warehouses",
   "locations": "Locations",
   "import": "Import",

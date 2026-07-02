@@ -33,14 +33,22 @@
     "loadingNotes": "Laddar anteckningar…",
     "on": "om"
   },
-  "takenItems": {
-    "title": "Uttagna artiklar",
-    "empty": "Inga artiklar uttagna.",
+  "borrowedItems": {
+    "title": "Lånade artiklar",
+    "empty": "Inga artiklar är för närvarande lånade.",
     "viewAll": "Visa alla →",
     "viewAllLink": "visa alla",
     "more": "+{{count}} till —",
     "qty": "Antal:",
-    "return": "Återlämna"
+    "holder": "Innehas av {{name}}",
+    "unknownHolder": "Okänd",
+    "return": "Återlämna",
+    "request": "Begär",
+    "requestedBy": "Begärd av {{name}}",
+    "accept": "Acceptera",
+    "decline": "Avböj",
+    "cancelRequest": "Avbryt begäran",
+    "actionFailed": "Åtgärden misslyckades"
   },
   "myReportedIssues": {
     "title": "Mina rapporterade ärenden",
