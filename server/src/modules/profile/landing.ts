@@ -9,7 +9,7 @@ export const LANDING_PAGE_ROUTES = [
   "/dashboard",
   "/inventory",
   "/used-in",
-  "/taken-items",
+  "/borrowed-items",
   "/warehouses",
   "/locations",
   "/machines",

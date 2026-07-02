@@ -18,7 +18,7 @@ export const LANDING_PAGE_OPTIONS: { path: string; label: string; icon: LucideIc
   { path: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { path: "/inventory", label: "Inventory", icon: Boxes },
   { path: "/used-in", label: "Used In", icon: PackageOpen },
-  { path: "/taken-items", label: "Taken Items", icon: Truck },
+  { path: "/borrowed-items", label: "Borrowed Items", icon: Truck },
   { path: "/warehouses", label: "Warehouses", icon: Warehouse },
   { path: "/locations", label: "Locations", icon: MapPin },
   { path: "/machines", label: "Machines", icon: Factory },

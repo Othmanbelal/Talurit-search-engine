@@ -19,7 +19,7 @@ import { StructuredInventoryGroupPage } from "../pages/StructuredInventoryGroupP
 import { StructuredInventoryTablePage } from "../pages/StructuredInventoryTablePage";
 import { ProfilePage } from "../pages/ProfilePage";
 import { ResetPasswordPage } from "../pages/ResetPasswordPage";
-import { TakenItemsPage } from "../pages/TakenItemsPage";
+import { BorrowedItemsPage } from "../pages/BorrowedItemsPage";
 import { ToolsPage } from "../pages/ToolsPage";
 import { UsedInDetailsPage } from "../pages/UsedInDetailsPage";
 import { UsedInPage } from "../pages/UsedInPage";
@@ -44,7 +44,7 @@ export function AppRouter() {
           <Route element={<StructuredInventoryTablePage />} path="/inventory/tables/:id" />
           <Route element={<UsedInPage />} path="/used-in" />
           <Route element={<UsedInDetailsPage />} path="/used-in/:id" />
-          <Route element={<TakenItemsPage />} path="/taken-items" />
+          <Route element={<BorrowedItemsPage />} path="/borrowed-items" />
           <Route element={<WarehousesPage />} path="/warehouses" />
           <Route element={<WarehouseDesignPage />} path="/warehouses/new" />
           <Route element={<WarehouseDetailsPage />} path="/warehouses/:id" />

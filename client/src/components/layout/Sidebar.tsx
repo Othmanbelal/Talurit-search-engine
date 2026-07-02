@@ -22,7 +22,7 @@ export function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => v
     { label: t("dashboard"), href: "/dashboard", icon: BarChart3 },
     { label: t("inventory"), href: "/inventory", icon: Boxes },
     { label: t("usedIn"), href: "/used-in", icon: Boxes },
-    { label: t("takenItems"), href: "/taken-items", icon: PackageMinus },
+    { label: t("borrowedItems"), href: "/borrowed-items", icon: PackageMinus },
     { label: t("warehouses"), href: "/warehouses", icon: Warehouse },
     { label: t("locations"), href: "/locations", icon: MapPinned },
     { label: t("import"), href: "/import", icon: FileSpreadsheet, adminOnly: true },
